@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Deutschland Entdecken</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Raleway:wght@300;400;600&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --black: #0a0a0a;
+      --dark: #111111;
+      --card: #181818;
+      --gold: #c9a84c;
+      --gold-light: #e8c96a;
+      --red: #cc0000;
+      --white: #f0ece0;
+      --muted: #888;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--black);
+      color: var(--white);
+      font-family: 'Raleway', sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 9999;
+      opacity: 0.4;
+    }
+
+    /* ── LANGUAGE SELECTOR OVERLAY ── */
+    #lang-screen {
+      position: fixed;
+      inset: 0;
+      background: var(--black);
+      z-index: 1000;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 3rem;
+      transition: opacity 0.6s ease, visibility 0.6s ease;
+    }
+
+    #lang-screen.hidden {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    .lang-flag-stripe {
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      display: flex;
+      height: 5px;
+    }
+    .lang-flag-stripe div { flex: 1; }
+    .lang-flag-stripe div:nth-child(1) { background: #1a1a1a; }
+    .lang-flag-stripe div:nth-child(2) { background: var(--red); }
+    .lang-flag-stripe div:nth-child(3) { background: var(--gold); }
+
+    .lang-title {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2rem, 6vw, 4rem);
+      font-weight: 900;
+      text-align: center;
+      line-height: 1;
+    }
+
+    .lang-title span {
+      display: block;
+      color: var(--gold);
+      font-style: italic;
+    }
+
+    .lang-subtitle {
+      font-size: 0.75rem;
+      letter-spacing: 0.4em;
+      text-transform: uppercase;
+      color: var(--muted);
+      text-align: center;
+    }
+
+    .lang-buttons {
+      display: flex;
+      gap: 1.5rem;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .lang-btn {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.8rem;
+      padding: 2rem 3rem;
+      border: 1px solid rgba(201,168,76,0.2);
+      background: var(--card);
+      color: var(--white);
+      cursor: pointer;
+      border-radius: 2px;
+      transition: all 0.3s ease;
+      font-family: 'Raleway', sans-serif;
+      min-width: 160px;
+    }
+
+    .lang-btn:hover {
+      border-color: var(--gold);
+      background: rgba(201,168,76,0.08);
+      transform: translateY(-4px);
+    }
+
+    .lang-btn .flag { font-size: 2.5rem; }
+    .lang-btn .lang-name { font-family: 'Playfair Display', serif; font-size: 1.3rem; font-weight: 700; }
+    .lang-btn .lang-native { font-size: 0.7rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted); }
+
+    /* ── MAIN CONTENT ── */
+    #main-content { opacity: 0; transition: opacity 0.6s ease; }
+    #main-content.visible { opacity: 1; }
+
+    .flag-stripe {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      display: flex;
+      height: 5px;
+      z-index: 100;
+    }
+    .flag-stripe div { flex: 1; }
+    .flag-stripe div:nth-child(1) { background: #1a1a1a; }
+    .flag-stripe div:nth-child(2) { background: var(--red); }
+    .flag-stripe div:nth-child(3) { background: var(--gold); }
+
+    /* ── HERO ── */
+    .hero {
+      position: relative;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 2rem;
+      overflow: hidden;
+    }
+
+    .hero-bg {
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 80% 60% at 50% 40%, rgba(201,168,76,0.08) 0%, transparent 70%),
+        radial-gradient(ellipse 40% 40% at 80% 80%, rgba(204,0,0,0.05) 0%, transparent 60%);
+    }
+
+    .lines { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
+    .lines span {
+      position: absolute;
+      bottom: -10px;
+      width: 1px;
+      background: linear-gradient(to top, transparent, rgba(201,168,76,0.3), transparent);
+      animation: rise linear infinite;
+    }
+    .lines span:nth-child(1)  { left: 10%; animation-duration: 8s;  animation-delay: 0s;   height: 40%; }
+    .lines span:nth-child(2)  { left: 25%; animation-duration: 12s; animation-delay: 2s;   height: 60%; }
+    .lines span:nth-child(3)  { left: 40%; animation-duration: 10s; animation-delay: 4s;   height: 30%; }
+    .lines span:nth-child(4)  { left: 55%; animation-duration: 9s;  animation-delay: 1s;   height: 50%; }
+    .lines span:nth-child(5)  { left: 70%; animation-duration: 14s; animation-delay: 3s;   height: 45%; }
+    .lines span:nth-child(6)  { left: 85%; animation-duration: 11s; animation-delay: 5s;   height: 35%; }
+    .lines span:nth-child(7)  { left: 92%; animation-duration: 7s;  animation-delay: 0.5s; height: 55%; }
+
+    @keyframes rise {
+      0%   { transform: translateY(0); opacity: 0; }
+      10%  { opacity: 1; }
+      90%  { opacity: 1; }
+      100% { transform: translateY(-100vh); opacity: 0; }
+    }
+
+    .hero-eyebrow {
+      font-size: 0.7rem; font-weight: 600; letter-spacing: 0.4em; text-transform: uppercase;
+      color: var(--gold); margin-bottom: 1.5rem;
+      opacity: 0; animation: fadeUp 0.8s ease 0.2s forwards;
+    }
+
+    .hero-title {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(3.5rem, 10vw, 8rem);
+      font-weight: 900; line-height: 0.9; letter-spacing: -0.02em;
+      color: var(--white); opacity: 0; animation: fadeUp 0.8s ease 0.4s forwards;
+    }
+    .hero-title span { display: block; color: var(--gold); font-style: italic; }
+
+    .hero-subtitle {
+      margin-top: 1.5rem; font-size: 0.95rem; font-weight: 300;
+      color: var(--muted); letter-spacing: 0.1em;
+      opacity: 0; animation: fadeUp 0.8s ease 0.6s forwards;
+    }
+
+    .hero-divider {
+      margin: 2.5rem auto; width: 60px; height: 1px;
+      background: linear-gradient(to right, transparent, var(--gold), transparent);
+      opacity: 0; animation: fadeUp 0.8s ease 0.8s forwards;
+    }
+
+    .hero-cta {
+      font-size: 0.8rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--muted);
+      opacity: 0; animation: fadeUp 0.8s ease 1s forwards;
+    }
+
+    .scroll-arrow {
+      margin-top: 1rem; font-size: 1.2rem; color: var(--gold);
+      opacity: 0; animation: fadeUp 0.8s ease 1.2s forwards, bounce 2s ease 2.2s infinite;
+    }
+
+    @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(8px); } }
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* ── GRID SECTION ── */
+    .section { padding: 6rem 2rem; max-width: 1200px; margin: 0 auto; }
+    .section-header { text-align: center; margin-bottom: 4rem; }
+    .section-label { font-size: 0.65rem; letter-spacing: 0.5em; text-transform: uppercase; color: var(--gold); display: block; margin-bottom: 1rem; }
+    .section-title { font-family: 'Playfair Display', serif; font-size: clamp(2rem, 5vw, 3.5rem); font-weight: 700; color: var(--white); }
+
+    .cards-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem; }
+
+    .card {
+      position: relative; background: var(--card); border: 1px solid rgba(201,168,76,0.1);
+      border-radius: 2px; padding: 2.5rem 2rem; cursor: pointer; text-decoration: none;
+      color: inherit; display: block; overflow: hidden;
+      transition: transform 0.3s ease, border-color 0.3s ease;
+    }
+    .card::before {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(135deg, rgba(201,168,76,0.05) 0%, transparent 60%);
+      opacity: 0; transition: opacity 0.3s ease;
+    }
+    .card:hover { transform: translateY(-4px); border-color: rgba(201,168,76,0.4); }
+    .card:hover::before { opacity: 1; }
+
+    .card-number {
+      font-family: 'Playfair Display', serif; font-size: 4rem; font-weight: 900;
+      color: rgba(201,168,76,0.1); line-height: 1; position: absolute; top: 1rem; right: 1.5rem;
+      transition: color 0.3s ease;
+    }
+    .card:hover .card-number { color: rgba(201,168,76,0.2); }
+    .card-icon { font-size: 2rem; margin-bottom: 1.2rem; display: block; }
+    .card-title { font-family: 'Playfair Display', serif; font-size: 1.4rem; font-weight: 700; color: var(--white); margin-bottom: 0.3rem; }
+    .card-subtitle { font-size: 0.75rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold); margin-bottom: 1rem; }
+    .card-desc { font-size: 0.85rem; color: var(--muted); line-height: 1.7; padding-bottom: 2rem; }
+
+    .card-arrow {
+      position: absolute; bottom: 1.5rem; right: 1.5rem;
+      width: 32px; height: 32px; border: 1px solid rgba(201,168,76,0.3);
+      border-radius: 50%; display: flex; align-items: center; justify-content: center;
+      font-size: 0.8rem; color: var(--gold);
+      transition: background 0.3s ease, border-color 0.3s ease;
+    }
+    .card:hover .card-arrow { background: var(--gold); color: var(--black); border-color: var(--gold); }
+
+    .ar-badge {
+      position: absolute; top: 1rem; left: 1rem; font-size: 0.55rem; letter-spacing: 0.15em;
+      text-transform: uppercase; background: rgba(201,168,76,0.15); color: var(--gold);
+      border: 1px solid rgba(201,168,76,0.3); padding: 0.2rem 0.5rem; border-radius: 2px;
+    }
+
+    footer {
+      border-top: 1px solid rgba(201,168,76,0.1); padding: 2rem; text-align: center;
+      font-size: 0.75rem; color: rgba(136,136,136,0.5); letter-spacing: 0.2em;
+    }
+
+    .fade-in { opacity: 0; transform: translateY(30px); transition: opacity 0.7s ease, transform 0.7s ease; }
+    .fade-in.visible { opacity: 1; transform: translateY(0); }
+  </style>
+</head>
+<body>
+
+  <!-- LANGUAGE SELECTOR -->
+  <div id="lang-screen">
+    <div class="lang-flag-stripe"><div></div><div></div><div></div></div>
+    <h1 class="lang-title">Deutschland<span>Entdecken</span></h1>
+    <p class="lang-subtitle">Sprache wählen · Dil seç</p>
+    <div class="lang-buttons">
+      <button class="lang-btn" onclick="setLang('de')">
+        <span class="flag">🇩🇪</span>
+        <span class="lang-name">Deutsch</span>
+        <span class="lang-native">Almanca</span>
+      </button>
+      <button class="lang-btn" onclick="setLang('tr')">
+        <span class="flag">🇹🇷</span>
+        <span class="lang-name">Türkçe</span>
+        <span class="lang-native">Turkish</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- MAIN CONTENT -->
+  <div id="main-content">
+    <div class="flag-stripe"><div></div><div></div><div></div></div>
+
+    <section class="hero">
+      <div class="hero-bg"></div>
+      <div class="lines"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+      <p class="hero-eyebrow" id="hero-eyebrow"></p>
+      <h1 class="hero-title">Deutschland<span>Entdecken</span></h1>
+      <p class="hero-subtitle" id="hero-subtitle"></p>
+      <div class="hero-divider"></div>
+      <p class="hero-cta" id="hero-cta"></p>
+      <div class="scroll-arrow">↓</div>
+    </section>
+
+    <section class="section">
+      <div class="section-header fade-in">
+        <span class="section-label" id="section-label"></span>
+        <h2 class="section-title" id="section-title"></h2>
+      </div>
+
+      <div class="cards-grid">
+        <a href="berlin/index.html" class="card fade-in">
+          <span class="ar-badge">AR</span><span class="card-number">01</span>
+          <span class="card-icon">🏛️</span>
+          <div class="card-title">Berlin</div>
+          <div class="card-subtitle" id="sub-berlin"></div>
+          <p class="card-desc" id="desc-berlin"></p>
+          <div class="card-arrow">→</div>
+        </a>
+
+        <a href="yemek/index.html" class="card fade-in">
+          <span class="ar-badge">AR</span><span class="card-number">02</span>
+          <span class="card-icon">🥨</span>
+          <div class="card-title">Esskultur</div>
+          <div class="card-subtitle" id="sub-yemek"></div>
+          <p class="card-desc" id="desc-yemek"></p>
+          <div class="card-arrow">→</div>
+        </a>
+
+        <a href="muzik/index.html" class="card fade-in">
+          <span class="ar-badge">AR</span><span class="card-number">03</span>
+          <span class="card-icon">🎵</span>
+          <div class="card-title">Musik</div>
+          <div class="card-subtitle" id="sub-muzik"></div>
+          <p class="card-desc" id="desc-muzik"></p>
+          <div class="card-arrow">→</div>
+        </a>
+
+        <a href="teknoloji/index.html" class="card fade-in">
+          <span class="ar-badge">AR</span><span class="card-number">04</span>
+          <span class="card-icon">🚗</span>
+          <div class="card-title">Technologie</div>
+          <div class="card-subtitle" id="sub-tek"></div>
+          <p class="card-desc" id="desc-tek"></p>
+          <div class="card-arrow">→</div>
+        </a>
+
+        <a href="festivaller/index.html" class="card fade-in">
+          <span class="ar-badge">AR</span><span class="card-number">05</span>
+          <span class="card-icon">🎄</span>
+          <div class="card-title">Feste</div>
+          <div class="card-subtitle" id="sub-fest"></div>
+          <p class="card-desc" id="desc-fest"></p>
+          <div class="card-arrow">→</div>
+        </a>
+
+        <a href="kisiler/index.html" class="card fade-in">
+          <span class="ar-badge">AR</span><span class="card-number">06</span>
+          <span class="card-icon">👤</span>
+          <div class="card-title">Persönlichkeiten</div>
+          <div class="card-subtitle" id="sub-kis"></div>
+          <p class="card-desc" id="desc-kis"></p>
+          <div class="card-arrow">→</div>
+        </a>
+
+        <a href="spor/index.html" class="card fade-in">
+          <span class="ar-badge">AR</span><span class="card-number">07</span>
+          <span class="card-icon">⚽</span>
+          <div class="card-title">Sport</div>
+          <div class="card-subtitle" id="sub-spor"></div>
+          <p class="card-desc" id="desc-spor"></p>
+          <div class="card-arrow">→</div>
+        </a>
+      </div>
+    </section>
+
+    <footer><p>Deutschland Entdecken · Almanca Haftası Projesi</p></footer>
+  </div>
+
+  <script>
+    const t = {
+      de: {
+        'hero-eyebrow': 'Deutsche Woche · Deutschland Entdecken',
+        'hero-subtitle': 'Eine Reise in die Tiefen einer Kultur',
+        'hero-cta': 'Thema wählen · QR-Code scannen · AR erleben',
+        'section-label': '7 Themen · 7 Erlebnisse',
+        'section-title': 'Themen Entdecken',
+        'sub-berlin': 'Stadt & Geschichte',
+        'desc-berlin': 'Vom Brandenburger Tor bis zum modernen Berlin — Spuren der Geschichte und der Geist der Stadt.',
+        'sub-yemek': 'Esskultur',
+        'desc-yemek': 'Von Pretzel bis Bratwurst, bis zur Schwarzwälder Kirschtorte — die Köstlichkeiten der deutschen Küche.',
+        'sub-muzik': 'Musik & Kunst',
+        'desc-muzik': 'Von Beethoven und Bach bis heute — das großartige Erbe der deutschen Musik.',
+        'sub-tek': 'Technologie & Industrie',
+        'desc-tek': 'BMW, Mercedes, Siemens — die weltverändernde Kraft der deutschen Ingenieurskunst.',
+        'sub-fest': 'Feste & Traditionen',
+        'desc-fest': 'Vom Oktoberfest-Rausch bis zur Weihnachtsmarkt-Magie — der Feiergeist Deutschlands.',
+        'sub-kis': 'Bedeutende Persönlichkeiten',
+        'desc-kis': 'Einstein, Goethe, Schiller — deutsche Genies, die den Lauf der Menschheit veränderten.',
+        'sub-spor': 'Sport & Bundesliga',
+        'desc-spor': 'Von der Leidenschaft der Bundesliga bis zu den Meisterschaften der Nationalmannschaft.',
+      },
+      tr: {
+        'hero-eyebrow': 'Almanca Haftası · Almanya\'yı Keşfet',
+        'hero-subtitle': 'Bir kültürün derinliklerine yolculuk',
+        'hero-cta': 'Bir konu seç · QR kodu tara · AR\'ı deneyimle',
+        'section-label': '7 Konu · 7 Deneyim',
+        'section-title': 'Konuları Keşfet',
+        'sub-berlin': 'Şehir & Tarih',
+        'desc-berlin': 'Brandenburgisches Tor\'dan modern Berlin\'e, tarihin izleri ve şehrin ruhu.',
+        'sub-yemek': 'Yemek Kültürü',
+        'desc-yemek': 'Pretzel\'den Bratwurst\'a, Schwarzwälder Kirschtorte\'ye Alman mutfağının lezzetleri.',
+        'sub-muzik': 'Müzik & Sanat',
+        'desc-muzik': 'Beethoven ve Bach\'tan günümüze uzanan Alman müziğinin muhteşem mirası.',
+        'sub-tek': 'Teknoloji & Sanayi',
+        'desc-tek': 'BMW, Mercedes, Siemens — Alman mühendisliğinin dünyayı şekillendiren gücü.',
+        'sub-fest': 'Festivaller & Gelenekler',
+        'desc-fest': 'Oktoberfest çılgınlığından Weihnachtsmarkt büyüsüne, Almanya\'nın kutlama ruhu.',
+        'sub-kis': 'Önemli İsimler',
+        'desc-kis': 'Einstein, Goethe, Schiller — insanlığın seyrini değiştiren Alman dehaları.',
+        'sub-spor': 'Spor & Bundesliga',
+        'desc-spor': 'Bundesliga\'nın tutkusundan Alman Milli Takımı\'nın şampiyonluklarına.',
+      }
+    };
+
+    function setLang(lang) {
+      Object.keys(t[lang]).forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.textContent = t[lang][id];
+      });
+      document.getElementById('lang-screen').classList.add('hidden');
+      const main = document.getElementById('main-content');
+      main.classList.add('visible');
+      setTimeout(() => {
+        document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+      }, 100);
+    }
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry, i) => {
+        if (entry.isIntersecting) {
+          setTimeout(() => entry.target.classList.add('visible'), i * 80);
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.1 });
+  </script>
+</body>
+</html>
