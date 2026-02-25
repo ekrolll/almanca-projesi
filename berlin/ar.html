@@ -31,10 +31,11 @@
     .ic-text { font-size:.8rem; color:rgba(232,244,248,.7); line-height:1.65; }
     .ic-close { position:absolute; top:.6rem; right:.8rem; color:rgba(0,212,255,.5); cursor:pointer; font-size:.9rem; pointer-events:all; background:none; border:none; font-family:Arial; }
     .ic-close:hover { color:#00d4ff; }
+    a-scene { width: 100vw !important; height: 100vh !important; position: fixed !important; top: 0 !important; left: 0 !important; }
   </style>
 </head>
 <body>
-<a-scene mindar-image="imageTargetSrc: targets.mind; autoStart: true; uiLoading: no; uiScanning: no; uiError: no;" color-space="sRGB" renderer="colorManagement: true" vr-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false" embedded>
+<a-scene mindar-image="imageTargetSrc: targets.mind; autoStart: true; uiLoading: no; uiScanning: no; uiError: no;" color-space="sRGB" renderer="colorManagement: true" vr-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false" >
   <a-camera position="0 0 0" look-controls="enabled: false" cursor="fuse: false; rayOrigin: mouse" raycaster="objects: .hotspot; far: 100"></a-camera>
   <a-entity mindar-image-target="targetIndex: 0">
     <a-torus position="0 -0.38 0" radius="0.58" radius-tubular="0.004" color="#00d4ff" opacity="0.5" animation="property: rotation; to: 0 360 0; dur: 10000; easing: linear; loop: true"></a-torus>
