@@ -1040,17 +1040,9 @@
   // ── AR ──
   let stream = null;
 
-  async function startAR() {
-    const container = document.getElementById('ar-container');
-    container.classList.add('active');
-    try {
-      stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
-      document.getElementById('ar-video').srcObject = stream;
-    } catch(e) {
-      document.getElementById('ar-status').textContent = lang === 'tr' ? 'Kamera izni gerekli' : 'Kamerazugriff erforderlich';
-    }
+  function startAR() {
+    window.location.href = 'ar.html';
   }
-
   function closeAR() {
     const container = document.getElementById('ar-container');
     container.classList.remove('active');
