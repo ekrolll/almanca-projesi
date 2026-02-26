@@ -4,25 +4,24 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Feste — Deutschland Entdecken</title>
-  <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Rajdhani:wght@300;400;600;700&family=Raleway:wght@300;400;600&display=swap" rel="stylesheet"/>
   <style>
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
     :root {
-      --bg: #0d0500;
-      --holo: #ff9500;
-      --holo2: #ffcc00;
+      --bg: #020a12;
+      --holo: #00d4ff;
+      --holo2: #0099cc;
+      --holo-dim: rgba(0,212,255,0.15);
       --gold: #c9a84c;
       --red: #cc0000;
-      --white: #fff8f0;
-      --muted: rgba(255,149,0,0.5);
-      --card-bg: rgba(30,10,0,0.85);
-      --glow: 0 0 20px rgba(255,149,0,0.4);
+      --white: #e8f4f8;
+      --muted: rgba(0,212,255,0.5);
+      --card-bg: rgba(0,20,40,0.85);
+      --glow: 0 0 20px rgba(0,212,255,0.4);
     }
 
-    html { scroll-behavior: smooth; overflow-y: auto; }
+    html { scroll-behavior: smooth; }
 
     body {
       background: var(--bg);
@@ -30,9 +29,9 @@
       font-family: 'Rajdhani', sans-serif;
       min-height: 100vh;
       overflow-x: hidden;
-  overflow-y: auto;
     }
 
+    /* ── SCAN LINES OVERLAY ── */
     body::after {
       content: '';
       position: fixed;
@@ -41,14 +40,14 @@
         0deg,
         transparent,
         transparent 2px,
-        rgba(255,149,0,0.015) 2px,
-        rgba(255,149,0,0.015) 4px
+        rgba(0,212,255,0.015) 2px,
+        rgba(0,212,255,0.015) 4px
       );
       pointer-events: none;
       z-index: 9998;
     }
 
-    /* NAV */
+    /* ── NAVBAR ── */
     nav {
       position: fixed;
       top: 0; left: 0; right: 0;
@@ -57,61 +56,104 @@
       align-items: center;
       justify-content: space-between;
       padding: 1rem 2rem;
-      background: linear-gradient(to bottom, rgba(13,5,0,0.95), transparent);
-      border-bottom: 1px solid rgba(255,149,0,0.1);
+      background: linear-gradient(to bottom, rgba(2,10,18,0.95), transparent);
+      border-bottom: 1px solid rgba(0,212,255,0.1);
     }
+
     .nav-back {
-      display: flex; align-items: center; gap: 0.5rem;
-      text-decoration: none; color: var(--holo);
-      font-size: 0.8rem; letter-spacing: 0.2em; text-transform: uppercase;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      text-decoration: none;
+      color: var(--holo);
+      font-size: 0.8rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
       transition: opacity 0.3s;
     }
     .nav-back:hover { opacity: 0.7; }
     .nav-back::before { content: '←'; font-size: 1rem; }
-    .nav-title { font-size: 0.75rem; letter-spacing: 0.4em; text-transform: uppercase; color: var(--muted); }
-    .nav-lang {
-      font-size: 0.7rem; cursor: pointer; background: none;
-      border: 1px solid rgba(255,149,0,0.2); color: var(--holo);
-      padding: 0.3rem 0.8rem; border-radius: 2px;
-      font-family: 'Rajdhani', sans-serif; transition: all 0.3s;
-    }
-    .nav-lang:hover { background: rgba(255,149,0,0.1); }
 
-    /* HERO */
-    .hero {
-      position: relative; min-height: 100vh;
-      display: flex; flex-direction: column;
-      align-items: center; justify-content: center;
-      padding: 6rem 2rem 4rem; overflow: hidden;
+    .nav-title {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 0.75rem;
+      letter-spacing: 0.4em;
+      text-transform: uppercase;
+      color: var(--muted);
     }
+
+    .nav-lang {
+      font-size: 0.7rem;
+      letter-spacing: 0.2em;
+      color: var(--muted);
+      cursor: pointer;
+      background: none;
+      border: 1px solid rgba(0,212,255,0.2);
+      color: var(--holo);
+      padding: 0.3rem 0.8rem;
+      border-radius: 2px;
+      font-family: 'Rajdhani', sans-serif;
+      transition: all 0.3s;
+    }
+    .nav-lang:hover { background: rgba(0,212,255,0.1); }
+
+    /* ── HERO ── */
+    .hero {
+      position: relative;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 6rem 2rem 4rem;
+      overflow: hidden;
+    }
+
+    /* Grid background */
     .hero-grid {
-      position: absolute; inset: 0;
+      position: absolute;
+      inset: 0;
       background-image:
-        linear-gradient(rgba(255,149,0,0.04) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255,149,0,0.04) 1px, transparent 1px);
+        linear-gradient(rgba(0,212,255,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,212,255,0.04) 1px, transparent 1px);
       background-size: 60px 60px;
+      perspective: 600px;
       transform: rotateX(20deg) scale(1.5);
       transform-origin: center bottom;
     }
+
+    /* Radial glow */
     .hero-glow {
-      position: absolute; inset: 0;
+      position: absolute;
+      inset: 0;
       background:
-        radial-gradient(ellipse 70% 50% at 50% 60%, rgba(255,149,0,0.08) 0%, transparent 70%),
-        radial-gradient(ellipse 40% 30% at 50% 100%, rgba(255,100,0,0.12) 0%, transparent 60%);
+        radial-gradient(ellipse 70% 50% at 50% 60%, rgba(0,212,255,0.08) 0%, transparent 70%),
+        radial-gradient(ellipse 40% 30% at 50% 100%, rgba(0,150,200,0.12) 0%, transparent 60%);
     }
+
+    /* Silhouette */
     .silhouette-wrap {
-      position: relative; width: 100%; max-width: 800px;
-      margin: 0 auto 2rem; opacity: 0;
+      position: relative;
+      width: 100%;
+      max-width: 800px;
+      margin: 0 auto 2rem;
+      opacity: 0;
       animation: fadeUp 1s ease 0.5s forwards;
     }
+
     .silhouette-svg {
       width: 100%;
-      filter: drop-shadow(0 0 20px rgba(255,149,0,0.6)) drop-shadow(0 0 60px rgba(255,149,0,0.3));
+      filter: drop-shadow(0 0 20px rgba(0,212,255,0.6)) drop-shadow(0 0 60px rgba(0,212,255,0.3));
     }
+
+    /* Scanning line */
     .scan-line {
-      position: absolute; left: 0; right: 0; height: 2px;
+      position: absolute;
+      left: 0; right: 0;
+      height: 2px;
       background: linear-gradient(to right, transparent, var(--holo), transparent);
-      animation: scan 3s ease-in-out infinite; opacity: 0.6;
+      animation: scan 3s ease-in-out infinite;
+      opacity: 0.6;
     }
     @keyframes scan {
       0%   { top: 0%; opacity: 0; }
@@ -119,322 +161,559 @@
       90%  { opacity: 0.6; }
       100% { top: 100%; opacity: 0; }
     }
-    .hotspot { position: absolute; cursor: pointer; }
-    .hotspot-dot {
-      width: 12px; height: 12px; background: var(--holo);
-      border-radius: 50%; animation: pulse 2s ease infinite;
-      position: relative; z-index: 2;
-    }
-    @keyframes pulse {
-      0%   { box-shadow: 0 0 0 0 rgba(255,149,0,0.7); }
-      70%  { box-shadow: 0 0 0 12px rgba(255,149,0,0); }
-      100% { box-shadow: 0 0 0 0 rgba(255,149,0,0); }
-    }
-    .hotspot-label {
-      position: absolute; background: var(--card-bg);
-      border: 1px solid rgba(255,149,0,0.4);
-      padding: 0.4rem 0.8rem; white-space: nowrap;
-      font-size: 0.7rem; letter-spacing: 0.15em; text-transform: uppercase;
-      color: var(--holo); backdrop-filter: blur(10px);
-      opacity: 0; transform: translateY(-5px);
-      transition: all 0.3s ease; pointer-events: none;
-    }
-    .hotspot:hover .hotspot-label { opacity: 1; transform: translateY(0); }
 
+    /* Hotspots */
+    .hotspot {
+      position: absolute;
+      cursor: pointer;
+    }
+
+    .hotspot-dot {
+      width: 12px;
+      height: 12px;
+      background: var(--holo);
+      border-radius: 50%;
+      box-shadow: 0 0 0 0 rgba(0,212,255,0.7);
+      animation: pulse 2s ease infinite;
+      position: relative;
+      z-index: 2;
+    }
+
+    @keyframes pulse {
+      0%   { box-shadow: 0 0 0 0 rgba(0,212,255,0.7); }
+      70%  { box-shadow: 0 0 0 12px rgba(0,212,255,0); }
+      100% { box-shadow: 0 0 0 0 rgba(0,212,255,0); }
+    }
+
+    .hotspot-line {
+      position: absolute;
+      width: 1px;
+      background: var(--holo);
+      opacity: 0.5;
+      transform-origin: top;
+    }
+
+    .hotspot-label {
+      position: absolute;
+      background: var(--card-bg);
+      border: 1px solid rgba(0,212,255,0.4);
+      padding: 0.4rem 0.8rem;
+      white-space: nowrap;
+      font-size: 0.7rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--holo);
+      backdrop-filter: blur(10px);
+      opacity: 0;
+      transform: translateY(-5px);
+      transition: all 0.3s ease;
+      pointer-events: none;
+    }
+
+    .hotspot:hover .hotspot-label {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Hero text */
     .hero-text {
-      position: relative; text-align: center; z-index: 10;
-      opacity: 0; animation: fadeUp 0.8s ease 1s forwards;
+      position: relative;
+      text-align: center;
+      z-index: 10;
+      opacity: 0;
+      animation: fadeUp 0.8s ease 1s forwards;
     }
+
     .hero-eyebrow {
-      font-size: 0.65rem; letter-spacing: 0.5em; text-transform: uppercase;
-      color: var(--holo); margin-bottom: 0.8rem; opacity: 0.7;
+      font-size: 0.65rem;
+      letter-spacing: 0.5em;
+      text-transform: uppercase;
+      color: var(--holo);
+      margin-bottom: 0.8rem;
+      opacity: 0.7;
     }
+
     .hero-title {
       font-family: 'Playfair Display', serif;
-      font-size: clamp(3rem, 10vw, 7rem); font-weight: 900;
-      line-height: 0.9; color: var(--white); text-shadow: var(--glow);
+      font-size: clamp(3rem, 10vw, 7rem);
+      font-weight: 900;
+      line-height: 0.9;
+      color: var(--white);
+      text-shadow: var(--glow);
     }
+
     .hero-title span {
-      display: block; font-size: 0.3em;
-      font-family: 'Rajdhani', sans-serif; letter-spacing: 0.5em;
-      text-transform: uppercase; color: var(--holo); margin-top: 0.5rem;
+      display: block;
+      font-size: 0.3em;
+      font-family: 'Rajdhani', sans-serif;
+      letter-spacing: 0.5em;
+      text-transform: uppercase;
+      color: var(--holo);
+      margin-top: 0.5rem;
     }
+
+    /* Coordinates */
     .coords {
-      margin-top: 1.5rem; display: flex; gap: 2rem;
-      justify-content: center; font-size: 0.7rem;
-      letter-spacing: 0.2em; color: var(--muted);
+      margin-top: 1.5rem;
+      display: flex;
+      gap: 2rem;
+      justify-content: center;
+      font-size: 0.7rem;
+      letter-spacing: 0.2em;
+      color: var(--muted);
     }
+
     @keyframes fadeUp {
       from { opacity: 0; transform: translateY(30px); }
       to   { opacity: 1; transform: translateY(0); }
     }
 
+    /* ── DATA STRIP ── */
     .data-strip {
-      position: relative; z-index: 10; width: 100%; max-width: 900px;
-      margin: 2rem auto 0; display: grid;
+      position: relative;
+      z-index: 10;
+      width: 100%;
+      max-width: 900px;
+      margin: 2rem auto 0;
+      display: grid;
       grid-template-columns: repeat(4, 1fr);
-      gap: 1px; background: rgba(255,149,0,0.1);
-      border: 1px solid rgba(255,149,0,0.15);
-      opacity: 0; animation: fadeUp 0.8s ease 1.3s forwards;
+      gap: 1px;
+      background: rgba(0,212,255,0.1);
+      border: 1px solid rgba(0,212,255,0.15);
+      opacity: 0;
+      animation: fadeUp 0.8s ease 1.3s forwards;
     }
-    .data-item { background: var(--card-bg); padding: 1rem; text-align: center; }
+
+    .data-item {
+      background: var(--card-bg);
+      padding: 1rem;
+      text-align: center;
+    }
+
     .data-value {
-      font-size: 1.4rem; font-weight: 700; color: var(--holo);
-      display: block; text-shadow: 0 0 10px rgba(255,149,0,0.5);
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: var(--holo);
+      display: block;
+      text-shadow: 0 0 10px rgba(0,212,255,0.5);
     }
+
     .data-label {
-      font-size: 0.6rem; letter-spacing: 0.2em; text-transform: uppercase;
-      color: var(--muted); margin-top: 0.2rem; display: block;
+      font-size: 0.6rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-top: 0.2rem;
+      display: block;
     }
 
-    /* CONTENT */
-    .content { max-width: 1000px; margin: 0 auto; padding: 6rem 2rem; }
+    /* ── CONTENT SECTION ── */
+    .content {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 6rem 2rem;
+    }
+
     .section-header {
-      margin-bottom: 3rem; display: flex; align-items: center; gap: 1rem;
-    }
-    .section-header::after {
-      content: ''; flex: 1; height: 1px;
-      background: linear-gradient(to right, rgba(255,149,0,0.4), transparent);
-    }
-    .section-tag {
-      font-size: 0.65rem; letter-spacing: 0.4em; text-transform: uppercase;
-      color: var(--holo); border: 1px solid rgba(255,149,0,0.3);
-      padding: 0.3rem 0.8rem; white-space: nowrap;
+      margin-bottom: 3rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
     }
 
-    .info-grid {
-      display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 1.5rem; margin-bottom: 4rem;
+    .section-header::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(to right, rgba(0,212,255,0.4), transparent);
     }
+
+    .section-tag {
+      font-size: 0.65rem;
+      letter-spacing: 0.4em;
+      text-transform: uppercase;
+      color: var(--holo);
+      border: 1px solid rgba(0,212,255,0.3);
+      padding: 0.3rem 0.8rem;
+      white-space: nowrap;
+    }
+
+    /* Info cards */
+    .info-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 4rem;
+    }
+
     .info-card {
-      background: var(--card-bg); border: 1px solid rgba(255,149,0,0.15);
-      padding: 1.8rem; position: relative; overflow: hidden;
-      opacity: 0; transform: translateY(20px);
+      background: var(--card-bg);
+      border: 1px solid rgba(0,212,255,0.15);
+      padding: 1.8rem;
+      position: relative;
+      overflow: hidden;
+      opacity: 0;
+      transform: translateY(20px);
       transition: opacity 0.6s ease, transform 0.6s ease, border-color 0.3s ease;
     }
-    .info-card.visible { opacity: 1; transform: translateY(0); }
-    .info-card:hover { border-color: rgba(255,149,0,0.4); }
+
+    .info-card.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .info-card:hover {
+      border-color: rgba(0,212,255,0.4);
+    }
+
     .info-card::before {
-      content: ''; position: absolute; top: 0; left: 0;
-      width: 3px; height: 100%;
+      content: '';
+      position: absolute;
+      top: 0; left: 0;
+      width: 3px;
+      height: 100%;
       background: linear-gradient(to bottom, var(--holo), transparent);
     }
-    .info-card-icon { font-size: 1.8rem; margin-bottom: 1rem; display: block; }
-    .info-card-title {
-      font-family: 'Rajdhani', sans-serif; font-size: 1.1rem; font-weight: 700;
-      letter-spacing: 0.1em; text-transform: uppercase;
-      color: var(--holo); margin-bottom: 0.5rem;
-    }
-    .info-card-text {
-      font-size: 0.9rem; line-height: 1.7;
-      color: rgba(255,248,240,0.7);
-      font-family: 'Raleway', sans-serif; font-weight: 300;
+
+    .info-card-icon {
+      font-size: 1.8rem;
+      margin-bottom: 1rem;
+      display: block;
+      filter: drop-shadow(0 0 8px rgba(0,212,255,0.4));
     }
 
-    .places-list {
-      display: flex; flex-direction: column; gap: 1px;
-      background: rgba(255,149,0,0.05); border: 1px solid rgba(255,149,0,0.1);
+    .info-card-title {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 1.1rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--holo);
+      margin-bottom: 0.5rem;
     }
+
+    .info-card-text {
+      font-size: 0.9rem;
+      line-height: 1.7;
+      color: rgba(232,244,248,0.7);
+      font-family: 'Raleway', sans-serif;
+      font-weight: 300;
+    }
+
+    /* ── PLACES LIST ── */
+    .places-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+      background: rgba(0,212,255,0.05);
+      border: 1px solid rgba(0,212,255,0.1);
+    }
+
     .place-item {
-      display: flex; align-items: center; gap: 1.5rem;
-      padding: 1.2rem 1.5rem; background: var(--card-bg);
-      opacity: 0; transform: translateX(-20px);
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+      padding: 1.2rem 1.5rem;
+      background: var(--card-bg);
+      cursor: pointer;
+      transition: background 0.3s ease;
+      opacity: 0;
+      transform: translateX(-20px);
       transition: opacity 0.5s ease, transform 0.5s ease, background 0.3s ease;
     }
-    .place-item.visible { opacity: 1; transform: translateX(0); }
-    .place-item:hover { background: rgba(255,149,0,0.08); }
-    .place-num { font-size: 0.7rem; color: var(--muted); letter-spacing: 0.1em; min-width: 30px; }
-    .place-name { font-size: 1rem; font-weight: 600; letter-spacing: 0.05em; flex: 1; }
-    .place-de { font-size: 0.75rem; color: var(--holo); letter-spacing: 0.1em; font-style: italic; }
-    .place-bar { width: 0; height: 2px; background: var(--holo); transition: width 1s ease; box-shadow: 0 0 8px var(--holo); }
+
+    .place-item.visible {
+      opacity: 1;
+      transform: translateX(0);
+    }
+
+    .place-item:hover { background: rgba(0,212,255,0.08); }
+
+    .place-num {
+      font-size: 0.7rem;
+      color: var(--muted);
+      letter-spacing: 0.1em;
+      min-width: 30px;
+    }
+
+    .place-name {
+      font-size: 1rem;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      flex: 1;
+    }
+
+    .place-de {
+      font-size: 0.75rem;
+      color: var(--holo);
+      letter-spacing: 0.1em;
+      font-style: italic;
+    }
+
+    .place-bar {
+      width: 0;
+      height: 2px;
+      background: var(--holo);
+      transition: width 1s ease;
+      box-shadow: 0 0 8px var(--holo);
+    }
+
     .place-item.visible .place-bar { width: 60px; }
 
-    /* AR SECTION */
+    /* ── AR SECTION ── */
     .ar-section {
-      margin-top: 4rem; border: 1px solid rgba(255,149,0,0.2);
-      background: rgba(20,5,0,0.8); padding: 2rem; text-align: center;
+      margin-top: 4rem;
+      border: 1px solid rgba(0,212,255,0.2);
+      background: rgba(0,10,20,0.8);
+      padding: 2rem;
+      text-align: center;
     }
-    .ar-title { font-size: 0.7rem; letter-spacing: 0.4em; text-transform: uppercase; color: var(--holo); margin-bottom: 1rem; }
+
+    .ar-title {
+      font-size: 0.7rem;
+      letter-spacing: 0.4em;
+      text-transform: uppercase;
+      color: var(--holo);
+      margin-bottom: 1rem;
+    }
+
     .ar-btn {
-      display: inline-flex; align-items: center; gap: 0.8rem;
-      padding: 1rem 2.5rem; background: transparent;
-      border: 1px solid var(--holo); color: var(--holo);
-      font-family: 'Rajdhani', sans-serif; font-size: 0.9rem;
-      font-weight: 600; letter-spacing: 0.3em; text-transform: uppercase;
-      cursor: pointer; transition: all 0.3s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.8rem;
+      padding: 1rem 2.5rem;
+      background: transparent;
+      border: 1px solid var(--holo);
+      color: var(--holo);
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 600;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: inset 0 0 0 0 var(--holo);
     }
-    .ar-btn:hover { background: rgba(255,149,0,0.1); box-shadow: 0 0 30px rgba(255,149,0,0.3); }
+
+    .ar-btn:hover {
+      background: rgba(0,212,255,0.1);
+      box-shadow: 0 0 30px rgba(0,212,255,0.3);
+    }
+
     .ar-btn-icon { font-size: 1.2rem; }
-    .ar-desc { margin-top: 1rem; font-size: 0.75rem; color: var(--muted); letter-spacing: 0.1em; }
 
-    /* AR OVERLAY - same pattern as Berlin */
-    #ar-overlay { display: none; position: fixed; inset: 0; z-index: 5000; }
-    #ar-overlay.active { display: block; }
-    #ar-overlay a-scene {
-      width: 100vw !important; height: 100vh !important;
-      position: fixed !important; top: 0 !important; left: 0 !important;
+    .ar-desc {
+      margin-top: 1rem;
+      font-size: 0.75rem;
+      color: var(--muted);
+      letter-spacing: 0.1em;
     }
-    #ar-ui { position: fixed; inset: 0; pointer-events: none; z-index: 6000; }
-    .c { position: absolute; width: 40px; height: 40px; }
-    .c-tl { top:16px; left:16px; border-top:2px solid #ff9500; border-left:2px solid #ff9500; }
-    .c-tr { top:16px; right:16px; border-top:2px solid #ff9500; border-right:2px solid #ff9500; }
-    .c-bl { bottom:70px; left:16px; border-bottom:2px solid #ff9500; border-left:2px solid #ff9500; }
-    .c-br { bottom:70px; right:16px; border-bottom:2px solid #ff9500; border-right:2px solid #ff9500; }
-    .scan { position:absolute; left:0; right:0; height:1px; background:linear-gradient(to right,transparent,#ff9500,transparent); animation:arscan 3s ease-in-out infinite; opacity:.5; }
-    @keyframes arscan { 0%{top:10%} 50%{top:90%} 100%{top:10%} }
-    #status { position:absolute; bottom:16px; left:50%; transform:translateX(-50%); background:rgba(0,0,0,.85); color:#ff9500; font-size:.62rem; letter-spacing:.3em; text-transform:uppercase; padding:.5rem 1.2rem; border:1px solid rgba(255,149,0,.35); backdrop-filter:blur(10px); white-space:nowrap; animation:blink 2s ease infinite; }
-    #status.found { color:#00ff88; border-color:rgba(0,255,136,.4); animation:none; }
-    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.4} }
-    #back { position:absolute; top:16px; left:50%; transform:translateX(-50%); background:rgba(0,0,0,.85); color:#ff9500; border:1px solid rgba(255,149,0,.35); padding:.45rem 1.2rem; font-size:.62rem; letter-spacing:.2em; text-transform:uppercase; cursor:pointer; pointer-events:all; backdrop-filter:blur(10px); font-family:Arial,sans-serif; }
-    #tap-hint { position:absolute; top:70px; left:50%; transform:translateX(-50%); color:rgba(255,149,0,.65); font-size:.6rem; letter-spacing:.25em; text-transform:uppercase; display:none; animation:blink 2s ease infinite; }
-    #info-card { position:absolute; bottom:70px; left:50%; transform:translateX(-50%) translateY(220px); width:min(340px,90vw); background:rgba(20,5,0,.93); border:1px solid rgba(255,149,0,.5); backdrop-filter:blur(20px); padding:1.2rem 1.5rem; transition:transform .4s cubic-bezier(.16,1,.3,1),opacity .4s ease; opacity:0; pointer-events:none; }
-    #info-card.show { transform:translateX(-50%) translateY(0); opacity:1; pointer-events:all; }
-    .ic-tag { font-size:.55rem; letter-spacing:.35em; text-transform:uppercase; color:#ff9500; margin-bottom:.4rem; display:flex; align-items:center; gap:.5rem; }
-    .ic-tag::after { content:''; flex:1; height:1px; background:rgba(255,149,0,.25); }
-    .ic-title { font-size:1.25rem; font-weight:700; color:#fff8f0; margin-bottom:.25rem; }
-    .ic-sub { font-size:.7rem; color:#ff9500; letter-spacing:.1em; margin-bottom:.65rem; }
-    .ic-text { font-size:.8rem; color:rgba(255,248,240,.7); line-height:1.65; }
-    .ic-close { position:absolute; top:.6rem; right:.8rem; color:rgba(255,149,0,.5); cursor:pointer; font-size:.9rem; pointer-events:all; background:none; border:none; font-family:Arial; }
-    .ic-close:hover { color:#ff9500; }
 
+    /* ── AR CAMERA VIEW ── */
+    #ar-container {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 1000;
+      background: #000;
+    }
+
+    #ar-container.active { display: block; }
+
+    #ar-video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .ar-overlay {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+    }
+
+    /* Corner brackets */
+    .ar-overlay::before, .ar-overlay::after {
+      content: '';
+      position: absolute;
+      width: 60px;
+      height: 60px;
+    }
+    .ar-overlay::before {
+      top: 20px; left: 20px;
+      border-top: 2px solid var(--holo);
+      border-left: 2px solid var(--holo);
+    }
+    .ar-overlay::after {
+      bottom: 20px; right: 20px;
+      border-bottom: 2px solid var(--holo);
+      border-right: 2px solid var(--holo);
+    }
+
+    .ar-top-right {
+      position: absolute;
+      top: 20px; right: 20px;
+      width: 60px; height: 60px;
+      border-top: 2px solid var(--holo);
+      border-right: 2px solid var(--holo);
+    }
+    .ar-bottom-left {
+      position: absolute;
+      bottom: 20px; left: 20px;
+      width: 60px; height: 60px;
+      border-bottom: 2px solid var(--holo);
+      border-left: 2px solid var(--holo);
+    }
+
+    .ar-scan {
+      position: absolute;
+      left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(to right, transparent, var(--holo), transparent);
+      animation: arscan 2s ease-in-out infinite;
+    }
+    @keyframes arscan {
+      0%   { top: 10%; }
+      50%  { top: 90%; }
+      100% { top: 10%; }
+    }
+
+    .ar-status {
+      position: absolute;
+      bottom: 100px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 0.7rem;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--holo);
+      background: rgba(0,0,0,0.6);
+      padding: 0.5rem 1.5rem;
+      border: 1px solid rgba(0,212,255,0.3);
+      backdrop-filter: blur(10px);
+      pointer-events: none;
+      animation: blink 1.5s ease infinite;
+    }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.4} }
+
+    .ar-close {
+      position: absolute;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0,0,0,0.7);
+      border: 1px solid rgba(0,212,255,0.4);
+      color: var(--holo);
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 0.75rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      padding: 0.5rem 1.5rem;
+      cursor: pointer;
+      pointer-events: all;
+      backdrop-filter: blur(10px);
+    }
+
+    /* AR info popup */
+    .ar-info-popup {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(0,10,30,0.9);
+      border: 1px solid rgba(0,212,255,0.5);
+      padding: 1.5rem 2rem;
+      text-align: center;
+      backdrop-filter: blur(20px);
+      pointer-events: none;
+      opacity: 0;
+      animation: popupIn 0.5s ease 1s forwards;
+      max-width: 300px;
+      width: 90%;
+    }
+
+    @keyframes popupIn {
+      from { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
+      to   { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+    }
+
+    .ar-popup-title {
+      font-size: 0.6rem;
+      letter-spacing: 0.4em;
+      text-transform: uppercase;
+      color: var(--holo);
+      margin-bottom: 0.5rem;
+    }
+
+    .ar-popup-main {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.8rem;
+      font-weight: 900;
+      color: var(--white);
+      text-shadow: 0 0 20px rgba(0,212,255,0.8);
+    }
+
+    .ar-popup-sub {
+      font-size: 0.75rem;
+      color: var(--muted);
+      margin-top: 0.5rem;
+      letter-spacing: 0.1em;
+    }
+
+    /* ── FOOTER ── */
     footer {
-      border-top: 1px solid rgba(255,149,0,0.1); padding: 2rem;
-      text-align: center; font-size: 0.7rem; letter-spacing: 0.3em;
-      text-transform: uppercase; color: rgba(255,149,0,0.3);
+      border-top: 1px solid rgba(0,212,255,0.1);
+      padding: 2rem;
+      text-align: center;
+      font-size: 0.7rem;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: rgba(0,212,255,0.3);
     }
-    .flag-stripe { position: fixed; top: 0; left: 0; right: 0; display: flex; height: 3px; z-index: 200; }
+
+    /* Flag stripe */
+    .flag-stripe {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      display: flex;
+      height: 3px;
+      z-index: 200;
+    }
     .flag-stripe div { flex: 1; }
     .flag-stripe div:nth-child(1) { background: #1a1a1a; }
     .flag-stripe div:nth-child(2) { background: var(--red); }
     .flag-stripe div:nth-child(3) { background: var(--gold); }
-    @media (max-width: 600px) { .data-strip { grid-template-columns: repeat(2, 1fr); } }
+
+    @media (max-width: 600px) {
+      .data-strip { grid-template-columns: repeat(2, 1fr); }
+    }
   </style>
 </head>
 <body>
 
 <div class="flag-stripe"><div></div><div></div><div></div></div>
 
+<!-- NAV -->
 <nav>
   <a href="../index.html" class="nav-back" id="nav-back">Ana Menü</a>
   <span class="nav-title">Deutschland Entdecken</span>
   <button class="nav-lang" onclick="toggleLang()" id="lang-toggle">DE</button>
 </nav>
 
-<!-- ══ AR OVERLAY ══ -->
-<div id="ar-overlay">
-  <a-scene
-    id="ar-scene"
-    mindar-image="imageTargetSrc: target.mind; autoStart: false; uiLoading: no; uiScanning: no; uiError: no;"
-    color-space="sRGB" renderer="colorManagement: true"
-    vr-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false">
-
-    <a-camera position="0 0 0" look-controls="enabled: false"
-      cursor="fuse: false; rayOrigin: mouse"
-      raycaster="objects: .hotspot; far: 100">
-    </a-camera>
-
-    <a-entity mindar-image-target="targetIndex: 0" id="ar-target">
-      <!-- Platform rings -->
-      <a-torus position="0 -0.38 0" radius="0.58" radius-tubular="0.004" color="#ff9500" opacity="0.5" animation="property: rotation; to: 0 360 0; dur: 10000; easing: linear; loop: true"></a-torus>
-      <a-torus position="0 -0.38 0" radius="0.42" radius-tubular="0.002" color="#ffcc00" opacity="0.3" animation="property: rotation; to: 0 -360 0; dur: 7000; easing: linear; loop: true"></a-torus>
-      <a-cylinder position="0 -0.382 0" radius="0.58" height="0.008" color="#ff9500" opacity="0.12" material="transparent:true"></a-cylinder>
-
-      <!-- Oktoberfest tent -->
-      <a-cone position="0 -0.05 0" radius-bottom="0.32" radius-top="0.02" height="0.26" color="#ff9500" opacity="0.75" material="transparent:true; emissive:#ff9500; emissiveIntensity:0.2"></a-cone>
-      <a-box position="0 -0.23 0" width="0.55" height="0.2" depth="0.28" color="#1a5c1a" opacity="0.65" material="transparent:true"></a-box>
-      <!-- Tent stripes -->
-      <a-box position="-0.12 -0.05 0.15" width="0.055" height="0.26" depth="0.01" color="#ffffff" opacity="0.18" material="transparent:true"></a-box>
-      <a-box position="0.12 -0.05 0.15" width="0.055" height="0.26" depth="0.01" color="#ffffff" opacity="0.18" material="transparent:true"></a-box>
-
-      <!-- Beer mug left -->
-      <a-cylinder position="-0.44 -0.22 0" radius="0.05" height="0.22" color="#c9a84c" opacity="0.85" material="transparent:true; emissive:#c9a84c; emissiveIntensity:0.3"></a-cylinder>
-      <a-cylinder position="-0.44 -0.1 0" radius="0.05" height="0.03" color="#ffdd88" opacity="0.7" material="transparent:true; emissive:#ffcc00; emissiveIntensity:0.5" animation="property: material.opacity; from:0.7; to:1; dur:800; easing:easeInOutSine; loop:true; dir:alternate"></a-cylinder>
-
-      <!-- Beer mug right -->
-      <a-cylinder position="0.44 -0.22 0" radius="0.05" height="0.22" color="#c9a84c" opacity="0.85" material="transparent:true; emissive:#c9a84c; emissiveIntensity:0.3"></a-cylinder>
-      <a-cylinder position="0.44 -0.1 0" radius="0.05" height="0.03" color="#ffdd88" opacity="0.7" material="transparent:true; emissive:#ffcc00; emissiveIntensity:0.5" animation="property: material.opacity; from:1; to:0.7; dur:800; easing:easeInOutSine; loop:true; dir:alternate"></a-cylinder>
-
-      <!-- Pretzel (torus) -->
-      <a-torus position="0 0.22 0.08" radius="0.065" radius-tubular="0.018" color="#8B4513" opacity="0.9" material="transparent:true; emissive:#5c2a00; emissiveIntensity:0.4" animation="property: rotation; from: 0 0 0; to: 0 360 0; dur: 6000; easing: linear; loop: true"></a-torus>
-
-      <!-- Ferris wheel far right -->
-      <a-torus position="0.48 -0.05 -0.05" radius="0.18" radius-tubular="0.005" color="#ff9500" opacity="0.5" animation="property: rotation; from: 0 0 0; to: 0 0 360; dur: 8000; easing: linear; loop: true"></a-torus>
-      <a-cylinder position="0.48 -0.25 -0.05" radius="0.006" height="0.22" color="#ff9500" opacity="0.6" material="transparent:true"></a-cylinder>
-
-      <!-- Christmas tree far left -->
-      <a-cone position="-0.46 -0.12 -0.04" radius-bottom="0.1" radius-top="0.01" height="0.26" color="#00aa44" opacity="0.7" material="transparent:true; emissive:#007722; emissiveIntensity:0.2"></a-cone>
-      <a-cylinder position="-0.46 -0.28 -0.04" radius="0.018" height="0.06" color="#8B4513" opacity="0.8" material="transparent:true"></a-cylinder>
-      <!-- Star on tree -->
-      <a-sphere position="-0.46 0.02 -0.04" radius="0.016" color="#ffcc00" opacity="1" material="transparent:true; emissive:#ffcc00; emissiveIntensity:1" animation="property: material.opacity; from:1; to:0.3; dur:600; easing:easeInOutSine; loop:true; dir:alternate"></a-sphere>
-
-      <!-- Floating confetti particles -->
-      <a-sphere position="-0.22 0 0.18" radius="0.007" color="#ffcc00" opacity="0.9" material="transparent:true; emissive:#ffcc00; emissiveIntensity:1" animation="property: position; from:-0.22 -0.38 0.18; to:-0.22 0.22 0.18; dur:2500; easing:easeInOutSine; loop:true; dir:alternate"></a-sphere>
-      <a-sphere position="0.2 0.05 0.14" radius="0.006" color="#ff4444" opacity="0.9" material="transparent:true; emissive:#ff4444; emissiveIntensity:1" animation="property: position; from:0.2 -0.38 0.14; to:0.2 0.18 0.14; dur:3000; easing:easeInOutSine; loop:true; dir:alternate; delay:400"></a-sphere>
-      <a-sphere position="-0.08 0.1 -0.12" radius="0.006" color="#44ff88" opacity="0.9" material="transparent:true; emissive:#44ff88; emissiveIntensity:1" animation="property: position; from:-0.08 -0.38 -0.12; to:-0.08 0.28 -0.12; dur:2000; easing:easeInOutSine; loop:true; dir:alternate; delay:800"></a-sphere>
-      <a-sphere position="0.08 0.08 0.2" radius="0.006" color="#aa44ff" opacity="0.9" material="transparent:true; emissive:#aa44ff; emissiveIntensity:1" animation="property: position; from:0.08 -0.38 0.2; to:0.08 0.2 0.2; dur:3500; easing:easeInOutSine; loop:true; dir:alternate; delay:1200"></a-sphere>
-
-      <!-- Title -->
-      <a-text value="FESTE &amp; FEIERN" align="center" position="0 0.4 0" scale="0.28 0.28 0.28" color="#ff9500" material="emissive:#ff9500; emissiveIntensity:0.5" animation="property: position; from: 0 0.38 0; to: 0 0.42 0; dur: 2500; easing: easeInOutSine; loop: true; dir: alternate"></a-text>
-      <a-text value="Deutschland · Traditionen" align="center" position="0 0.32 0" scale="0.1 0.1 0.1" color="rgba(255,200,0,0.7)"></a-text>
-
-      <!-- Hotspots -->
-      <a-sphere class="hotspot" position="0 0.05 0.16" radius="0.026" color="#ff9500"
-        material="emissive:#ff9500; emissiveIntensity:0.9; transparent:true; opacity:0.95"
-        animation="property: scale; from:1 1 1; to:1.4 1.4 1.4; dur:1000; easing:easeInOutSine; loop:true; dir:alternate"
-        data-title="Oktoberfest" data-sub="München · Eylül–Ekim" data-tag="Dünyanın En Büyük Festivali"
-        data-text="1810'dan beri her yıl München'de düzenlenen Oktoberfest dünyanın en büyük halk festivalidir. Her yıl 6 milyondan fazla ziyaretçi çeker. 14 büyük çadır, geleneksel Bavyera müziği ve lezzetleri.">
-      </a-sphere>
-      <a-torus position="0 0.05 0.16" radius="0.042" radius-tubular="0.003" color="#ff9500" opacity="0.35" animation="property: scale; from:1 1 1; to:2 2 2; dur:1500; easing:easeOutQuad; loop:true"></a-torus>
-      <a-text value="[ OKTOBERFEST ]" align="center" position="0 0.135 0.16" scale="0.065 0.065 0.065" color="#ff9500"></a-text>
-
-      <a-sphere class="hotspot" position="-0.44 0.02 0" radius="0.023" color="#ffcc00"
-        material="emissive:#ffcc00; emissiveIntensity:0.9; transparent:true; opacity:0.95"
-        animation="property: scale; from:1 1 1; to:1.5 1.5 1.5; dur:800; easing:easeInOutSine; loop:true; dir:alternate; delay:300"
-        data-title="Karneval" data-sub="Köln · Şubat–Mart" data-tag="Renkli Karnaval"
-        data-text="Köln Karnavalı Almanya'nın en büyük karnavalıdır. Her yıl 1 milyondan fazla kişi renkli kostümler ve geçit törenleriyle kutlama yapar. 'Kölle Alaaf!' nidası şehri sarıyor.">
-      </a-sphere>
-      <a-text value="[ KARNEVAL ]" align="center" position="-0.44 0.1 0" scale="0.065 0.065 0.065" color="#ffcc00"></a-text>
-
-      <a-sphere class="hotspot" position="-0.46 0.12 -0.04" radius="0.023" color="#00cc44"
-        material="emissive:#00cc44; emissiveIntensity:0.9; transparent:true; opacity:0.95"
-        animation="property: scale; from:1 1 1; to:1.4 1.4 1.4; dur:1200; easing:easeInOutSine; loop:true; dir:alternate; delay:600"
-        data-title="Weihnachtsmarkt" data-sub="Tüm Almanya · Aralık" data-tag="Noel Pazarları"
-        data-text="600 yılı aşkın geleneğiyle Almanya Noel pazarları dünyanın en güzel kış etkinlikleri arasında yer alır. Nürnberg, Dresden ve Köln'deki pazarlar her yıl milyonlarca ziyaretçi çeker. Glühwein, lebkuchen ve ışıl ışıl süslemeler.">
-      </a-sphere>
-      <a-text value="[ WEIHNACHT ]" align="center" position="-0.46 0.2 -0.04" scale="0.065 0.065 0.065" color="#00cc44"></a-text>
-
-      <a-sphere class="hotspot" position="0.48 0.12 -0.05" radius="0.023" color="#ff6699"
-        material="emissive:#ff6699; emissiveIntensity:0.9; transparent:true; opacity:0.95"
-        animation="property: scale; from:1 1 1; to:1.4 1.4 1.4; dur:900; easing:easeInOutSine; loop:true; dir:alternate; delay:900"
-        data-title="Schützenfest" data-sub="Hannover · Temmuz" data-tag="Geleneksel Festival"
-        data-text="Hannover Schützenfest dünyanın en büyük nişancılık festivalidir. Her yıl Temmuz'da 10 günlük kutlamalar yapılır. Geleneksel Alman kıyafetleri, müzik ve atış yarışmalarıyla coşkulu bir şenlik.">
-      </a-sphere>
-      <a-text value="[ SCHÜTZEN ]" align="center" position="0.48 0.2 -0.05" scale="0.065 0.065 0.065" color="#ff6699"></a-text>
-
-      <a-sphere class="hotspot" position="0 -0.08 -0.28" radius="0.023" color="#44aaff"
-        material="emissive:#44aaff; emissiveIntensity:0.9; transparent:true; opacity:0.95"
-        animation="property: scale; from:1 1 1; to:1.5 1.5 1.5; dur:1100; easing:easeInOutSine; loop:true; dir:alternate; delay:1200"
-        data-title="Berlinale" data-sub="Berlin · Şubat" data-tag="Film Festivali"
-        data-text="Berlin Uluslararası Film Festivali, Cannes ve Venedik ile birlikte dünyanın üç büyük film festivalinden biridir. Her yıl 300'den fazla film gösterilir ve 500.000'den fazla bilet satılır.">
-      </a-sphere>
-      <a-text value="[ BERLINALE ]" align="center" position="0 0 -0.28" scale="0.065 0.065 0.065" color="#44aaff"></a-text>
-    </a-entity>
-  </a-scene>
-
-  <div id="ar-ui">
-    <div class="c c-tl"></div><div class="c c-tr"></div>
-    <div class="c c-bl"></div><div class="c c-br"></div>
-    <div class="scan"></div>
-    <div id="tap-hint">▲ Noktalara Dokun</div>
-    <div id="status">Taranıyor...</div>
-    <button id="back" onclick="closeAR()">← Geri Dön</button>
-    <div id="info-card">
-      <button class="ic-close" onclick="closeCard()">✕</button>
-      <div class="ic-tag" id="ic-tag"></div>
-      <div class="ic-title" id="ic-title"></div>
-      <div class="ic-sub" id="ic-sub"></div>
-      <div class="ic-text" id="ic-text"></div>
+<!-- AR CONTAINER -->
+<div id="ar-container">
+  <video id="ar-video" autoplay playsinline muted></video>
+  <div class="ar-overlay">
+    <div class="ar-top-right"></div>
+    <div class="ar-bottom-left"></div>
+    <div class="ar-scan"></div>
+    <div class="ar-status" id="ar-status">Taranıyor...</div>
+    <div class="ar-info-popup">
+      <div class="ar-popup-title">Hedef Tespit Edildi</div>
+      <div class="ar-popup-main">Feste</div>
+      <div class="ar-popup-sub">München · Köln · Nürnberg</div>
     </div>
+    <button class="ar-close" onclick="closeAR()" id="ar-close">✕ Kapat</button>
   </div>
 </div>
 
@@ -443,87 +722,100 @@
   <div class="hero-grid"></div>
   <div class="hero-glow"></div>
 
+  <!-- Festivaller Silhouette SVG -->
   <div class="silhouette-wrap">
     <div class="scan-line"></div>
     <svg class="silhouette-svg" viewBox="0 0 800 300" xmlns="http://www.w3.org/2000/svg">
       <defs>
-        <linearGradient id="festGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-          <stop offset="0%" style="stop-color:#ff9500;stop-opacity:0.9"/>
-          <stop offset="100%" style="stop-color:#7a4500;stop-opacity:0.5"/>
+        <linearGradient id="skyGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" style="stop-color:rgba(0,212,255,0);stop-opacity:0"/>
+          <stop offset="100%" style="stop-color:rgba(0,212,255,0.1);stop-opacity:1"/>
         </linearGradient>
-        <filter id="fg">
-          <feGaussianBlur stdDeviation="3" result="b"/>
-          <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+        <linearGradient id="buildGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" style="stop-color:#00d4ff;stop-opacity:0.9"/>
+          <stop offset="100%" style="stop-color:#004466;stop-opacity:0.6"/>
+        </linearGradient>
+        <filter id="glow">
+          <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+          <feMerge>
+            <feMergeNode in="coloredBlur"/>
+            <feMergeNode in="SourceGraphic"/>
+          </feMerge>
         </filter>
       </defs>
 
-      <line x1="0" y1="270" x2="800" y2="270" stroke="rgba(255,149,0,0.3)" stroke-width="1"/>
+      <rect width="800" height="300" fill="url(#skyGrad)"/>
+      <line x1="0" y1="280" x2="800" y2="280" stroke="rgba(0,212,255,0.3)" stroke-width="1"/>
 
-      <!-- Left tent -->
-      <polygon points="130,195 210,270 50,270" fill="url(#festGrad)" filter="url(#fg)"/>
-      <rect x="50" y="195" width="160" height="75" fill="rgba(20,70,20,0.55)"/>
-      <rect x="75" y="210" width="22" height="55" fill="rgba(255,149,0,0.15)"/>
-      <rect x="118" y="210" width="22" height="55" fill="rgba(255,149,0,0.15)"/>
-      <rect x="160" y="210" width="22" height="55" fill="rgba(255,149,0,0.15)"/>
+      <!-- Center big tent (Oktoberfest) -->
+      <polygon points="400,80 560,210 240,210" fill="url(#buildGrad)" filter="url(#glow)"/>
+      <rect x="240" y="210" width="320" height="70" fill="rgba(0,80,20,0.6)"/>
+      <rect x="285" y="210" width="25" height="70" fill="rgba(0,212,255,0.08)"/>
+      <rect x="375" y="210" width="25" height="70" fill="rgba(0,212,255,0.08)"/>
+      <rect x="465" y="210" width="25" height="70" fill="rgba(0,212,255,0.08)"/>
+      <!-- Flag on top -->
+      <line x1="400" y1="58" x2="400" y2="80" stroke="rgba(0,212,255,0.8)" stroke-width="2"/>
+      <polygon points="400,58 422,66 400,74" fill="rgba(0,212,255,0.85)" filter="url(#glow)"/>
 
-      <!-- Center big tent -->
-      <polygon points="400,75 570,205 230,205" fill="url(#festGrad)" filter="url(#fg)"/>
-      <rect x="230" y="205" width="340" height="65" fill="rgba(20,70,20,0.65)"/>
-      <rect x="280" y="205" width="28" height="65" fill="rgba(255,255,255,0.07)"/>
-      <rect x="375" y="205" width="28" height="65" fill="rgba(255,255,255,0.07)"/>
-      <rect x="468" y="205" width="28" height="65" fill="rgba(255,255,255,0.07)"/>
-      <!-- Flag -->
-      <line x1="400" y1="55" x2="400" y2="75" stroke="rgba(255,149,0,0.8)" stroke-width="2"/>
-      <polygon points="400,55 422,63 400,71" fill="rgba(255,149,0,0.85)"/>
+      <!-- Left small tent -->
+      <polygon points="130,200 200,280 60,280" fill="url(#buildGrad)" filter="url(#glow)"/>
+      <rect x="60" y="200" width="140" height="80" fill="rgba(0,80,20,0.5)"/>
+      <rect x="85" y="215" width="18" height="65" fill="rgba(0,212,255,0.08)"/>
+      <rect x="120" y="215" width="18" height="65" fill="rgba(0,212,255,0.08)"/>
+      <rect x="155" y="215" width="18" height="65" fill="rgba(0,212,255,0.08)"/>
 
-      <!-- Right tent -->
-      <polygon points="668,195 748,270 588,270" fill="url(#festGrad)" filter="url(#fg)"/>
-      <rect x="588" y="195" width="160" height="75" fill="rgba(20,70,20,0.55)"/>
+      <!-- Right small tent -->
+      <polygon points="668,200 738,280 598,280" fill="url(#buildGrad)" filter="url(#glow)"/>
+      <rect x="598" y="200" width="140" height="80" fill="rgba(0,80,20,0.5)"/>
 
-      <!-- Beer mugs -->
-      <rect x="215" y="228" width="22" height="38" fill="url(#festGrad)" rx="3" filter="url(#fg)"/>
-      <rect x="215" y="223" width="22" height="8" fill="rgba(255,220,100,0.65)"/>
-      <rect x="562" y="228" width="22" height="38" fill="url(#festGrad)" rx="3" filter="url(#fg)"/>
-      <rect x="562" y="223" width="22" height="8" fill="rgba(255,220,100,0.65)"/>
+      <!-- Beer mug left -->
+      <rect x="212" y="232" width="20" height="44" fill="url(#buildGrad)" rx="3" filter="url(#glow)"/>
+      <rect x="212" y="226" width="20" height="9" fill="rgba(0,212,255,0.6)"/>
+
+      <!-- Beer mug right -->
+      <rect x="566" y="232" width="20" height="44" fill="url(#buildGrad)" rx="3" filter="url(#glow)"/>
+      <rect x="566" y="226" width="20" height="9" fill="rgba(0,212,255,0.6)"/>
 
       <!-- Ferris wheel right -->
-      <circle cx="740" cy="160" r="72" fill="none" stroke="rgba(255,149,0,0.35)" stroke-width="2"/>
-      <circle cx="740" cy="160" r="6" fill="rgba(255,149,0,0.6)"/>
-      <line x1="740" y1="88" x2="740" y2="232" stroke="rgba(255,149,0,0.18)" stroke-width="1"/>
-      <line x1="668" y1="160" x2="812" y2="160" stroke="rgba(255,149,0,0.18)" stroke-width="1"/>
-      <line x1="689" y1="109" x2="791" y2="211" stroke="rgba(255,149,0,0.12)" stroke-width="1"/>
-      <line x1="791" y1="109" x2="689" y2="211" stroke="rgba(255,149,0,0.12)" stroke-width="1"/>
+      <circle cx="730" cy="165" r="68" fill="none" stroke="rgba(0,212,255,0.35)" stroke-width="2"/>
+      <circle cx="730" cy="165" r="7" fill="rgba(0,212,255,0.6)"/>
+      <line x1="730" y1="97" x2="730" y2="233" stroke="rgba(0,212,255,0.18)" stroke-width="1"/>
+      <line x1="662" y1="165" x2="798" y2="165" stroke="rgba(0,212,255,0.18)" stroke-width="1"/>
+      <line x1="682" y1="117" x2="778" y2="213" stroke="rgba(0,212,255,0.12)" stroke-width="1"/>
+      <line x1="778" y1="117" x2="682" y2="213" stroke="rgba(0,212,255,0.12)" stroke-width="1"/>
+      <rect x="730" y="233" width="4" height="47" fill="rgba(0,212,255,0.4)"/>
 
       <!-- Christmas tree left -->
-      <polygon points="65,170 85,230 45,230" fill="rgba(0,150,50,0.55)" filter="url(#fg)"/>
-      <polygon points="65,145 90,195 40,195" fill="rgba(0,170,60,0.65)" filter="url(#fg)"/>
-      <rect x="60" y="230" width="10" height="15" fill="rgba(100,50,0,0.7)"/>
-      <circle cx="65" cy="143" r="5" fill="rgba(255,220,0,0.9)" filter="url(#fg)"/>
+      <polygon points="62,178 82,230 42,230" fill="rgba(0,150,50,0.55)" filter="url(#glow)"/>
+      <polygon points="62,152 88,200 36,200" fill="rgba(0,170,60,0.65)" filter="url(#glow)"/>
+      <rect x="57" y="230" width="10" height="16" fill="rgba(100,50,0,0.7)"/>
+      <circle cx="62" cy="150" r="6" fill="rgba(0,212,255,1)" filter="url(#glow)"/>
 
-      <!-- Stars -->
-      <circle cx="160" cy="140" r="3" fill="rgba(255,200,0,0.8)"/>
-      <circle cx="310" cy="118" r="2" fill="rgba(255,149,0,0.7)"/>
-      <circle cx="490" cy="108" r="3" fill="rgba(255,200,0,0.8)"/>
-      <circle cx="620" cy="128" r="2" fill="rgba(255,100,0,0.7)"/>
+      <!-- Stars / lights -->
+      <circle cx="155" cy="145" r="3" fill="rgba(0,212,255,0.8)"/>
+      <circle cx="300" cy="122" r="2" fill="rgba(0,212,255,0.6)"/>
+      <circle cx="500" cy="112" r="3" fill="rgba(0,212,255,0.8)"/>
+      <circle cx="615" cy="132" r="2" fill="rgba(0,212,255,0.6)"/>
 
-      <rect x="0" y="268" width="800" height="4" fill="rgba(255,149,0,0.08)"/>
+      <rect x="0" y="278" width="800" height="4" fill="rgba(0,212,255,0.05)" opacity="0.5"/>
     </svg>
 
-    <!-- Hotspots on silhouette -->
-    <div class="hotspot" style="position:absolute; top:62%; left:46%;">
+    <!-- Hotspots -->
+    <div class="hotspot" style="position:absolute; top:60%; left:46%;">
       <div class="hotspot-dot"></div>
-      <div class="hotspot-label" style="bottom:20px; left:10px;">Oktoberfest Çadırı</div>
+      <div class="hotspot-label" style="bottom:20px; left:10px;" id="hs1">Oktoberfest</div>
     </div>
-    <div class="hotspot" style="position:absolute; top:40%; left:88%;">
+    <div class="hotspot" style="position:absolute; top:38%; left:87%;">
       <div class="hotspot-dot"></div>
-      <div class="hotspot-label" style="bottom:20px; right:10px;">Dönme Dolap</div>
+      <div class="hotspot-label" style="bottom:20px; right:10px;" id="hs2">Riesenrad</div>
     </div>
-    <div class="hotspot" style="position:absolute; top:48%; left:7%;">
+    <div class="hotspot" style="position:absolute; top:50%; left:6%;">
       <div class="hotspot-dot"></div>
-      <div class="hotspot-label" style="bottom:20px; left:10px;">Weihnachtsbaum</div>
+      <div class="hotspot-label" style="bottom:20px; left:10px;" id="hs3">Weihnachtsmarkt</div>
     </div>
   </div>
 
+  <!-- Hero Text -->
   <div class="hero-text">
     <p class="hero-eyebrow" id="eyebrow">Almanya · Festivaller & Gelenekler</p>
     <h1 class="hero-title">
@@ -539,6 +831,7 @@
     </div>
   </div>
 
+  <!-- Data Strip -->
   <div class="data-strip">
     <div class="data-item">
       <span class="data-value">6M+</span>
@@ -550,7 +843,7 @@
     </div>
     <div class="data-item">
       <span class="data-value">1810</span>
-      <span class="data-label" id="d3">Oktoberfest'in Başlangıcı</span>
+      <span class="data-label" id="d3">Oktoberfest Başlangıcı</span>
     </div>
     <div class="data-item">
       <span class="data-value">600+</span>
@@ -570,17 +863,17 @@
     <div class="info-card">
       <span class="info-card-icon">🍺</span>
       <div class="info-card-title" id="c1t">Oktoberfest</div>
-      <p class="info-card-text" id="c1d">1810'dan beri München'de düzenlenen Oktoberfest dünyanın en büyük halk festivalidir. Her yıl 6 milyondan fazla ziyaretçi çekerken 14 büyük çadırda geleneksel Bavyera müziği ve lezzetleri sunulur.</p>
+      <p class="info-card-text" id="c1d">1810'dan beri München'de düzenlenen Oktoberfest dünyanın en büyük halk festivalidir. Her yıl 6 milyondan fazla ziyaretçi çeker. 14 büyük çadır, geleneksel Bavyera müziği ve lezzetleri.</p>
     </div>
     <div class="info-card">
       <span class="info-card-icon">🎭</span>
       <div class="info-card-title" id="c2t">Karneval & Fasching</div>
-      <p class="info-card-text" id="c2d">Köln, Düsseldorf ve Mainz'da kutlanan Karneval, Almanya'nın en renkli festivalidir. Renkli kostümler, büyük geçit törenleri ve "Alaaf!" nidalarıyla şehirleri rengarenk bir şenliğe dönüşür.</p>
+      <p class="info-card-text" id="c2d">Köln, Düsseldorf ve Mainz'da kutlanan Karneval Almanya'nın en renkli festivalidir. Renkli kostümler, büyük geçit törenleri ve "Alaaf!" nidalarıyla şehirler büyük bir şenliğe dönüşür.</p>
     </div>
     <div class="info-card">
       <span class="info-card-icon">🎄</span>
       <div class="info-card-title" id="c3t">Weihnachtsmarkt</div>
-      <p class="info-card-text" id="c3d">600 yılı aşkın geleneğiyle Almanya Noel pazarları, dünyanın en güzel kış etkinlikleri arasındadır. Glühwein, Lebkuchen ve el yapımı hediyelerle sihirli bir Advent atmosferi yaşanır.</p>
+      <p class="info-card-text" id="c3d">600 yılı aşkın geleneğiyle Almanya Noel pazarları dünyanın en güzel kış etkinlikleri arasındadır. Glühwein, Lebkuchen ve el yapımı hediyelerle sihirli bir Advent atmosferi yaşanır.</p>
     </div>
   </div>
 
@@ -592,52 +885,53 @@
     <div class="place-item">
       <span class="place-num">Şub</span>
       <div>
-        <div class="place-name">🎭 Karneval / Fasching</div>
-        <div class="place-de">Köln, Düsseldorf, Mainz · 1M+ Ziyaretçi</div>
+        <div class="place-name" id="p1n">🎭 Karneval / Fasching</div>
+        <div class="place-de" id="p1d">Köln, Düsseldorf, Mainz · 1M+ Ziyaretçi</div>
       </div>
       <div class="place-bar"></div>
     </div>
     <div class="place-item">
       <span class="place-num">Şub</span>
       <div>
-        <div class="place-name">🎬 Berlinale Film Festivali</div>
-        <div class="place-de">Berlin · Altın Ayı Ödülü · 500K+ Bilet</div>
+        <div class="place-name" id="p2n">🎬 Berlinale Film Festivali</div>
+        <div class="place-de" id="p2d">Berlin · Altın Ayı Ödülü · 500K+ Bilet</div>
       </div>
       <div class="place-bar"></div>
     </div>
     <div class="place-item">
       <span class="place-num">Tem</span>
       <div>
-        <div class="place-name">🎯 Schützenfest</div>
-        <div class="place-de">Hannover · Dünyanın En Büyük Nişancılık Festivali</div>
+        <div class="place-name" id="p3n">🎯 Schützenfest</div>
+        <div class="place-de" id="p3d">Hannover · Dünyanın En Büyük Nişancılık Festivali</div>
       </div>
       <div class="place-bar"></div>
     </div>
     <div class="place-item">
       <span class="place-num">Eyl</span>
       <div>
-        <div class="place-name">🍺 Oktoberfest</div>
-        <div class="place-de">München · 1810'dan beri · 6M+ Ziyaretçi</div>
+        <div class="place-name" id="p4n">🍺 Oktoberfest</div>
+        <div class="place-de" id="p4d">München · 1810'dan beri · 6M+ Ziyaretçi</div>
       </div>
       <div class="place-bar"></div>
     </div>
     <div class="place-item">
       <span class="place-num">Ara</span>
       <div>
-        <div class="place-name">🎄 Weihnachtsmarkt</div>
-        <div class="place-de">Nürnberg, Dresden, Köln · 600+ Yıllık Gelenek</div>
+        <div class="place-name" id="p5n">🎄 Weihnachtsmarkt</div>
+        <div class="place-de" id="p5d">Nürnberg, Dresden, Köln · 600+ Yıllık Gelenek</div>
       </div>
       <div class="place-bar"></div>
     </div>
   </div>
 
+  <!-- AR SECTION -->
   <div class="ar-section">
     <div class="ar-title" id="ar-label">AR Deneyimini Başlat</div>
     <button class="ar-btn" onclick="startAR()">
       <span class="ar-btn-icon">📡</span>
       <span id="ar-btn-text">Kamerayı Aç · Fotoğrafa Tut</span>
     </button>
-    <p class="ar-desc" id="ar-desc">Festival fotoğrafına telefonu tut, 3D festival sahnesi ve interaktif bilgiler görüntüle</p>
+    <p class="ar-desc" id="ar-desc">Festival fotoğrafına telefonu tut, interaktif bilgiler görüntüle</p>
   </div>
 
 </div>
@@ -647,29 +941,40 @@
 </footer>
 
 <script>
+  // ── LANGUAGE ──
   let lang = localStorage.getItem('lang') || 'tr';
 
   const texts = {
     tr: {
-      'nav-back': '← Ana Menü', 'lang-toggle': 'DE',
+      'nav-back': '← Ana Menü',
+      'lang-toggle': 'DE',
       'eyebrow': 'Almanya · Festivaller & Gelenekler',
       'hero-sub': 'Kutlamalar · Gelenekler · Eğlence',
       'altitude': 'Weihnachtsmarkt',
       'd1': 'Oktoberfest Ziyaretçi', 'd2': 'Yıllık Festival',
-      'd3': "Oktoberfest'in Başlangıcı", 'd4': 'Yıllık Noel Pazarları',
+      'd3': 'Oktoberfest Başlangıcı', 'd4': 'Yıllık Noel Pazarları',
       'tag1': 'Festivaller Hakkında', 'tag2': 'Festival Takvimi',
       'c1t': 'Oktoberfest',
-      'c1d': "1810'dan beri München'de düzenlenen Oktoberfest dünyanın en büyük halk festivalidir. Her yıl 6 milyondan fazla ziyaretçi çekerken 14 büyük çadırda geleneksel Bavyera müziği ve lezzetleri sunulur.",
+      'c1d': "1810'dan beri München'de düzenlenen Oktoberfest dünyanın en büyük halk festivalidir. Her yıl 6 milyondan fazla ziyaretçi çeker. 14 büyük çadır, geleneksel Bavyera müziği ve lezzetleri.",
       'c2t': 'Karneval & Fasching',
-      'c2d': "Köln, Düsseldorf ve Mainz'da kutlanan Karneval, Almanya'nın en renkli festivalidir. Renkli kostümler, büyük geçit törenleri ve 'Alaaf!' nidalarıyla şehirleri rengarenk bir şenliğe dönüşür.",
+      'c2d': "Köln, Düsseldorf ve Mainz'da kutlanan Karneval Almanya'nın en renkli festivalidir. Renkli kostümler, büyük geçit törenleri ve 'Alaaf!' nidalarıyla şehirler büyük bir şenliğe dönüşür.",
       'c3t': 'Weihnachtsmarkt',
-      'c3d': "600 yılı aşkın geleneğiyle Almanya Noel pazarları, dünyanın en güzel kış etkinlikleri arasındadır. Glühwein, Lebkuchen ve el yapımı hediyelerle sihirli bir Advent atmosferi yaşanır.",
+      'c3d': "600 yılı aşkın geleneğiyle Almanya Noel pazarları dünyanın en güzel kış etkinlikleri arasındadır. Glühwein, Lebkuchen ve el yapımı hediyelerle sihirli bir Advent atmosferi yaşanır.",
+      'p1n': '🎭 Karneval / Fasching', 'p1d': 'Köln, Düsseldorf, Mainz · 1M+ Ziyaretçi',
+      'p2n': '🎬 Berlinale Film Festivali', 'p2d': 'Berlin · Altın Ayı Ödülü · 500K+ Bilet',
+      'p3n': '🎯 Schützenfest', 'p3d': 'Hannover · Dünyanın En Büyük Nişancılık Festivali',
+      'p4n': '🍺 Oktoberfest', 'p4d': "München · 1810'dan beri · 6M+ Ziyaretçi",
+      'p5n': '🎄 Weihnachtsmarkt', 'p5d': 'Nürnberg, Dresden, Köln · 600+ Yıllık Gelenek',
       'ar-label': 'AR Deneyimini Başlat',
       'ar-btn-text': 'Kamerayı Aç · Fotoğrafa Tut',
-      'ar-desc': 'Festival fotoğrafına telefonu tut, 3D festival sahnesi ve interaktif bilgiler görüntüle',
+      'ar-desc': "Festival fotoğrafına telefonu tut, interaktif bilgiler görüntüle",
+      'ar-status': 'Taranıyor...',
+      'ar-close': '✕ Kapat',
+      'hs1': 'Oktoberfest', 'hs2': 'Riesenrad', 'hs3': 'Weihnachtsmarkt',
     },
     de: {
-      'nav-back': '← Hauptmenü', 'lang-toggle': 'TR',
+      'nav-back': '← Hauptmenü',
+      'lang-toggle': 'TR',
       'eyebrow': 'Deutschland · Feste & Traditionen',
       'hero-sub': 'Feiern · Traditionen · Spaß',
       'altitude': 'Weihnachtsmarkt',
@@ -677,14 +982,22 @@
       'd3': 'Beginn Oktoberfest', 'd4': 'Jahre Weihnachtsmärkte',
       'tag1': 'Über die Feste', 'tag2': 'Festkalender',
       'c1t': 'Oktoberfest',
-      'c1d': 'Das seit 1810 in München stattfindende Oktoberfest ist das größte Volksfest der Welt. Jährlich kommen über 6 Millionen Besucher in 14 große Zelte mit traditioneller Bayerischer Musik und Küche.',
+      'c1d': 'Das seit 1810 in München stattfindende Oktoberfest ist das größte Volksfest der Welt mit über 6 Millionen Besuchern jährlich. 14 große Zelte mit traditioneller Bayerischer Musik und Küche.',
       'c2t': 'Karneval & Fasching',
-      'c2d': "Der Kölner Karneval ist das größte Karnevalsfest Deutschlands. Mit bunten Kostümen, großen Umzügen und dem Ruf 'Kölle Alaaf!' verwandeln sich die Städte in ein buntes Fest.",
+      'c2d': "Der Kölner Karneval ist Deutschlands größtes Karnevalsfest. Mit bunten Kostümen, großen Umzügen und 'Kölle Alaaf!' verwandeln sich die Städte in ein buntes Fest.",
       'c3t': 'Weihnachtsmarkt',
-      'c3d': 'Mit einer über 600-jährigen Tradition gehören die deutschen Weihnachtsmärkte zu den schönsten Winterveranstaltungen der Welt. Glühwein, Lebkuchen und handgemachte Geschenke schaffen eine zauberhafte Atmosphäre.',
+      'c3d': 'Mit über 600-jähriger Tradition gehören die deutschen Weihnachtsmärkte zu den schönsten Winterveranstaltungen der Welt. Glühwein, Lebkuchen und Handwerk schaffen eine zauberhafte Atmosphäre.',
+      'p1n': '🎭 Karneval / Fasching', 'p1d': 'Köln, Düsseldorf, Mainz · 1M+ Besucher',
+      'p2n': '🎬 Berlinale Filmfestival', 'p2d': 'Berlin · Goldener Bär · 500K+ Tickets',
+      'p3n': '🎯 Schützenfest', 'p3d': 'Hannover · Größtes Schützenfest der Welt',
+      'p4n': '🍺 Oktoberfest', 'p4d': 'München · Seit 1810 · 6M+ Besucher',
+      'p5n': '🎄 Weihnachtsmarkt', 'p5d': 'Nürnberg, Dresden, Köln · 600+ Jahre Tradition',
       'ar-label': 'AR-Erlebnis starten',
       'ar-btn-text': 'Kamera öffnen · Foto scannen',
-      'ar-desc': 'Halte das Telefon auf das Festivalbild und erlebe eine interaktive 3D-Festszene',
+      'ar-desc': 'Halte das Telefon auf das Festivalbild und erlebe interaktive Informationen',
+      'ar-status': 'Wird gescannt...',
+      'ar-close': '✕ Schließen',
+      'hs1': 'Oktoberfest', 'hs2': 'Riesenrad', 'hs3': 'Weihnachtsmarkt',
     }
   };
 
@@ -696,69 +1009,41 @@
     });
     document.getElementById('lang-toggle').textContent = l === 'tr' ? 'DE' : 'TR';
   }
+
   function toggleLang() {
     lang = lang === 'tr' ? 'de' : 'tr';
     localStorage.setItem('lang', lang);
     applyLang(lang);
   }
+
   applyLang(lang);
 
+  // ── SCROLL ANIMATIONS ──
   const observer = new IntersectionObserver((entries) => {
-    entries.forEach((e, i) => {
-      if (e.isIntersecting) {
-        setTimeout(() => e.target.classList.add('visible'), i * 100);
-        observer.unobserve(e.target);
+    entries.forEach((entry, i) => {
+      if (entry.isIntersecting) {
+        setTimeout(() => entry.target.classList.add('visible'), i * 100);
+        observer.unobserve(entry.target);
       }
     });
   }, { threshold: 0.1 });
+
   document.querySelectorAll('.info-card, .place-item').forEach(el => observer.observe(el));
 
-  // AR - same logic as Berlin
-  let arStarted = false;
+  // ── AR ──
+  let stream = null;
 
   function startAR() {
-    document.getElementById('ar-overlay').classList.add('active');
-    document.body.style.overflow = 'hidden';
-    if (arStarted) return;
-    arStarted = true;
-    const scene = document.getElementById('ar-scene');
-    const go = () => {
-      const m = scene.systems['mindar-image-system'];
-      if (m) { m.start(); document.getElementById('status').textContent = 'Taranıyor...'; }
-    };
-    scene.hasLoaded ? go() : scene.addEventListener('loaded', go, { once: true });
-    const t = document.getElementById('ar-target');
-    t.addEventListener('targetFound', () => {
-      document.getElementById('status').textContent = '✓ Hedef Bulundu — Noktalara Dokun';
-      document.getElementById('status').classList.add('found');
-      document.getElementById('tap-hint').style.display = 'block';
-    });
-    t.addEventListener('targetLost', () => {
-      document.getElementById('status').textContent = 'Taranıyor...';
-      document.getElementById('status').classList.remove('found');
-      document.getElementById('tap-hint').style.display = 'none';
-      closeCard();
-    });
-    document.querySelectorAll('.hotspot').forEach(hs => {
-      hs.addEventListener('click', () => {
-        document.getElementById('ic-tag').textContent = hs.dataset.tag;
-        document.getElementById('ic-title').textContent = hs.dataset.title;
-        document.getElementById('ic-sub').textContent = hs.dataset.sub;
-        document.getElementById('ic-text').textContent = hs.dataset.text;
-        document.getElementById('info-card').classList.add('show');
-      });
-    });
+    window.location.href = 'ar.html';
   }
-
   function closeAR() {
-    document.getElementById('ar-overlay').classList.remove('active');
-    document.body.style.overflow = '';
-    closeCard();
-    try { document.getElementById('ar-scene').systems['mindar-image-system'].stop(); } catch(e) {}
-    arStarted = false;
+    const container = document.getElementById('ar-container');
+    container.classList.remove('active');
+    if (stream) {
+      stream.getTracks().forEach(t => t.stop());
+      stream = null;
+    }
   }
-
-  function closeCard() { document.getElementById('info-card').classList.remove('show'); }
 </script>
 </body>
 </html>
