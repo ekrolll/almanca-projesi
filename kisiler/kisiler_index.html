@@ -1,0 +1,864 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>5 Bedeutende Persönlichkeiten — Deutschland Entdecken</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Rajdhani:wght@300;400;600;700&family=Raleway:wght@300;400;600&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --bg: #020a12;
+      --holo: #00d4ff;
+      --holo2: #0099cc;
+      --holo-dim: rgba(0,212,255,0.15);
+      --gold: #c9a84c;
+      --gold-dim: rgba(201,168,76,0.25);
+      --red: #cc0000;
+      --white: #e8f4f8;
+      --muted: rgba(0,212,255,0.5);
+      --card-bg: rgba(0,20,40,0.55);
+      --glass: rgba(0,20,40,0.45);
+      --glow: 0 0 20px rgba(0,212,255,0.4);
+      --gold-glow: 0 0 20px rgba(201,168,76,0.4);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--white);
+      font-family: 'Rajdhani', sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* CRT Scanlines */
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,212,255,0.015) 2px, rgba(0,212,255,0.015) 4px);
+      pointer-events: none;
+      z-index: 9998;
+    }
+
+    /* German Flag Stripe */
+    .flag-stripe {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      display: flex;
+      height: 3px;
+      z-index: 200;
+    }
+    .flag-stripe div { flex: 1; }
+    .flag-stripe div:nth-child(1) { background: #1a1a1a; }
+    .flag-stripe div:nth-child(2) { background: var(--red); }
+    .flag-stripe div:nth-child(3) { background: var(--gold); }
+
+    /* ── NAVBAR ── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1rem 2rem;
+      background: linear-gradient(to bottom, rgba(2,10,18,0.95), transparent);
+      border-bottom: 1px solid rgba(0,212,255,0.1);
+    }
+    .nav-back {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      text-decoration: none;
+      color: var(--holo);
+      font-size: 0.8rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      transition: opacity 0.3s;
+    }
+    .nav-back:hover { opacity: 0.7; }
+    .nav-back::before { content: '\2190'; font-size: 1rem; }
+    .nav-title {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 0.75rem;
+      letter-spacing: 0.4em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+    .nav-lang {
+      font-size: 0.7rem;
+      cursor: pointer;
+      background: none;
+      border: 1px solid rgba(0,212,255,0.2);
+      color: var(--holo);
+      padding: 0.3rem 0.8rem;
+      border-radius: 2px;
+      font-family: 'Rajdhani', sans-serif;
+      letter-spacing: 0.15em;
+      transition: all 0.3s;
+    }
+    .nav-lang:hover { background: rgba(0,212,255,0.1); }
+
+    /* ── HERO ── */
+    .hero {
+      position: relative;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 6rem 2rem 4rem;
+      overflow: hidden;
+    }
+    .hero-grid {
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(0,212,255,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,212,255,0.04) 1px, transparent 1px);
+      background-size: 60px 60px;
+      perspective: 600px;
+      transform: rotateX(20deg) scale(1.5);
+      transform-origin: center bottom;
+    }
+    .hero-glow {
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 70% 50% at 50% 60%, rgba(201,168,76,0.06) 0%, transparent 70%),
+        radial-gradient(ellipse 40% 30% at 50% 100%, rgba(0,212,255,0.1) 0%, transparent 60%);
+    }
+
+    /* SVG Section */
+    .silhouette-wrap {
+      position: relative;
+      width: 100%;
+      max-width: 800px;
+      margin: 0 auto 2rem;
+      opacity: 0;
+      animation: fadeUp 1s ease 0.5s forwards;
+    }
+    .silhouette-svg {
+      width: 100%;
+      filter: drop-shadow(0 0 20px rgba(201,168,76,0.4)) drop-shadow(0 0 60px rgba(0,212,255,0.2));
+    }
+    .scan-line {
+      position: absolute;
+      left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(to right, transparent, var(--gold), transparent);
+      animation: scan 3s ease-in-out infinite;
+      opacity: 0.6;
+    }
+    @keyframes scan { 0%{top:0%;opacity:0} 10%{opacity:0.6} 90%{opacity:0.6} 100%{top:100%;opacity:0} }
+
+    /* Hero Hotspots */
+    .hotspot { position: absolute; cursor: pointer; }
+    .hotspot-dot {
+      width: 12px; height: 12px;
+      background: var(--gold);
+      border-radius: 50%;
+      box-shadow: 0 0 0 0 rgba(201,168,76,0.7);
+      animation: pulseGold 2s ease infinite;
+      position: relative; z-index: 2;
+    }
+    @keyframes pulseGold { 0%{box-shadow:0 0 0 0 rgba(201,168,76,0.7)} 70%{box-shadow:0 0 0 12px rgba(201,168,76,0)} 100%{box-shadow:0 0 0 0 rgba(201,168,76,0)} }
+    .hotspot-label {
+      position: absolute;
+      background: rgba(0,10,20,0.9);
+      border: 1px solid rgba(201,168,76,0.5);
+      padding: 0.4rem 0.8rem;
+      white-space: nowrap;
+      font-size: 0.7rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--gold);
+      backdrop-filter: blur(10px);
+      opacity: 0;
+      transform: translateY(-5px);
+      transition: all 0.3s ease;
+      pointer-events: none;
+    }
+    .hotspot:hover .hotspot-label { opacity: 1; transform: translateY(0); }
+
+    /* Hero Text */
+    .hero-text {
+      position: relative;
+      text-align: center;
+      z-index: 10;
+      opacity: 0;
+      animation: fadeUp 0.8s ease 1s forwards;
+    }
+    .hero-eyebrow {
+      font-size: 0.65rem;
+      letter-spacing: 0.5em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 0.8rem;
+      opacity: 0.8;
+    }
+    .hero-title {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2rem, 7vw, 5rem);
+      font-weight: 900;
+      line-height: 0.95;
+      color: var(--white);
+      text-shadow: var(--gold-glow);
+    }
+    .hero-title .sub {
+      display: block;
+      font-size: 0.28em;
+      font-family: 'Rajdhani', sans-serif;
+      letter-spacing: 0.5em;
+      text-transform: uppercase;
+      color: var(--holo);
+      margin-top: 0.6rem;
+    }
+    .coords {
+      margin-top: 1.5rem;
+      display: flex;
+      gap: 2rem;
+      justify-content: center;
+      flex-wrap: wrap;
+      font-size: 0.7rem;
+      letter-spacing: 0.2em;
+      color: var(--muted);
+    }
+    @keyframes fadeUp { from{opacity:0;transform:translateY(30px)} to{opacity:1;transform:translateY(0)} }
+
+    /* AR Enter Button (Hero) */
+    .hero-ar-btn {
+      margin-top: 2rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.8rem;
+      padding: 0.9rem 2.2rem;
+      background: rgba(201,168,76,0.08);
+      border: 1px solid rgba(201,168,76,0.5);
+      color: var(--gold);
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 0.85rem;
+      font-weight: 600;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      opacity: 0;
+      animation: fadeUp 0.8s ease 1.5s forwards;
+    }
+    .hero-ar-btn:hover {
+      background: rgba(201,168,76,0.15);
+      box-shadow: 0 0 30px rgba(201,168,76,0.25);
+    }
+
+    /* Data Strip */
+    .data-strip {
+      position: relative; z-index: 10;
+      width: 100%; max-width: 900px;
+      margin: 2rem auto 0;
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 1px;
+      background: rgba(201,168,76,0.1);
+      border: 1px solid rgba(201,168,76,0.2);
+      opacity: 0;
+      animation: fadeUp 0.8s ease 1.3s forwards;
+    }
+    .data-item { background: var(--card-bg); padding: 1rem; text-align: center; backdrop-filter: blur(10px); }
+    .data-value { font-size: 1.3rem; font-weight: 700; color: var(--gold); display: block; text-shadow: 0 0 10px rgba(201,168,76,0.4); }
+    .data-label { font-size: 0.55rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted); margin-top: 0.2rem; display: block; }
+
+    /* ── CONTENT ── */
+    .content {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 6rem 2rem;
+    }
+    .section-header {
+      margin-bottom: 3rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    .section-header::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(to right, rgba(201,168,76,0.4), transparent);
+    }
+    .section-tag {
+      font-size: 0.65rem;
+      letter-spacing: 0.4em;
+      text-transform: uppercase;
+      color: var(--gold);
+      border: 1px solid rgba(201,168,76,0.3);
+      padding: 0.3rem 0.8rem;
+      white-space: nowrap;
+    }
+
+    /* ── PERSON CARDS (Glassmorphism) ── */
+    .person-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 4rem;
+    }
+    .person-card {
+      background: var(--glass);
+      border: 1px solid rgba(201,168,76,0.15);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      padding: 2rem 1.8rem;
+      position: relative;
+      overflow: hidden;
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.7s ease, transform 0.7s ease, border-color 0.3s ease;
+    }
+    .person-card.visible { opacity: 1; transform: translateY(0); }
+    .person-card:hover { border-color: rgba(201,168,76,0.45); }
+
+    /* Gold left accent */
+    .person-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0;
+      width: 3px; height: 100%;
+      background: linear-gradient(to bottom, var(--gold), transparent);
+    }
+    /* Subtle corner glow */
+    .person-card::after {
+      content: '';
+      position: absolute;
+      top: -50%; right: -50%;
+      width: 100%; height: 100%;
+      background: radial-gradient(circle, rgba(201,168,76,0.04) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .pc-header { display: flex; align-items: flex-start; gap: 1rem; margin-bottom: 1rem; }
+    .pc-icon {
+      font-size: 2.2rem;
+      flex-shrink: 0;
+      width: 52px; height: 52px;
+      display: flex; align-items: center; justify-content: center;
+      background: rgba(201,168,76,0.08);
+      border: 1px solid rgba(201,168,76,0.2);
+      border-radius: 4px;
+    }
+    .pc-name {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: var(--white);
+      line-height: 1.2;
+    }
+    .pc-years {
+      font-size: 0.72rem;
+      letter-spacing: 0.15em;
+      color: var(--gold);
+      margin-top: 0.2rem;
+      display: block;
+    }
+    .pc-role {
+      font-size: 0.62rem;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--holo);
+      margin-bottom: 0.8rem;
+      padding-bottom: 0.8rem;
+      border-bottom: 1px solid rgba(0,212,255,0.1);
+    }
+    .pc-text {
+      font-size: 0.88rem;
+      line-height: 1.75;
+      color: rgba(232,244,248,0.7);
+      font-family: 'Raleway', sans-serif;
+      font-weight: 300;
+    }
+    /* Featured card (center/Goethe) */
+    .person-card.featured { border-color: rgba(201,168,76,0.35); }
+    .person-card.featured::before { background: linear-gradient(to bottom, var(--gold), var(--holo), transparent); width: 3px; }
+
+    /* ── INFO CARDS ── */
+    .info-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 5rem;
+    }
+    .info-card {
+      background: var(--card-bg);
+      border: 1px solid rgba(0,212,255,0.15);
+      backdrop-filter: blur(12px);
+      padding: 1.8rem;
+      position: relative;
+      overflow: hidden;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.6s ease, transform 0.6s ease, border-color 0.3s ease;
+    }
+    .info-card.visible { opacity: 1; transform: translateY(0); }
+    .info-card:hover { border-color: rgba(0,212,255,0.4); }
+    .info-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0;
+      width: 3px; height: 100%;
+      background: linear-gradient(to bottom, var(--holo), transparent);
+    }
+    .info-card-icon { font-size: 1.8rem; margin-bottom: 1rem; display: block; }
+    .info-card-title {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 1.1rem; font-weight: 700;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--holo); margin-bottom: 0.5rem;
+    }
+    .info-card-text {
+      font-size: 0.9rem; line-height: 1.7;
+      color: rgba(232,244,248,0.7);
+      font-family: 'Raleway', sans-serif; font-weight: 300;
+    }
+
+    /* ── AR SECTION ── */
+    .ar-section {
+      margin-top: 2rem;
+      border: 1px solid rgba(201,168,76,0.25);
+      background: rgba(0,10,20,0.8);
+      backdrop-filter: blur(10px);
+      padding: 2.5rem;
+      text-align: center;
+    }
+    .ar-title { font-size: 0.7rem; letter-spacing: 0.4em; text-transform: uppercase; color: var(--gold); margin-bottom: 1rem; }
+    .ar-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.8rem;
+      padding: 1rem 2.5rem;
+      background: transparent;
+      border: 1px solid var(--gold);
+      color: var(--gold);
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 0.9rem; font-weight: 600;
+      letter-spacing: 0.3em; text-transform: uppercase;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    .ar-btn:hover { background: rgba(201,168,76,0.1); box-shadow: 0 0 30px rgba(201,168,76,0.25); }
+    .ar-btn-icon { font-size: 1.2rem; }
+    .ar-desc { margin-top: 1rem; font-size: 0.75rem; color: var(--muted); letter-spacing: 0.1em; }
+
+    /* ── FOOTER ── */
+    footer {
+      border-top: 1px solid rgba(201,168,76,0.1);
+      padding: 2rem;
+      text-align: center;
+      font-size: 0.7rem;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: rgba(201,168,76,0.3);
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 600px) {
+      .data-strip { grid-template-columns: repeat(3, 1fr); }
+      .data-strip .data-item:nth-child(n+4) { display: none; }
+      .person-grid { grid-template-columns: 1fr; }
+      nav { padding: 0.8rem 1rem; }
+    }
+    @media (min-width: 601px) and (max-width: 900px) {
+      .data-strip { grid-template-columns: repeat(3, 1fr); }
+      .data-strip .data-item:nth-child(n+4) { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="flag-stripe"><div></div><div></div><div></div></div>
+
+<!-- NAV -->
+<nav>
+  <a href="../index.html" class="nav-back" id="nav-back">Ana Menu</a>
+  <span class="nav-title">Deutschland Entdecken</span>
+  <button class="nav-lang" onclick="toggleLang()" id="lang-toggle">DE</button>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-grid"></div>
+  <div class="hero-glow"></div>
+
+  <!-- Abstract SVG: Interconnected Minds & Classical Pillars -->
+  <div class="silhouette-wrap">
+    <div class="scan-line"></div>
+    <svg class="silhouette-svg" viewBox="0 0 800 320" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="skyGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" style="stop-color:rgba(201,168,76,0);stop-opacity:0"/>
+          <stop offset="100%" style="stop-color:rgba(201,168,76,0.08);stop-opacity:1"/>
+        </linearGradient>
+        <linearGradient id="goldGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" style="stop-color:#c9a84c;stop-opacity:0.9"/>
+          <stop offset="100%" style="stop-color:#8a6e2f;stop-opacity:0.5"/>
+        </linearGradient>
+        <linearGradient id="cyanGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" style="stop-color:#00d4ff;stop-opacity:0.7"/>
+          <stop offset="100%" style="stop-color:#004466;stop-opacity:0.3"/>
+        </linearGradient>
+        <filter id="glow"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+        <filter id="glowStrong"><feGaussianBlur stdDeviation="5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+      </defs>
+
+      <rect width="800" height="320" fill="url(#skyGrad)"/>
+
+      <!-- Ground / Platform -->
+      <line x1="0" y1="280" x2="800" y2="280" stroke="rgba(201,168,76,0.3)" stroke-width="1"/>
+      <rect x="100" y="275" width="600" height="6" rx="2" fill="rgba(201,168,76,0.08)"/>
+
+      <!-- Classical Pillars (5 columns for 5 people) -->
+      <!-- Pillar 1 - Einstein -->
+      <rect x="130" y="165" width="14" height="115" fill="url(#goldGrad)" filter="url(#glow)" opacity="0.7"/>
+      <rect x="125" y="160" width="24" height="8" fill="url(#goldGrad)" opacity="0.8"/>
+      <rect x="125" y="275" width="24" height="8" fill="url(#goldGrad)" opacity="0.6"/>
+      <!-- Head/Mind Node -->
+      <circle cx="137" cy="135" r="22" fill="none" stroke="url(#goldGrad)" stroke-width="1.5" filter="url(#glow)"/>
+      <circle cx="137" cy="128" r="12" fill="url(#cyanGrad)" opacity="0.6" filter="url(#glow)"/>
+      <!-- Symbol: E=mc2 -->
+      <text x="137" y="105" text-anchor="middle" font-size="9" fill="rgba(0,212,255,0.8)" font-family="monospace" filter="url(#glow)">E=mc2</text>
+      <text x="137" y="300" text-anchor="middle" font-size="7" fill="rgba(201,168,76,0.6)" font-family="monospace">EINSTEIN</text>
+
+      <!-- Pillar 2 - Beethoven -->
+      <rect x="265" y="155" width="14" height="125" fill="url(#goldGrad)" filter="url(#glow)" opacity="0.7"/>
+      <rect x="260" y="150" width="24" height="8" fill="url(#goldGrad)" opacity="0.8"/>
+      <rect x="260" y="275" width="24" height="8" fill="url(#goldGrad)" opacity="0.6"/>
+      <circle cx="272" cy="125" r="22" fill="none" stroke="url(#goldGrad)" stroke-width="1.5" filter="url(#glow)"/>
+      <circle cx="272" cy="118" r="12" fill="url(#cyanGrad)" opacity="0.6" filter="url(#glow)"/>
+      <!-- Symbol: Music notes -->
+      <circle cx="268" cy="96" r="4" fill="rgba(0,212,255,0.7)" filter="url(#glow)"/>
+      <line x1="272" y1="96" x2="272" y2="82" stroke="rgba(0,212,255,0.8)" stroke-width="1.5"/>
+      <circle cx="278" cy="92" r="4" fill="rgba(0,212,255,0.7)" filter="url(#glow)"/>
+      <line x1="282" y1="92" x2="282" y2="78" stroke="rgba(0,212,255,0.8)" stroke-width="1.5"/>
+      <text x="272" y="300" text-anchor="middle" font-size="7" fill="rgba(201,168,76,0.6)" font-family="monospace">BEETHOVEN</text>
+
+      <!-- Pillar 3 - Goethe (Center, Taller) -->
+      <rect x="393" y="130" width="16" height="150" fill="url(#goldGrad)" filter="url(#glowStrong)" opacity="0.85"/>
+      <rect x="386" y="124" width="30" height="10" fill="url(#goldGrad)" opacity="0.9"/>
+      <rect x="386" y="275" width="30" height="10" fill="url(#goldGrad)" opacity="0.7"/>
+      <!-- Triangular Pediment -->
+      <polygon points="386,124 401,100 416,124" fill="rgba(201,168,76,0.35)" filter="url(#glow)"/>
+      <circle cx="401" cy="80" r="24" fill="none" stroke="rgba(201,168,76,0.7)" stroke-width="2" filter="url(#glowStrong)"/>
+      <circle cx="401" cy="72" r="14" fill="url(#goldGrad)" opacity="0.7" filter="url(#glowStrong)"/>
+      <!-- Symbol: Quill/Book -->
+      <rect x="389" y="55" width="24" height="14" rx="2" fill="rgba(201,168,76,0.3)" filter="url(#glow)"/>
+      <line x1="401" y1="55" x2="401" y2="69" stroke="rgba(201,168,76,0.5)" stroke-width="0.5"/>
+      <text x="401" y="300" text-anchor="middle" font-size="8" fill="rgba(201,168,76,0.8)" font-family="monospace" filter="url(#glow)">GOETHE</text>
+
+      <!-- Pillar 4 - Gutenberg -->
+      <rect x="525" y="155" width="14" height="125" fill="url(#goldGrad)" filter="url(#glow)" opacity="0.7"/>
+      <rect x="520" y="150" width="24" height="8" fill="url(#goldGrad)" opacity="0.8"/>
+      <rect x="520" y="275" width="24" height="8" fill="url(#goldGrad)" opacity="0.6"/>
+      <circle cx="532" cy="125" r="22" fill="none" stroke="url(#goldGrad)" stroke-width="1.5" filter="url(#glow)"/>
+      <circle cx="532" cy="118" r="12" fill="url(#cyanGrad)" opacity="0.6" filter="url(#glow)"/>
+      <!-- Symbol: Press / Type Block -->
+      <rect x="522" y="90" width="8" height="10" fill="rgba(0,212,255,0.5)" filter="url(#glow)"/>
+      <rect x="532" y="88" width="8" height="12" fill="rgba(0,212,255,0.6)" filter="url(#glow)"/>
+      <rect x="542" y="91" width="8" height="9" fill="rgba(0,212,255,0.45)" filter="url(#glow)"/>
+      <text x="532" y="300" text-anchor="middle" font-size="7" fill="rgba(201,168,76,0.6)" font-family="monospace">GUTENBERG</text>
+
+      <!-- Pillar 5 - Marx -->
+      <rect x="660" y="165" width="14" height="115" fill="url(#goldGrad)" filter="url(#glow)" opacity="0.7"/>
+      <rect x="655" y="160" width="24" height="8" fill="url(#goldGrad)" opacity="0.8"/>
+      <rect x="655" y="275" width="24" height="8" fill="url(#goldGrad)" opacity="0.6"/>
+      <circle cx="667" cy="135" r="22" fill="none" stroke="url(#goldGrad)" stroke-width="1.5" filter="url(#glow)"/>
+      <circle cx="667" cy="128" r="12" fill="url(#cyanGrad)" opacity="0.6" filter="url(#glow)"/>
+      <!-- Symbol: Beard silhouette -->
+      <path d="M655,140 Q660,158 667,162 Q674,158 679,140" fill="rgba(0,212,255,0.2)" filter="url(#glow)"/>
+      <text x="667" y="300" text-anchor="middle" font-size="7" fill="rgba(201,168,76,0.6)" font-family="monospace">MARX</text>
+
+      <!-- Neural Connections between minds -->
+      <line x1="137" y1="128" x2="272" y2="118" stroke="rgba(0,212,255,0.15)" stroke-width="1" stroke-dasharray="4,4"/>
+      <line x1="272" y1="118" x2="401" y2="72" stroke="rgba(0,212,255,0.2)" stroke-width="1" stroke-dasharray="4,4"/>
+      <line x1="401" y1="72" x2="532" y2="118" stroke="rgba(0,212,255,0.2)" stroke-width="1" stroke-dasharray="4,4"/>
+      <line x1="532" y1="118" x2="667" y2="128" stroke="rgba(0,212,255,0.15)" stroke-width="1" stroke-dasharray="4,4"/>
+      <!-- Cross connections -->
+      <line x1="137" y1="128" x2="401" y2="72" stroke="rgba(201,168,76,0.08)" stroke-width="0.5" stroke-dasharray="6,6"/>
+      <line x1="667" y1="128" x2="401" y2="72" stroke="rgba(201,168,76,0.08)" stroke-width="0.5" stroke-dasharray="6,6"/>
+      <line x1="272" y1="118" x2="532" y2="118" stroke="rgba(201,168,76,0.06)" stroke-width="0.5" stroke-dasharray="6,6"/>
+
+      <!-- Small floating particles -->
+      <circle cx="200" cy="200" r="2" fill="rgba(201,168,76,0.5)"><animate attributeName="cy" values="200;180;200" dur="3s" repeatCount="indefinite"/></circle>
+      <circle cx="470" cy="180" r="1.5" fill="rgba(0,212,255,0.5)"><animate attributeName="cy" values="180;160;180" dur="4s" repeatCount="indefinite"/></circle>
+      <circle cx="600" cy="210" r="2" fill="rgba(201,168,76,0.4)"><animate attributeName="cy" values="210;190;210" dur="3.5s" repeatCount="indefinite"/></circle>
+      <circle cx="340" cy="190" r="1.5" fill="rgba(0,212,255,0.4)"><animate attributeName="cy" values="190;170;190" dur="2.5s" repeatCount="indefinite"/></circle>
+
+      <!-- Ground reflection -->
+      <rect x="0" y="280" width="800" height="40" fill="rgba(201,168,76,0.03)"/>
+    </svg>
+
+    <!-- Hotspots on SVG -->
+    <div class="hotspot" style="position:absolute; top:37%; left:14.5%;">
+      <div class="hotspot-dot"></div>
+      <div class="hotspot-label" style="bottom:20px; left:10px;" id="hs1">Albert Einstein</div>
+    </div>
+    <div class="hotspot" style="position:absolute; top:33%; left:31.5%;">
+      <div class="hotspot-dot"></div>
+      <div class="hotspot-label" style="bottom:20px; left:10px;" id="hs2">Ludwig van Beethoven</div>
+    </div>
+    <div class="hotspot" style="position:absolute; top:20%; left:48.5%;">
+      <div class="hotspot-dot"></div>
+      <div class="hotspot-label" style="bottom:20px; left:10px;" id="hs3">Johann W. von Goethe</div>
+    </div>
+    <div class="hotspot" style="position:absolute; top:33%; left:64%;">
+      <div class="hotspot-dot"></div>
+      <div class="hotspot-label" style="bottom:20px; right:10px;" id="hs4">Johannes Gutenberg</div>
+    </div>
+    <div class="hotspot" style="position:absolute; top:37%; left:81%;">
+      <div class="hotspot-dot"></div>
+      <div class="hotspot-label" style="bottom:20px; right:10px;" id="hs5">Karl Marx</div>
+    </div>
+  </div>
+
+  <!-- Hero Text -->
+  <div class="hero-text">
+    <p class="hero-eyebrow" id="eyebrow">Almanya &middot; 5 Tarihi Deha</p>
+    <h1 class="hero-title">
+      Bedeutende<br>Personen
+      <span class="sub" id="hero-sub">Bilim &middot; Sanat &middot; Edebiyat &middot; Felsefe</span>
+    </h1>
+    <div class="coords">
+      <span>Einstein</span><span>&middot;</span>
+      <span>Beethoven</span><span>&middot;</span>
+      <span>Goethe</span><span>&middot;</span>
+      <span>Gutenberg</span><span>&middot;</span>
+      <span>Marx</span>
+    </div>
+    <a href="ar.html" class="hero-ar-btn" id="hero-ar-link">
+      <span>&#x1F4E1;</span>
+      <span id="hero-ar-text">AR Deneyimine Gir</span>
+    </a>
+  </div>
+
+  <!-- Data Strip -->
+  <div class="data-strip">
+    <div class="data-item"><span class="data-value">5</span><span class="data-label" id="d1">Tarihi Deha</span></div>
+    <div class="data-item"><span class="data-value">1400</span><span class="data-label" id="d2">En Eski Dogum</span></div>
+    <div class="data-item"><span class="data-value">3</span><span class="data-label" id="d3">Nobel Odulu</span></div>
+    <div class="data-item"><span class="data-value">500+</span><span class="data-label" id="d4">Yil Etki</span></div>
+    <div class="data-item"><span class="data-value">&#8734;</span><span class="data-label" id="d5">Dunya Mirasi</span></div>
+  </div>
+</section>
+
+<!-- CONTENT -->
+<div class="content">
+
+  <!-- Why They Matter -->
+  <div class="section-header"><span class="section-tag" id="tag1">Neden Onemliler?</span></div>
+
+  <div class="info-grid">
+    <div class="info-card">
+      <span class="info-card-icon">&#x1F52C;</span>
+      <div class="info-card-title" id="c1t">Bilim &amp; Bulus</div>
+      <p class="info-card-text" id="c1d">Einstein'in izafiyet teorisi fizigin temellerini degistirdi. Gutenberg'in matbaa icadi bilginin demokratiklesmesini sagladi. Alman dehasi modern dunyayi sekillendirdi.</p>
+    </div>
+    <div class="info-card">
+      <span class="info-card-icon">&#x1F3B6;</span>
+      <div class="info-card-title" id="c2t">Muzik &amp; Edebiyat</div>
+      <p class="info-card-text" id="c2d">Beethoven isitme kaybina ragmen tarihin en buyuk bestecisi oldu. Goethe ise Almanca edebiyatin zirvesi sayilan Faust'u yazdi. Ikisi de dunya kultur mirasinin vazgecilmez parcasidir.</p>
+    </div>
+    <div class="info-card">
+      <span class="info-card-icon">&#x1F4DC;</span>
+      <div class="info-card-title" id="c3t">Felsefe &amp; Toplum</div>
+      <p class="info-card-text" id="c3d">Karl Marx'in ekonomi ve toplum teorileri 20. yuzyili derinden etkiledi. Das Kapital eseri sosyal bilimlerin en etkili yapitlarindan biridir. Dusunceleri bugun hala tartisiliyor.</p>
+    </div>
+  </div>
+
+  <!-- 5 Person Cards -->
+  <div class="section-header"><span class="section-tag" id="tag2">5 Onemli Kisilik</span></div>
+
+  <div class="person-grid">
+    <!-- Einstein -->
+    <div class="person-card">
+      <div class="pc-header">
+        <div class="pc-icon">&#x1F9EC;</div>
+        <div>
+          <div class="pc-name">Albert Einstein</div>
+          <span class="pc-years">1879 &ndash; 1955 &middot; Ulm</span>
+        </div>
+      </div>
+      <div class="pc-role" id="pc1r">Fizikci &middot; Nobel 1921</div>
+      <p class="pc-text" id="pc1d">Izafiyet teorisiyle fizigin temellerini yeniden yazan Einstein, 1921'de Nobel Fizik Odulu'nu kazandi. E=mc&sup2; formuluyle kutle-enerji esdegerligini kesfetti. Modern fizigin babasi olarak kabul edilir.</p>
+    </div>
+
+    <!-- Beethoven -->
+    <div class="person-card">
+      <div class="pc-header">
+        <div class="pc-icon">&#x1F3B9;</div>
+        <div>
+          <div class="pc-name">Ludwig van Beethoven</div>
+          <span class="pc-years">1770 &ndash; 1827 &middot; Bonn</span>
+        </div>
+      </div>
+      <div class="pc-role" id="pc2r">Besteci &middot; 9. Senfoni</div>
+      <p class="pc-text" id="pc2d">Klasik muzikten romantik doneme gecisi simgeleyen Beethoven, isitme kaybina ragmen en buyuk eserlerini besteledi. 9. Senfonisi'ndeki "Nese Ilahisi" AB'nin resmi marsidir.</p>
+    </div>
+
+    <!-- Goethe (Featured) -->
+    <div class="person-card featured">
+      <div class="pc-header">
+        <div class="pc-icon">&#x1F4D6;</div>
+        <div>
+          <div class="pc-name">Johann Wolfgang von Goethe</div>
+          <span class="pc-years">1749 &ndash; 1832 &middot; Frankfurt</span>
+        </div>
+      </div>
+      <div class="pc-role" id="pc3r">Yazar &amp; Sair &middot; Faust</div>
+      <p class="pc-text" id="pc3d">Alman edebiyatinin en buyuk ismi olan Goethe, Faust eseriyle dunya literaturune damga vurdu. Sair, yazar, bilim insani ve devlet adami olarak cok yonlu bir dehadir.</p>
+    </div>
+
+    <!-- Gutenberg -->
+    <div class="person-card">
+      <div class="pc-header">
+        <div class="pc-icon">&#x1F5A8;&#xFE0F;</div>
+        <div>
+          <div class="pc-name">Johannes Gutenberg</div>
+          <span class="pc-years">~1400 &ndash; 1468 &middot; Mainz</span>
+        </div>
+      </div>
+      <div class="pc-role" id="pc4r">Mucit &middot; Matbaa</div>
+      <p class="pc-text" id="pc4d">Hareketli harfli matbaayi icat ederek bilgi cagini baslatan Gutenberg, kitaplarin seri uretimini mumkun kildi. Bu bulus Ronesans ve Reform hareketlerinin yayilmasinda kritik rol oynadi.</p>
+    </div>
+
+    <!-- Marx -->
+    <div class="person-card">
+      <div class="pc-header">
+        <div class="pc-icon">&#x1F4DC;</div>
+        <div>
+          <div class="pc-name">Karl Marx</div>
+          <span class="pc-years">1818 &ndash; 1883 &middot; Trier</span>
+        </div>
+      </div>
+      <div class="pc-role" id="pc5r">Filozof &middot; Das Kapital</div>
+      <p class="pc-text" id="pc5d">Ekonomi, tarih ve toplum uzerine teorileriyle 20. yuzyili derinden etkileyen Marx, Das Kapital eseriyle kapitalizmin en onemli elestirmenlerinden biri oldu.</p>
+    </div>
+  </div>
+
+  <!-- AR Section -->
+  <div class="ar-section">
+    <div class="ar-title" id="ar-label">AR Deneyimini Baslat</div>
+    <button class="ar-btn" onclick="startAR()">
+      <span class="ar-btn-icon">&#x1F4E1;</span>
+      <span id="ar-btn-text">Kamerayi Ac &middot; Hedefe Tut</span>
+    </button>
+    <p class="ar-desc" id="ar-desc">Hedef gorsele telefonunu tut, holografik Ruhlar Salonu'nu kesfet</p>
+  </div>
+
+</div>
+
+<footer><p>Bedeutende Personen &middot; Deutschland Entdecken &middot; Almanca Haftasi</p></footer>
+
+<script>
+  /* ── LANGUAGE SYSTEM ── */
+  var lang = localStorage.getItem('lang') || 'tr';
+
+  var texts = {
+    tr: {
+      'nav-back':'Ana Menu','lang-toggle':'DE',
+      'eyebrow':'Almanya \u00b7 5 Tarihi Deha',
+      'hero-sub':'Bilim \u00b7 Sanat \u00b7 Edebiyat \u00b7 Felsefe',
+      'hero-ar-text':'AR Deneyimine Gir',
+      'd1':'Tarihi Deha','d2':'En Eski Dogum','d3':'Nobel Odulu','d4':'Yil Etki','d5':'Dunya Mirasi',
+      'tag1':'Neden Onemliler?','tag2':'5 Onemli Kisilik',
+      'c1t':'Bilim & Bulus',
+      'c1d':"Einstein'in izafiyet teorisi fizigin temellerini degistirdi. Gutenberg'in matbaa icadi bilginin demokratiklesmesini sagladi. Alman dehasi modern dunyayi sekillendirdi.",
+      'c2t':'Muzik & Edebiyat',
+      'c2d':"Beethoven isitme kaybina ragmen tarihin en buyuk bestecisi oldu. Goethe ise Almanca edebiyatin zirvesi sayilan Faust'u yazdi. Ikisi de dunya kultur mirasinin vazgecilmez parcasidir.",
+      'c3t':'Felsefe & Toplum',
+      'c3d':"Karl Marx'in ekonomi ve toplum teorileri 20. yuzyili derinden etkiledi. Das Kapital eseri sosyal bilimlerin en etkili yapitlarindan biridir. Dusunceleri bugun hala tartisiliyor.",
+      'pc1r':'Fizikci \u00b7 Nobel 1921',
+      'pc1d':"Izafiyet teorisiyle fizigin temellerini yeniden yazan Einstein, 1921'de Nobel Fizik Odulu'nu kazandi. E=mc\u00b2 formuluyle kutle-enerji esdegerligini kesfetti. Modern fizigin babasi olarak kabul edilir.",
+      'pc2r':'Besteci \u00b7 9. Senfoni',
+      'pc2d':'Klasik muzikten romantik doneme gecisi simgeleyen Beethoven, isitme kaybina ragmen en buyuk eserlerini besteledi. 9. Senfonisi\'ndeki "Nese Ilahisi" AB\'nin resmi marsidir.',
+      'pc3r':'Yazar & Sair \u00b7 Faust',
+      'pc3d':"Alman edebiyatinin en buyuk ismi olan Goethe, Faust eseriyle dunya literaturune damga vurdu. Sair, yazar, bilim insani ve devlet adami olarak cok yonlu bir dehadir.",
+      'pc4r':'Mucit \u00b7 Matbaa',
+      'pc4d':"Hareketli harfli matbaayi icat ederek bilgi cagini baslatan Gutenberg, kitaplarin seri uretimini mumkun kildi. Bu bulus Ronesans ve Reform hareketlerinin yayilmasinda kritik rol oynadi.",
+      'pc5r':'Filozof \u00b7 Das Kapital',
+      'pc5d':"Ekonomi, tarih ve toplum uzerine teorileriyle 20. yuzyili derinden etkileyen Marx, Das Kapital eseriyle kapitalizmin en onemli elestirmenlerinden biri oldu.",
+      'ar-label':'AR Deneyimini Baslat',
+      'ar-btn-text':'Kamerayi Ac \u00b7 Hedefe Tut',
+      'ar-desc':'Hedef gorsele telefonunu tut, holografik Ruhlar Salonu\'nu kesfet',
+      'hs1':'Albert Einstein','hs2':'Ludwig van Beethoven','hs3':'Johann W. von Goethe','hs4':'Johannes Gutenberg','hs5':'Karl Marx'
+    },
+    de: {
+      'nav-back':'Hauptmenu','lang-toggle':'TR',
+      'eyebrow':'Deutschland \u00b7 5 Historische Genies',
+      'hero-sub':'Wissenschaft \u00b7 Kunst \u00b7 Literatur \u00b7 Philosophie',
+      'hero-ar-text':'AR-Erlebnis starten',
+      'd1':'Historische Genies','d2':'Alteste Geburt','d3':'Nobelpreise','d4':'Jahre Einfluss','d5':'Welterbe',
+      'tag1':'Warum sind sie wichtig?','tag2':'5 Bedeutende Personlichkeiten',
+      'c1t':'Wissenschaft & Erfindung',
+      'c1d':"Einsteins Relativitatstheorie veranderte die Grundlagen der Physik. Gutenbergs Erfindung des Buchdrucks ermoglichte die Demokratisierung des Wissens. Deutsches Genie formte die moderne Welt.",
+      'c2t':'Musik & Literatur',
+      'c2d':"Beethoven wurde trotz seiner Taubheit zum grossten Komponisten der Geschichte. Goethe schrieb Faust, den Gipfel der deutschen Literatur. Beide sind unverzichtbare Teile des Weltkulturerbes.",
+      'c3t':'Philosophie & Gesellschaft',
+      'c3d':"Karl Marx' Theorien uber Wirtschaft und Gesellschaft pragten das 20. Jahrhundert tiefgreifend. Das Kapital ist eines der einflussreichsten Werke der Sozialwissenschaften.",
+      'pc1r':'Physiker \u00b7 Nobelpreis 1921',
+      'pc1d':"Einstein, der die Grundlagen der Physik mit der Relativitatstheorie neu schrieb, gewann 1921 den Nobelpreis fur Physik. Mit der Formel E=mc\u00b2 entdeckte er die Masse-Energie-Aquivalenz. Er gilt als Vater der modernen Physik.",
+      'pc2r':'Komponist \u00b7 9. Symphonie',
+      'pc2d':'Beethoven, der den Ubergang von der Klassik zur Romantik symbolisiert, komponierte trotz seines Horverlusts seine grossten Werke. Die "Ode an die Freude" aus seiner 9. Symphonie ist die offizielle Hymne der EU.',
+      'pc3r':'Schriftsteller & Dichter \u00b7 Faust',
+      'pc3d':"Goethe, der grosste Name der deutschen Literatur, pragte die Weltliteratur mit seinem Werk Faust. Als Dichter, Schriftsteller, Wissenschaftler und Staatsmann war er ein vielseitiges Genie.",
+      'pc4r':'Erfinder \u00b7 Buchdruck',
+      'pc4d':"Gutenberg, der mit der Erfindung des Buchdrucks mit beweglichen Lettern das Informationszeitalter einlautete, ermoglichte die Massenproduktion von Buchern. Diese Erfindung spielte eine entscheidende Rolle bei der Verbreitung von Renaissance und Reformation.",
+      'pc5r':'Philosoph \u00b7 Das Kapital',
+      'pc5d':"Marx, der das 20. Jahrhundert mit seinen Theorien uber Wirtschaft, Geschichte und Gesellschaft tiefgreifend beeinflusste, wurde mit Das Kapital zu einem der wichtigsten Kritiker des Kapitalismus.",
+      'ar-label':'AR-Erlebnis starten',
+      'ar-btn-text':'Kamera offnen \u00b7 Ziel scannen',
+      'ar-desc':'Halte dein Telefon auf das Zielbild und entdecke die holografische Ruhmeshalle',
+      'hs1':'Albert Einstein','hs2':'Ludwig van Beethoven','hs3':'Johann W. von Goethe','hs4':'Johannes Gutenberg','hs5':'Karl Marx'
+    }
+  };
+
+  function applyLang(l) {
+    var t = texts[l];
+    Object.keys(t).forEach(function(id) {
+      var el = document.getElementById(id);
+      if (el) el.textContent = t[id];
+    });
+    document.getElementById('lang-toggle').textContent = (l === 'tr') ? 'DE' : 'TR';
+  }
+
+  function toggleLang() {
+    lang = (lang === 'tr') ? 'de' : 'tr';
+    localStorage.setItem('lang', lang);
+    applyLang(lang);
+  }
+
+  applyLang(lang);
+
+  /* ── SCROLL REVEAL (IntersectionObserver) ── */
+  var observer = new IntersectionObserver(function(entries) {
+    entries.forEach(function(entry, i) {
+      if (entry.isIntersecting) {
+        setTimeout(function() { entry.target.classList.add('visible'); }, i * 120);
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.1 });
+
+  document.querySelectorAll('.info-card, .person-card').forEach(function(el) {
+    observer.observe(el);
+  });
+
+  /* ── AR NAVIGATION ── */
+  function startAR() {
+    window.location.href = 'ar.html';
+  }
+</script>
+</body>
+</html>

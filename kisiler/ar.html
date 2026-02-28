@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Hall of Fame AR — Deutschland Entdecken</title>
+  <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { overflow: hidden; background: #000; font-family: 'Arial', sans-serif; }
+
+    /* A-Frame scene fill */
+    a-scene { width: 100vw !important; height: 100vh !important; position: fixed !important; top: 0 !important; left: 0 !important; }
+
+    /* ── 2D HUD OVERLAY ── */
+    #ui { position: fixed; inset: 0; pointer-events: none; z-index: 1000; }
+
+    /* Corner Brackets */
+    .corner { position: absolute; width: 44px; height: 44px; }
+    .c-tl { top: 16px; left: 16px; border-top: 2px solid #c9a84c; border-left: 2px solid #c9a84c; }
+    .c-tr { top: 16px; right: 16px; border-top: 2px solid #c9a84c; border-right: 2px solid #c9a84c; }
+    .c-bl { bottom: 80px; left: 16px; border-bottom: 2px solid #c9a84c; border-left: 2px solid #c9a84c; }
+    .c-br { bottom: 80px; right: 16px; border-bottom: 2px solid #c9a84c; border-right: 2px solid #c9a84c; }
+
+    /* Viewfinder crosshair */
+    .crosshair {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      width: 60px; height: 60px;
+    }
+    .crosshair::before, .crosshair::after {
+      content: '';
+      position: absolute;
+      background: rgba(201,168,76,0.3);
+    }
+    .crosshair::before { top: 50%; left: 0; width: 100%; height: 1px; transform: translateY(-50%); }
+    .crosshair::after { left: 50%; top: 0; height: 100%; width: 1px; transform: translateX(-50%); }
+
+    /* Moving horizontal scanline */
+    .hud-scanline {
+      position: absolute;
+      left: 16px; right: 16px;
+      height: 1px;
+      background: linear-gradient(to right, transparent, rgba(0,212,255,0.6), transparent);
+      animation: hudScan 4s ease-in-out infinite;
+      opacity: 0.5;
+    }
+    @keyframes hudScan { 0%{top:10%} 50%{top:85%} 100%{top:10%} }
+
+    /* Side tech lines */
+    .tech-line-l, .tech-line-r {
+      position: absolute;
+      width: 1px;
+      height: 120px;
+      background: linear-gradient(to bottom, transparent, rgba(201,168,76,0.2), transparent);
+    }
+    .tech-line-l { left: 40px; top: 50%; transform: translateY(-50%); }
+    .tech-line-r { right: 40px; top: 50%; transform: translateY(-50%); }
+
+    /* Status bar */
+    #status {
+      position: absolute;
+      bottom: 22px; left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0,0,0,0.88);
+      color: #c9a84c;
+      font-size: 0.6rem;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      padding: 0.5rem 1.4rem;
+      border: 1px solid rgba(201,168,76,0.35);
+      backdrop-filter: blur(12px);
+      white-space: nowrap;
+      animation: statusBlink 2s ease infinite;
+      display: flex; align-items: center; gap: 0.6rem;
+    }
+    #status.found { color: #00ff88; border-color: rgba(0,255,136,0.4); animation: none; }
+    @keyframes statusBlink { 0%,100%{opacity:1} 50%{opacity:0.35} }
+
+    /* Status progress bar */
+    .status-bar {
+      width: 40px; height: 3px;
+      background: rgba(201,168,76,0.2);
+      position: relative;
+      overflow: hidden;
+      border-radius: 2px;
+    }
+    .status-bar-fill {
+      position: absolute;
+      top: 0; left: -100%;
+      width: 100%; height: 100%;
+      background: #c9a84c;
+      animation: barSlide 2s linear infinite;
+    }
+    #status.found .status-bar-fill { background: #00ff88; animation: none; width: 100%; left: 0; }
+    @keyframes barSlide { 0%{left:-100%} 100%{left:100%} }
+
+    /* Tap hint */
+    #tap-hint {
+      position: absolute;
+      top: 70px; left: 50%;
+      transform: translateX(-50%);
+      color: rgba(201,168,76,0.7);
+      font-size: 0.58rem;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      display: none;
+      animation: statusBlink 2s ease infinite;
+    }
+
+    /* Back/Close button */
+    #back-btn {
+      position: absolute;
+      top: 16px; left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0,0,0,0.88);
+      color: #c9a84c;
+      border: 1px solid rgba(201,168,76,0.35);
+      padding: 0.45rem 1.4rem;
+      font-size: 0.6rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      cursor: pointer;
+      pointer-events: all;
+      backdrop-filter: blur(12px);
+      font-family: Arial, sans-serif;
+      transition: all 0.3s;
+    }
+    #back-btn:hover { background: rgba(201,168,76,0.12); }
+
+    /* ── INFO CARD (Glassmorphism Slide-Up) ── */
+    #info-card {
+      position: absolute;
+      bottom: 80px; left: 50%;
+      transform: translateX(-50%) translateY(300px);
+      width: min(380px, 92vw);
+      background: rgba(0,8,22,0.92);
+      border: 1px solid rgba(201,168,76,0.5);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      padding: 1.4rem 1.6rem 1.2rem;
+      transition: transform 0.45s cubic-bezier(0.16,1,0.3,1), opacity 0.45s ease;
+      opacity: 0;
+      pointer-events: none;
+      border-radius: 2px;
+    }
+    #info-card.show { transform: translateX(-50%) translateY(0); opacity: 1; pointer-events: all; }
+
+    .ic-tag {
+      font-size: 0.52rem;
+      letter-spacing: 0.35em;
+      text-transform: uppercase;
+      color: #c9a84c;
+      margin-bottom: 0.5rem;
+      display: flex; align-items: center; gap: 0.5rem;
+    }
+    .ic-tag::after { content: ''; flex: 1; height: 1px; background: rgba(201,168,76,0.25); }
+    .ic-title { font-size: 1.3rem; font-weight: 700; color: #e8f4f8; margin-bottom: 0.25rem; }
+    .ic-sub { font-size: 0.68rem; color: #c9a84c; letter-spacing: 0.12em; margin-bottom: 0.7rem; }
+    .ic-text { font-size: 0.78rem; color: rgba(232,244,248,0.72); line-height: 1.7; }
+    .ic-close {
+      position: absolute;
+      top: 0.6rem; right: 0.8rem;
+      color: rgba(201,168,76,0.5);
+      cursor: pointer;
+      font-size: 1rem;
+      pointer-events: all;
+      background: none; border: none;
+      font-family: Arial, sans-serif;
+      transition: color 0.2s;
+    }
+    .ic-close:hover { color: #c9a84c; }
+
+    /* Top-right data display */
+    .hud-data {
+      position: absolute;
+      top: 66px; right: 18px;
+      text-align: right;
+      font-size: 0.5rem;
+      letter-spacing: 0.15em;
+      color: rgba(201,168,76,0.5);
+      text-transform: uppercase;
+      line-height: 1.8;
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── A-FRAME SCENE ── -->
+<a-scene
+  mindar-image="imageTargetSrc: target.mind; autoStart: true; uiLoading: no; uiScanning: no; uiError: no;"
+  color-space="sRGB"
+  renderer="colorManagement: true"
+  vr-mode-ui="enabled: false"
+  device-orientation-permission-ui="enabled: false"
+>
+  <a-camera position="0 0 0" look-controls="enabled: false" cursor="fuse: false; rayOrigin: mouse" raycaster="objects: .hotspot; far: 100"></a-camera>
+
+  <a-entity mindar-image-target="targetIndex: 0">
+
+    <!-- ══════════ HALL OF FAME ═══════════ -->
+
+    <!-- Base Platform (Circular Stage) -->
+    <a-cylinder position="0 -0.38 0" radius="0.65" height="0.012" color="#c9a84c" opacity="0.18" material="transparent:true; emissive:#c9a84c; emissiveIntensity:0.15"></a-cylinder>
+    <a-cylinder position="0 -0.375 0" radius="0.55" height="0.008" color="#c9a84c" opacity="0.12" material="transparent:true; emissive:#c9a84c; emissiveIntensity:0.1"></a-cylinder>
+
+    <!-- Rotating Torus Rings -->
+    <a-torus position="0 -0.37 0" radius="0.62" radius-tubular="0.004" color="#c9a84c" opacity="0.35"
+      material="transparent:true; emissive:#c9a84c; emissiveIntensity:0.3"
+      animation="property: rotation; to: 0 360 0; dur: 12000; easing: linear; loop: true"></a-torus>
+    <a-torus position="0 -0.37 0" radius="0.48" radius-tubular="0.003" color="#00d4ff" opacity="0.25"
+      material="transparent:true; emissive:#00d4ff; emissiveIntensity:0.2"
+      animation="property: rotation; to: 0 -360 0; dur: 9000; easing: linear; loop: true"></a-torus>
+    <a-torus position="0 -0.37 0" radius="0.35" radius-tubular="0.002" color="#c9a84c" opacity="0.15"
+      material="transparent:true"
+      animation="property: rotation; to: 360 0 0; dur: 15000; easing: linear; loop: true"></a-torus>
+
+    <!-- Central Decorative Column -->
+    <a-cylinder position="0 -0.15 0" radius="0.025" height="0.45" color="#c9a84c" opacity="0.5"
+      material="transparent:true; emissive:#c9a84c; emissiveIntensity:0.25"></a-cylinder>
+    <!-- Top Orb -->
+    <a-sphere position="0 0.09 0" radius="0.035" color="#c9a84c" opacity="0.7"
+      material="transparent:true; emissive:#c9a84c; emissiveIntensity:0.6"
+      animation="property: position; from: 0 0.08 0; to: 0 0.11 0; dur: 2500; easing: easeInOutSine; loop: true; dir: alternate"></a-sphere>
+
+    <!-- Floating Header Text -->
+    <a-text value="HALL OF FAME" align="center" position="0 0.22 0" scale="0.2 0.2 0.2" color="#c9a84c"
+      material="emissive:#c9a84c; emissiveIntensity:0.5"
+      animation="property: position; from: 0 0.21 0; to: 0 0.24 0; dur: 3000; easing: easeInOutSine; loop: true; dir: alternate"></a-text>
+    <a-text value="DEUTSCHLAND" align="center" position="0 0.17 0" scale="0.08 0.08 0.08" color="rgba(0,180,220,0.7)"></a-text>
+
+    <!-- ── Decorative Arch Boxes (Hall Structure) ── -->
+    <!-- Left arch pillar -->
+    <a-box position="-0.52 -0.18 0" width="0.04" height="0.38" depth="0.04" color="#001e3c" opacity="0.55" material="transparent:true"></a-box>
+    <a-box position="-0.52 0.03 0" width="0.055" height="0.02" depth="0.055" color="#c9a84c" opacity="0.4" material="transparent:true; emissive:#c9a84c; emissiveIntensity:0.2"></a-box>
+    <!-- Right arch pillar -->
+    <a-box position="0.52 -0.18 0" width="0.04" height="0.38" depth="0.04" color="#001e3c" opacity="0.55" material="transparent:true"></a-box>
+    <a-box position="0.52 0.03 0" width="0.055" height="0.02" depth="0.055" color="#c9a84c" opacity="0.4" material="transparent:true; emissive:#c9a84c; emissiveIntensity:0.2"></a-box>
+    <!-- Top Arch Bar -->
+    <a-box position="0 0.04 0" width="1.08" height="0.015" depth="0.04" color="#c9a84c" opacity="0.25" material="transparent:true; emissive:#c9a84c; emissiveIntensity:0.15"></a-box>
+
+    <!-- Small Pedestals under each hotspot -->
+    <!-- 1 - Einstein -->
+    <a-box position="-0.38 -0.34 0.04" width="0.06" height="0.06" depth="0.06" color="#001e3c" opacity="0.6" material="transparent:true"></a-box>
+    <a-cylinder position="-0.38 -0.28 0.04" radius="0.015" height="0.12" color="#c9a84c" opacity="0.4" material="transparent:true; emissive:#c9a84c; emissiveIntensity:0.2"></a-cylinder>
+    <!-- 2 - Beethoven -->
+    <a-box position="-0.19 -0.32 0.08" width="0.06" height="0.08" depth="0.06" color="#001e3c" opacity="0.6" material="transparent:true"></a-box>
+    <a-cylinder position="-0.19 -0.25 0.08" radius="0.015" height="0.14" color="#c9a84c" opacity="0.4" material="transparent:true; emissive:#c9a84c; emissiveIntensity:0.2"></a-cylinder>
+    <!-- 3 - Goethe (center, taller) -->
+    <a-box position="0 -0.30 0.1" width="0.07" height="0.12" depth="0.07" color="#001e3c" opacity="0.65" material="transparent:true"></a-box>
+    <a-cylinder position="0 -0.20 0.1" radius="0.018" height="0.22" color="#c9a84c" opacity="0.55" material="transparent:true; emissive:#c9a84c; emissiveIntensity:0.3"></a-cylinder>
+    <!-- 4 - Gutenberg -->
+    <a-box position="0.19 -0.32 0.08" width="0.06" height="0.08" depth="0.06" color="#001e3c" opacity="0.6" material="transparent:true"></a-box>
+    <a-cylinder position="0.19 -0.25 0.08" radius="0.015" height="0.14" color="#c9a84c" opacity="0.4" material="transparent:true; emissive:#c9a84c; emissiveIntensity:0.2"></a-cylinder>
+    <!-- 5 - Marx -->
+    <a-box position="0.38 -0.34 0.04" width="0.06" height="0.06" depth="0.06" color="#001e3c" opacity="0.6" material="transparent:true"></a-box>
+    <a-cylinder position="0.38 -0.28 0.04" radius="0.015" height="0.12" color="#c9a84c" opacity="0.4" material="transparent:true; emissive:#c9a84c; emissiveIntensity:0.2"></a-cylinder>
+
+    <!-- ══════════ 5 HOTSPOT SPHERES ═══════════ -->
+
+    <!-- 1 ─ EINSTEIN -->
+    <a-sphere class="hotspot" id="hs-einstein"
+      position="-0.38 -0.19 0.04" radius="0.028"
+      color="#c9a84c" material="emissive:#c9a84c; emissiveIntensity:0.9; transparent:true; opacity:0.95"
+      animation="property: scale; from:1 1 1; to:1.4 1.4 1.4; dur:1000; easing:easeInOutSine; loop:true; dir:alternate"
+      data-person="einstein"></a-sphere>
+    <!-- Pulse ring -->
+    <a-torus position="-0.38 -0.19 0.04" radius="0.045" radius-tubular="0.003" color="#c9a84c" opacity="0.3"
+      animation="property: scale; from:1 1 1; to:2 2 2; dur:1500; easing:easeOutQuad; loop:true"
+      animation__fade="property: material.opacity; from:0.3; to:0; dur:1500; easing:easeOutQuad; loop:true"></a-torus>
+    <!-- Label -->
+    <a-text value="[ EINSTEIN ]" align="center" position="-0.38 -0.12 0.04" scale="0.07 0.07 0.07" color="#c9a84c"></a-text>
+
+    <!-- 2 ─ BEETHOVEN -->
+    <a-sphere class="hotspot" id="hs-beethoven"
+      position="-0.19 -0.15 0.08" radius="0.028"
+      color="#00d4ff" material="emissive:#00d4ff; emissiveIntensity:0.9; transparent:true; opacity:0.95"
+      animation="property: scale; from:1 1 1; to:1.4 1.4 1.4; dur:1100; easing:easeInOutSine; loop:true; dir:alternate; delay:200"
+      data-person="beethoven"></a-sphere>
+    <a-torus position="-0.19 -0.15 0.08" radius="0.045" radius-tubular="0.003" color="#00d4ff" opacity="0.3"
+      animation="property: scale; from:1 1 1; to:2 2 2; dur:1500; easing:easeOutQuad; loop:true; delay:200"
+      animation__fade="property: material.opacity; from:0.3; to:0; dur:1500; easing:easeOutQuad; loop:true; delay:200"></a-torus>
+    <a-text value="[ BEETHOVEN ]" align="center" position="-0.19 -0.08 0.08" scale="0.065 0.065 0.065" color="#00d4ff"></a-text>
+
+    <!-- 3 ─ GOETHE (Center, Golden) -->
+    <a-sphere class="hotspot" id="hs-goethe"
+      position="0 -0.06 0.1" radius="0.032"
+      color="#c9a84c" material="emissive:#c9a84c; emissiveIntensity:1; transparent:true; opacity:0.95"
+      animation="property: scale; from:1 1 1; to:1.5 1.5 1.5; dur:900; easing:easeInOutSine; loop:true; dir:alternate; delay:400"
+      data-person="goethe"></a-sphere>
+    <a-torus position="0 -0.06 0.1" radius="0.05" radius-tubular="0.003" color="#c9a84c" opacity="0.35"
+      animation="property: scale; from:1 1 1; to:2.2 2.2 2.2; dur:1500; easing:easeOutQuad; loop:true; delay:400"
+      animation__fade="property: material.opacity; from:0.35; to:0; dur:1500; easing:easeOutQuad; loop:true; delay:400"></a-torus>
+    <a-text value="[ GOETHE ]" align="center" position="0 0.02 0.1" scale="0.075 0.075 0.075" color="#c9a84c"></a-text>
+
+    <!-- 4 ─ GUTENBERG -->
+    <a-sphere class="hotspot" id="hs-gutenberg"
+      position="0.19 -0.15 0.08" radius="0.028"
+      color="#00d4ff" material="emissive:#00d4ff; emissiveIntensity:0.9; transparent:true; opacity:0.95"
+      animation="property: scale; from:1 1 1; to:1.4 1.4 1.4; dur:1200; easing:easeInOutSine; loop:true; dir:alternate; delay:600"
+      data-person="gutenberg"></a-sphere>
+    <a-torus position="0.19 -0.15 0.08" radius="0.045" radius-tubular="0.003" color="#00d4ff" opacity="0.3"
+      animation="property: scale; from:1 1 1; to:2 2 2; dur:1500; easing:easeOutQuad; loop:true; delay:600"
+      animation__fade="property: material.opacity; from:0.3; to:0; dur:1500; easing:easeOutQuad; loop:true; delay:600"></a-torus>
+    <a-text value="[ GUTENBERG ]" align="center" position="0.19 -0.08 0.08" scale="0.06 0.06 0.06" color="#00d4ff"></a-text>
+
+    <!-- 5 ─ MARX -->
+    <a-sphere class="hotspot" id="hs-marx"
+      position="0.38 -0.19 0.04" radius="0.028"
+      color="#c9a84c" material="emissive:#c9a84c; emissiveIntensity:0.9; transparent:true; opacity:0.95"
+      animation="property: scale; from:1 1 1; to:1.4 1.4 1.4; dur:1000; easing:easeInOutSine; loop:true; dir:alternate; delay:800"
+      data-person="marx"></a-sphere>
+    <a-torus position="0.38 -0.19 0.04" radius="0.045" radius-tubular="0.003" color="#c9a84c" opacity="0.3"
+      animation="property: scale; from:1 1 1; to:2 2 2; dur:1500; easing:easeOutQuad; loop:true; delay:800"
+      animation__fade="property: material.opacity; from:0.3; to:0; dur:1500; easing:easeOutQuad; loop:true; delay:800"></a-torus>
+    <a-text value="[ MARX ]" align="center" position="0.38 -0.12 0.04" scale="0.07 0.07 0.07" color="#c9a84c"></a-text>
+
+    <!-- ══════════ FLOATING PARTICLES ═══════════ -->
+    <a-sphere position="-0.28 -0.1 0.15" radius="0.005" color="#c9a84c" opacity="0.6" material="transparent:true"
+      animation="property: position; from:-0.28 -0.38 0.15; to:-0.28 0.15 0.15; dur:3500; easing:easeInOutSine; loop:true; dir:alternate"></a-sphere>
+    <a-sphere position="0.12 0 -0.08" radius="0.004" color="#00d4ff" opacity="0.5" material="transparent:true"
+      animation="property: position; from:0.12 -0.38 -0.08; to:0.12 0.12 -0.08; dur:4000; easing:easeInOutSine; loop:true; dir:alternate; delay:500"></a-sphere>
+    <a-sphere position="0.3 0.05 0.18" radius="0.004" color="#c9a84c" opacity="0.7" material="transparent:true"
+      animation="property: position; from:0.3 -0.38 0.18; to:0.3 0.18 0.18; dur:2800; easing:easeInOutSine; loop:true; dir:alternate; delay:1000"></a-sphere>
+    <a-sphere position="-0.15 0 0.2" radius="0.003" color="#00d4ff" opacity="0.4" material="transparent:true"
+      animation="property: position; from:-0.15 -0.38 0.2; to:-0.15 0.1 0.2; dur:3200; easing:easeInOutSine; loop:true; dir:alternate; delay:1500"></a-sphere>
+    <a-sphere position="0.45 -0.05 0" radius="0.004" color="#c9a84c" opacity="0.5" material="transparent:true"
+      animation="property: position; from:0.45 -0.38 0; to:0.45 0.08 0; dur:3800; easing:easeInOutSine; loop:true; dir:alternate; delay:700"></a-sphere>
+
+  </a-entity>
+</a-scene>
+
+<!-- ── 2D HUD UI ── -->
+<div id="ui">
+  <!-- Corner brackets -->
+  <div class="corner c-tl"></div>
+  <div class="corner c-tr"></div>
+  <div class="corner c-bl"></div>
+  <div class="corner c-br"></div>
+
+  <!-- Viewfinder -->
+  <div class="crosshair"></div>
+
+  <!-- Moving scanline -->
+  <div class="hud-scanline"></div>
+
+  <!-- Side tech lines -->
+  <div class="tech-line-l"></div>
+  <div class="tech-line-r"></div>
+
+  <!-- HUD Data -->
+  <div class="hud-data">
+    HALL OF FAME<br>
+    5 PERSONEN<br>
+    MindAR v1.2
+  </div>
+
+  <!-- Tap hint -->
+  <div id="tap-hint"></div>
+
+  <!-- Status bar -->
+  <div id="status">
+    <div class="status-bar"><div class="status-bar-fill"></div></div>
+    <span id="status-text">Scanning...</span>
+  </div>
+
+  <!-- Back button -->
+  <button id="back-btn" onclick="window.location.href='kisiler_index.html'"></button>
+
+  <!-- Info Card -->
+  <div id="info-card">
+    <button class="ic-close" onclick="closeCard()">&#x2715;</button>
+    <div class="ic-tag" id="ic-tag"></div>
+    <div class="ic-title" id="ic-title"></div>
+    <div class="ic-sub" id="ic-sub"></div>
+    <div class="ic-text" id="ic-text"></div>
+  </div>
+</div>
+
+<script>
+  /* ── LANGUAGE DATA ── */
+  var lang = localStorage.getItem('lang') || 'tr';
+
+  var people = {
+    einstein: {
+      tr: {
+        tag: 'Fizik \u00b7 Nobel 1921',
+        title: 'Albert Einstein',
+        sub: '1879 \u2013 1955 \u00b7 Ulm, Almanya',
+        text: 'Izafiyet teorisiyle fizigin temellerini yeniden yazan Einstein, 1921\'de Nobel Fizik Odulu\'nu kazandi. E=mc\u00b2 formuluyle kutle-enerji esdegerligini kesfetti. Modern fizigin babasi olarak kabul edilir.'
+      },
+      de: {
+        tag: 'Physik \u00b7 Nobelpreis 1921',
+        title: 'Albert Einstein',
+        sub: '1879 \u2013 1955 \u00b7 Ulm, Deutschland',
+        text: 'Einstein, der die Grundlagen der Physik mit der Relativitatstheorie neu schrieb, gewann 1921 den Nobelpreis. Mit E=mc\u00b2 entdeckte er die Masse-Energie-Aquivalenz. Er gilt als Vater der modernen Physik.'
+      }
+    },
+    beethoven: {
+      tr: {
+        tag: 'Muzik \u00b7 Klasik Donem',
+        title: 'Ludwig van Beethoven',
+        sub: '1770 \u2013 1827 \u00b7 Bonn, Almanya',
+        text: 'Klasik muzikten romantik doneme gecisi simgeleyen Beethoven, isitme kaybina ragmen en buyuk eserlerini besteledi. 9. Senfonisi\'ndeki "Nese Ilahisi" AB\'nin resmi marsidir.'
+      },
+      de: {
+        tag: 'Musik \u00b7 Klassik',
+        title: 'Ludwig van Beethoven',
+        sub: '1770 \u2013 1827 \u00b7 Bonn, Deutschland',
+        text: 'Beethoven, der den Ubergang von der Klassik zur Romantik symbolisiert, komponierte trotz seines Horverlusts seine grossten Werke. Die "Ode an die Freude" ist die offizielle Hymne der EU.'
+      }
+    },
+    goethe: {
+      tr: {
+        tag: 'Edebiyat \u00b7 Weimarer Klassik',
+        title: 'Johann Wolfgang von Goethe',
+        sub: '1749 \u2013 1832 \u00b7 Frankfurt, Almanya',
+        text: 'Alman edebiyatinin en buyuk ismi olan Goethe, Faust eseriyle dunya literaturune damga vurdu. Sair, yazar, bilim insani ve devlet adami olarak cok yonlu bir dehadir.'
+      },
+      de: {
+        tag: 'Literatur \u00b7 Weimarer Klassik',
+        title: 'Johann Wolfgang von Goethe',
+        sub: '1749 \u2013 1832 \u00b7 Frankfurt, Deutschland',
+        text: 'Goethe, der grosste Name der deutschen Literatur, pragte die Weltliteratur mit Faust. Als Dichter, Schriftsteller, Wissenschaftler und Staatsmann war er ein vielseitiges Genie.'
+      }
+    },
+    gutenberg: {
+      tr: {
+        tag: 'Icat \u00b7 Bilgi Cagi',
+        title: 'Johannes Gutenberg',
+        sub: '~1400 \u2013 1468 \u00b7 Mainz, Almanya',
+        text: 'Hareketli harfli matbaayi icat ederek bilgi cagini baslatan Gutenberg, kitaplarin seri uretimini mumkun kildi. Bu bulus Ronesans ve Reform hareketlerinin yayilmasinda kritik rol oynadi.'
+      },
+      de: {
+        tag: 'Erfindung \u00b7 Informationszeitalter',
+        title: 'Johannes Gutenberg',
+        sub: '~1400 \u2013 1468 \u00b7 Mainz, Deutschland',
+        text: 'Gutenberg, der mit der Erfindung des Buchdrucks das Informationszeitalter einlautete, ermoglichte die Massenproduktion von Buchern. Diese Erfindung spielte eine entscheidende Rolle bei Renaissance und Reformation.'
+      }
+    },
+    marx: {
+      tr: {
+        tag: 'Felsefe \u00b7 Ekonomi',
+        title: 'Karl Marx',
+        sub: '1818 \u2013 1883 \u00b7 Trier, Almanya',
+        text: 'Ekonomi, tarih ve toplum uzerine teorileriyle 20. yuzyili derinden etkileyen Marx, Das Kapital eseriyle kapitalizmin en onemli elestirmenlerinden biri oldu.'
+      },
+      de: {
+        tag: 'Philosophie \u00b7 Okonomie',
+        title: 'Karl Marx',
+        sub: '1818 \u2013 1883 \u00b7 Trier, Deutschland',
+        text: 'Marx, der das 20. Jahrhundert mit seinen Theorien uber Wirtschaft und Gesellschaft pragte, wurde mit Das Kapital zu einem der wichtigsten Kritiker des Kapitalismus.'
+      }
+    }
+  };
+
+  /* UI strings */
+  var ui = {
+    tr: {
+      status: 'Taraniyor...',
+      found: '\u2713 Hedef Bulundu \u2014 Kurelere Dokun',
+      hint: '\u25B2 Kurelere Dokun',
+      back: '\u2190 Geri Don'
+    },
+    de: {
+      status: 'Wird gescannt...',
+      found: '\u2713 Ziel erkannt \u2014 Kugeln antippen',
+      hint: '\u25B2 Kugeln antippen',
+      back: '\u2190 Zuruck'
+    }
+  };
+
+  /* Apply UI language */
+  var statusEl = document.getElementById('status');
+  var statusText = document.getElementById('status-text');
+  var tapHint = document.getElementById('tap-hint');
+  var backBtn = document.getElementById('back-btn');
+  var card = document.getElementById('info-card');
+
+  statusText.textContent = ui[lang].status;
+  tapHint.textContent = ui[lang].hint;
+  backBtn.textContent = ui[lang].back;
+
+  /* ── TARGET TRACKING ── */
+  var target = document.querySelector('[mindar-image-target]');
+
+  target.addEventListener('targetFound', function() {
+    statusText.textContent = ui[lang].found;
+    statusEl.classList.add('found');
+    tapHint.style.display = 'block';
+  });
+
+  target.addEventListener('targetLost', function() {
+    statusText.textContent = ui[lang].status;
+    statusEl.classList.remove('found');
+    tapHint.style.display = 'none';
+    closeCard();
+  });
+
+  /* ── HOTSPOT CLICK HANDLER ── */
+  document.querySelectorAll('.hotspot').forEach(function(hs) {
+    hs.addEventListener('click', function() {
+      var personKey = hs.getAttribute('data-person');
+      if (!personKey || !people[personKey]) return;
+
+      var data = people[personKey][lang];
+
+      document.getElementById('ic-tag').textContent = data.tag;
+      document.getElementById('ic-title').textContent = data.title;
+      document.getElementById('ic-sub').textContent = data.sub;
+      document.getElementById('ic-text').textContent = data.text;
+
+      card.classList.add('show');
+    });
+  });
+
+  /* ── CLOSE CARD ── */
+  function closeCard() {
+    card.classList.remove('show');
+  }
+</script>
+</body>
+</html>

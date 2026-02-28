@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Feste AR</title>
+  <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { overflow: hidden; background: #000; font-family: 'Arial', sans-serif; }
+    #ui { position: fixed; inset: 0; pointer-events: none; z-index: 1000; }
+    .c { position: absolute; width: 40px; height: 40px; }
+    .c-tl { top:16px; left:16px; border-top:2px solid #00d4ff; border-left:2px solid #00d4ff; }
+    .c-tr { top:16px; right:16px; border-top:2px solid #00d4ff; border-right:2px solid #00d4ff; }
+    .c-bl { bottom:70px; left:16px; border-bottom:2px solid #00d4ff; border-left:2px solid #00d4ff; }
+    .c-br { bottom:70px; right:16px; border-bottom:2px solid #00d4ff; border-right:2px solid #00d4ff; }
+    .scan { position:absolute; left:0; right:0; height:1px; background:linear-gradient(to right,transparent,#00d4ff,transparent); animation:scan 3s ease-in-out infinite; opacity:.5; }
+    @keyframes scan { 0%{top:10%} 50%{top:90%} 100%{top:10%} }
+    #status { position:absolute; bottom:16px; left:50%; transform:translateX(-50%); background:rgba(0,0,0,.85); color:#00d4ff; font-size:.62rem; letter-spacing:.3em; text-transform:uppercase; padding:.5rem 1.2rem; border:1px solid rgba(0,212,255,.35); backdrop-filter:blur(10px); white-space:nowrap; animation:blink 2s ease infinite; }
+    #status.found { color:#00ff88; border-color:rgba(0,255,136,.4); animation:none; }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.4} }
+    #back { position:absolute; top:16px; left:50%; transform:translateX(-50%); background:rgba(0,0,0,.85); color:#00d4ff; border:1px solid rgba(0,212,255,.35); padding:.45rem 1.2rem; font-size:.62rem; letter-spacing:.2em; text-transform:uppercase; cursor:pointer; pointer-events:all; backdrop-filter:blur(10px); font-family:Arial,sans-serif; }
+    #tap-hint { position:absolute; top:70px; left:50%; transform:translateX(-50%); color:rgba(0,212,255,.65); font-size:.6rem; letter-spacing:.25em; text-transform:uppercase; display:none; animation:blink 2s ease infinite; }
+    #info-card { position:absolute; bottom:70px; left:50%; transform:translateX(-50%) translateY(220px); width:min(340px, 90vw); background:rgba(0,8,22,.93); border:1px solid rgba(0,212,255,.5); backdrop-filter:blur(20px); padding:1.2rem 1.5rem; transition:transform .4s cubic-bezier(.16,1,.3,1), opacity .4s ease; opacity:0; pointer-events:none; }
+    #info-card.show { transform:translateX(-50%) translateY(0); opacity:1; pointer-events:all; }
+    .ic-tag { font-size:.55rem; letter-spacing:.35em; text-transform:uppercase; color:#00d4ff; margin-bottom:.4rem; display:flex; align-items:center; gap:.5rem; }
+    .ic-tag::after { content:''; flex:1; height:1px; background:rgba(0,212,255,.25); }
+    .ic-title { font-size:1.25rem; font-weight:700; color:#e8f4f8; margin-bottom:.25rem; }
+    .ic-sub { font-size:.7rem; color:#00d4ff; letter-spacing:.1em; margin-bottom:.65rem; }
+    .ic-text { font-size:.8rem; color:rgba(232,244,248,.7); line-height:1.65; }
+    .ic-close { position:absolute; top:.6rem; right:.8rem; color:rgba(0,212,255,.5); cursor:pointer; font-size:.9rem; pointer-events:all; background:none; border:none; font-family:Arial; }
+    .ic-close:hover { color:#00d4ff; }
+    a-scene { width: 100vw !important; height: 100vh !important; position: fixed !important; top: 0 !important; left: 0 !important; }
+  </style>
+</head>
+<body>
+<a-scene mindar-image="imageTargetSrc: target.mind; autoStart: true; uiLoading: no; uiScanning: no; uiError: no;" color-space="sRGB" renderer="colorManagement: true" vr-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false">
+  <a-camera position="0 0 0" look-controls="enabled: false" cursor="fuse: false; rayOrigin: mouse" raycaster="objects: .hotspot; far: 100"></a-camera>
+  <a-entity mindar-image-target="targetIndex: 0">
+    <a-torus position="0 -0.38 0" radius="0.58" radius-tubular="0.004" color="#00d4ff" opacity="0.5" animation="property: rotation; to: 0 360 0; dur: 10000; easing: linear; loop: true"></a-torus>
+    <a-torus position="0 -0.38 0" radius="0.42" radius-tubular="0.002" color="#00d4ff" opacity="0.3" animation="property: rotation; to: 0 -360 0; dur: 7000; easing: linear; loop: true"></a-torus>
+    <a-cylinder position="0 -0.382 0" radius="0.58" height="0.008" color="#00d4ff" opacity="0.12" material="transparent:true"></a-cylinder>
+    <!-- Tent -->
+    <a-cone position="0 -0.05 0" radius-bottom="0.32" radius-top="0.02" height="0.26" color="#00d4ff" opacity="0.7" material="transparent:true; emissive:#00d4ff; emissiveIntensity:0.2"></a-cone>
+    <a-box position="0 -0.23 0" width="0.55" height="0.2" depth="0.28" color="#003322" opacity="0.65" material="transparent:true"></a-box>
+    <a-cone position="0 0.1 0" radius-bottom="0.025" radius-top="0.01" height="0.06" color="#c9a84c" opacity="0.9" material="transparent:true; emissive:#c9a84c; emissiveIntensity:0.5" animation="property: position; from: 0 0.09 0; to: 0 0.11 0; dur: 2000; easing: easeInOutSine; loop: true; dir: alternate"></a-cone>
+    <!-- Beer mugs -->
+    <a-cylinder position="-0.44 -0.22 0" radius="0.05" height="0.22" color="#00aacc" opacity="0.8" material="transparent:true; emissive:#00aacc; emissiveIntensity:0.3"></a-cylinder>
+    <a-cylinder position="-0.44 -0.1 0" radius="0.05" height="0.03" color="#aaffff" opacity="0.6" material="transparent:true; emissive:#00d4ff; emissiveIntensity:0.5" animation="property: material.opacity; from:0.6; to:1; dur:800; easing:easeInOutSine; loop:true; dir:alternate"></a-cylinder>
+    <a-cylinder position="0.44 -0.22 0" radius="0.05" height="0.22" color="#00aacc" opacity="0.8" material="transparent:true; emissive:#00aacc; emissiveIntensity:0.3"></a-cylinder>
+    <a-cylinder position="0.44 -0.1 0" radius="0.05" height="0.03" color="#aaffff" opacity="0.6" material="transparent:true; emissive:#00d4ff; emissiveIntensity:0.5" animation="property: material.opacity; from:1; to:0.6; dur:800; easing:easeInOutSine; loop:true; dir:alternate"></a-cylinder>
+    <!-- Ferris wheel -->
+    <a-torus position="0.48 -0.05 -0.05" radius="0.18" radius-tubular="0.005" color="#00d4ff" opacity="0.5" animation="property: rotation; from: 0 0 0; to: 0 0 360; dur: 8000; easing: linear; loop: true"></a-torus>
+    <a-cylinder position="0.48 -0.25 -0.05" radius="0.006" height="0.22" color="#00d4ff" opacity="0.6" material="transparent:true"></a-cylinder>
+    <!-- Christmas tree -->
+    <a-cone position="-0.46 -0.12 -0.04" radius-bottom="0.1" radius-top="0.01" height="0.26" color="#00aa44" opacity="0.7" material="transparent:true; emissive:#007722; emissiveIntensity:0.2"></a-cone>
+    <a-cylinder position="-0.46 -0.28 -0.04" radius="0.018" height="0.06" color="#663300" opacity="0.8" material="transparent:true"></a-cylinder>
+    <a-sphere position="-0.46 0.02 -0.04" radius="0.016" color="#00d4ff" opacity="1" material="transparent:true; emissive:#00d4ff; emissiveIntensity:1" animation="property: material.opacity; from:1; to:0.3; dur:600; easing:easeInOutSine; loop:true; dir:alternate"></a-sphere>
+    <!-- Particles -->
+    <a-sphere position="-0.25 -0.1 0.1" radius="0.005" color="#00d4ff" opacity="0.6" material="transparent:true" animation="property: position; from:-0.25 -0.38 0.1; to:-0.25 0.18 0.1; dur:3000; easing:easeInOutSine; loop:true; dir:alternate"></a-sphere>
+    <a-sphere position="0.18 0 -0.1" radius="0.004" color="#00d4ff" opacity="0.5" material="transparent:true" animation="property: position; from:0.18 -0.38 -0.1; to:0.18 0.12 -0.1; dur:4000; easing:easeInOutSine; loop:true; dir:alternate; delay:500"></a-sphere>
+    <a-sphere position="0.05 0.1 0.18" radius="0.004" color="#c9a84c" opacity="0.7" material="transparent:true" animation="property: position; from:0.05 -0.38 0.18; to:0.05 0.22 0.18; dur:2500; easing:easeInOutSine; loop:true; dir:alternate; delay:1000"></a-sphere>
+    <a-sphere position="0.32 0 0.02" radius="0.004" color="#00ff88" opacity="0.5" material="transparent:true" animation="property: position; from:0.32 -0.38 0.02; to:0.32 0.08 0.02; dur:3500; easing:easeInOutSine; loop:true; dir:alternate; delay:1500"></a-sphere>
+    <!-- Title -->
+    <a-text value="FESTE &amp; FEIERN" align="center" position="0 0.28 0" scale="0.32 0.32 0.32" color="#00d4ff" material="emissive:#00d4ff; emissiveIntensity:0.5" animation="property: position; from: 0 0.26 0; to: 0 0.30 0; dur: 2500; easing: easeInOutSine; loop: true; dir: alternate"></a-text>
+    <a-text value="München · Köln · Nürnberg" align="center" position="0 0.21 0" scale="0.11 0.11 0.11" color="rgba(0,180,220,0.7)"></a-text>
+    <!-- Hotspots -->
+    <a-sphere class="hotspot" position="0 0.07 0.01" radius="0.026" color="#00d4ff" material="emissive:#00d4ff; emissiveIntensity:0.9; transparent:true; opacity:0.95" animation="property: scale; from:1 1 1; to:1.4 1.4 1.4; dur:1000; easing:easeInOutSine; loop:true; dir:alternate" data-title="Oktoberfest" data-sub="München · Eylül–Ekim · 1810'dan beri" data-tag="Dünyanın En Büyük Festivali" data-text="1810'dan beri her yıl München'de düzenlenen Oktoberfest dünyanın en büyük halk festivalidir. Her yıl 6 milyondan fazla ziyaretçi çeker. 14 büyük çadır, geleneksel Bavyera müziği ve yemekleri eşliğinde kutlama yapılır."></a-sphere>
+    <a-torus position="0 0.07 0.01" radius="0.042" radius-tubular="0.003" color="#00d4ff" opacity="0.35" animation="property: scale; from:1 1 1; to:2 2 2; dur:1500; easing:easeOutQuad; loop:true"></a-torus>
+    <a-text value="[ OKTOBERFEST ]" align="center" position="0 0.155 0.01" scale="0.07 0.07 0.07" color="#00d4ff"></a-text>
+    <a-sphere class="hotspot" position="0.44 0.14 -0.05" radius="0.023" color="#00ff88" material="emissive:#00ff88; emissiveIntensity:0.9; transparent:true; opacity:0.95" animation="property: scale; from:1 1 1; to:1.5 1.5 1.5; dur:800; easing:easeInOutSine; loop:true; dir:alternate; delay:300" data-title="Schützenfest" data-sub="Hannover · Temmuz" data-tag="Geleneksel Festival" data-text="Hannover Schützenfest dünyanın en büyük nişancılık festivalidir. Her yıl Temmuz'da 10 günlük kutlamalar yapılır. Geleneksel Alman kıyafetleri, müzik ve atış yarışmalarıyla 1 milyondan fazla kişi katılır."></a-sphere>
+    <a-text value="[ SCHÜTZEN ]" align="center" position="0.44 0.21 -0.05" scale="0.07 0.07 0.07" color="#00ff88"></a-text>
+    <a-sphere class="hotspot" position="-0.46 0.04 -0.04" radius="0.023" color="#c9a84c" material="emissive:#c9a84c; emissiveIntensity:0.9; transparent:true; opacity:0.95" animation="property: scale; from:1 1 1; to:1.4 1.4 1.4; dur:1200; easing:easeInOutSine; loop:true; dir:alternate; delay:600" data-title="Weihnachtsmarkt" data-sub="Nürnberg, Dresden, Köln · Aralık" data-tag="Noel Pazarları" data-text="600 yılı aşkın geleneğiyle Almanya Noel pazarları dünyanın en güzel kış etkinlikleri arasındadır. Nürnberg, Dresden ve Köln'deki pazarlar her yıl milyonlarca ziyaretçi çeker. Glühwein, Lebkuchen ve ışıl ışıl süslemeler."></a-sphere>
+    <a-text value="[ WEIHNACHT ]" align="center" position="-0.46 0.11 -0.04" scale="0.07 0.07 0.07" color="#c9a84c"></a-text>
+    <a-sphere class="hotspot" position="-0.44 -0.14 0" radius="0.023" color="#ff6b6b" material="emissive:#ff6b6b; emissiveIntensity:0.9; transparent:true; opacity:0.95" animation="property: scale; from:1 1 1; to:1.4 1.4 1.4; dur:900; easing:easeInOutSine; loop:true; dir:alternate; delay:900" data-title="Karneval" data-sub="Köln, Düsseldorf, Mainz · Şubat–Mart" data-tag="Renkli Karnaval" data-text="Köln Karnavalı Almanya'nın en büyük karnavalıdır. Her yıl 1 milyondan fazla kişi renkli kostümler ve geçit törenleriyle kutlama yapar. 'Kölle Alaaf!' nidası şehri sarıyor. Fasching döneminin zirvesidir."></a-sphere>
+    <a-text value="[ KARNEVAL ]" align="center" position="-0.44 -0.07 0" scale="0.07 0.07 0.07" color="#ff6b6b"></a-text>
+    <a-sphere class="hotspot" position="0.44 -0.14 0.05" radius="0.023" color="#aa88ff" material="emissive:#aa88ff; emissiveIntensity:0.9; transparent:true; opacity:0.95" animation="property: scale; from:1 1 1; to:1.5 1.5 1.5; dur:1100; easing:easeInOutSine; loop:true; dir:alternate; delay:1200" data-title="Berlinale" data-sub="Berlin · Şubat" data-tag="Film Festivali" data-text="Berlin Uluslararası Film Festivali, Cannes ve Venedik ile birlikte dünyanın üç büyük film festivalinden biridir. Her yıl Şubat'ta düzenlenen festivalde 300'den fazla film gösterilir. Altın Ayı ödülü sinema dünyasının en prestijli ödülleri arasındadır."></a-sphere>
+    <a-text value="[ BERLINALE ]" align="center" position="0.44 -0.07 0.05" scale="0.07 0.07 0.07" color="#aa88ff"></a-text>
+  </a-entity>
+</a-scene>
+<div id="ui">
+  <div class="c c-tl"></div><div class="c c-tr"></div><div class="c c-bl"></div><div class="c c-br"></div>
+  <div class="scan"></div>
+  <div id="tap-hint">▲ Noktalara Dokun</div>
+  <div id="status">Taranıyor...</div>
+  <button id="back" onclick="window.location.href='index.html'">← Geri Dön</button>
+  <div id="info-card">
+    <button class="ic-close" onclick="closeCard()">✕</button>
+    <div class="ic-tag" id="ic-tag"></div>
+    <div class="ic-title" id="ic-title"></div>
+    <div class="ic-sub" id="ic-sub"></div>
+    <div class="ic-text" id="ic-text"></div>
+  </div>
+</div>
+<script>
+  const target = document.querySelector('[mindar-image-target]');
+  const statusEl = document.getElementById('status');
+  const tapHint = document.getElementById('tap-hint');
+  const card = document.getElementById('info-card');
+  target.addEventListener('targetFound', () => { statusEl.textContent = '✓ Hedef Bulundu — Noktalara Dokun'; statusEl.classList.add('found'); tapHint.style.display = 'block'; });
+  target.addEventListener('targetLost', () => { statusEl.textContent = 'Taranıyor...'; statusEl.classList.remove('found'); tapHint.style.display = 'none'; closeCard(); });
+  document.querySelectorAll('.hotspot').forEach(hs => {
+    hs.addEventListener('click', () => {
+      document.getElementById('ic-tag').textContent = hs.dataset.tag;
+      document.getElementById('ic-title').textContent = hs.dataset.title;
+      document.getElementById('ic-sub').textContent = hs.dataset.sub;
+      document.getElementById('ic-text').textContent = hs.dataset.text;
+      card.classList.add('show');
+    });
+  });
+  function closeCard() { card.classList.remove('show'); }
+</script>
+</body>
+</html>
