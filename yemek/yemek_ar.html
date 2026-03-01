@@ -3,63 +3,63 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Deutsche Küche AR — Deutschland Entdecken</title>
+  <title>Berliner AR — Deutsche Küche</title>
   <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { overflow: hidden; background: #000; font-family: 'Arial', sans-serif; }
-    a-scene { width: 100vw !important; height: 100vh !important; position: fixed !important; top: 0 !important; left: 0 !important; }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { overflow:hidden; background:#000; font-family:'Arial',sans-serif; }
+    a-scene { width:100vw!important; height:100vh!important; position:fixed!important; top:0!important; left:0!important; }
 
-    #ui { position: fixed; inset: 0; pointer-events: none; z-index: 1000; }
+    #ui { position:fixed; inset:0; pointer-events:none; z-index:1000; }
 
     #status {
-      position: absolute; bottom: 16px; left: 50%; transform: translateX(-50%);
-      background: rgba(0,0,0,.80); color: #e8d5b0; font-size: .62rem;
-      letter-spacing: .25em; text-transform: uppercase; padding: .5rem 1.2rem;
-      border: 1px solid rgba(200,170,110,.3); backdrop-filter: blur(12px);
-      white-space: nowrap; animation: blink 2.5s ease infinite;
-      display: flex; align-items: center; gap: 0.5rem;
+      position:absolute; bottom:18px; left:50%; transform:translateX(-50%);
+      background:rgba(8,5,2,.88); color:#d4b483; font-size:.60rem;
+      letter-spacing:.28em; text-transform:uppercase; padding:.5rem 1.3rem;
+      border:1px solid rgba(200,160,90,.28); backdrop-filter:blur(14px);
+      white-space:nowrap; display:flex; align-items:center; gap:.55rem;
+      animation:blink 2.5s ease infinite;
     }
-    #status.found { color: #a8c87a; border-color: rgba(150,200,100,.4); animation: none; }
-    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.45} }
+    #status.found { color:#9ec87a; border-color:rgba(140,200,90,.35); animation:none; }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.4} }
 
-    .status-bar { width: 36px; height: 2px; background: rgba(200,170,110,0.18); position: relative; overflow: hidden; border-radius: 2px; }
-    .status-bar-fill { position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: #c9a84c; animation: barSlide 2s linear infinite; }
-    #status.found .status-bar-fill { background: #a8c87a; animation: none; width: 100%; left: 0; }
-    @keyframes barSlide { 0%{left:-100%} 100%{left:100%} }
+    .sbar { width:34px; height:2px; background:rgba(200,160,90,.18); position:relative; overflow:hidden; border-radius:2px; }
+    .sbar-fill { position:absolute; top:0; left:-100%; width:100%; height:100%; background:#c9a84c; animation:slide 2s linear infinite; }
+    #status.found .sbar-fill { background:#9ec87a; animation:none; width:100%; left:0; }
+    @keyframes slide { 0%{left:-100%} 100%{left:100%} }
 
     #back {
-      position: absolute; top: 16px; left: 50%; transform: translateX(-50%);
-      background: rgba(0,0,0,.80); color: #e8d5b0;
-      border: 1px solid rgba(200,170,110,.3); padding: .45rem 1.2rem;
-      font-size: .62rem; letter-spacing: .2em; text-transform: uppercase;
-      cursor: pointer; pointer-events: all; backdrop-filter: blur(12px); font-family: Arial, sans-serif;
+      position:absolute; top:16px; left:50%; transform:translateX(-50%);
+      background:rgba(8,5,2,.88); color:#d4b483;
+      border:1px solid rgba(200,160,90,.28); padding:.45rem 1.3rem;
+      font-size:.60rem; letter-spacing:.22em; text-transform:uppercase;
+      cursor:pointer; pointer-events:all; backdrop-filter:blur(14px); font-family:Arial,sans-serif;
     }
     #tap-hint {
-      position: absolute; top: 68px; left: 50%; transform: translateX(-50%);
-      color: rgba(220,190,130,.6); font-size: .6rem; letter-spacing: .25em;
-      text-transform: uppercase; display: none; animation: blink 2s ease infinite;
+      position:absolute; top:66px; left:50%; transform:translateX(-50%);
+      color:rgba(212,180,131,.55); font-size:.58rem; letter-spacing:.25em;
+      text-transform:uppercase; display:none; animation:blink 2s ease infinite;
     }
 
     #info-card {
-      position: absolute; bottom: 70px; left: 50%;
-      transform: translateX(-50%) translateY(260px);
-      width: min(360px, 92vw);
-      background: rgba(12,8,3,.92); border: 1px solid rgba(200,165,100,.45);
-      backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-      padding: 1.2rem 1.5rem;
-      transition: transform .4s cubic-bezier(.16,1,.3,1), opacity .4s ease;
-      opacity: 0; pointer-events: none;
+      position:absolute; bottom:72px; left:50%;
+      transform:translateX(-50%) translateY(280px);
+      width:min(360px,92vw);
+      background:rgba(10,6,2,.93); border:1px solid rgba(195,158,88,.42);
+      backdrop-filter:blur(22px); -webkit-backdrop-filter:blur(22px);
+      padding:1.3rem 1.5rem;
+      transition:transform .42s cubic-bezier(.16,1,.3,1), opacity .42s ease;
+      opacity:0; pointer-events:none;
     }
-    #info-card.show { transform: translateX(-50%) translateY(0); opacity: 1; pointer-events: all; }
-    .ic-tag { font-size: .55rem; letter-spacing: .35em; text-transform: uppercase; color: #c9a84c; margin-bottom: .4rem; display: flex; align-items: center; gap: .5rem; }
-    .ic-tag::after { content: ''; flex: 1; height: 1px; background: rgba(200,165,100,.22); }
-    .ic-title { font-size: 1.25rem; font-weight: 700; color: #f0e8d5; margin-bottom: .25rem; }
-    .ic-sub { font-size: .7rem; color: #b8944c; letter-spacing: .1em; margin-bottom: .65rem; }
-    .ic-text { font-size: .8rem; color: rgba(240,232,210,.7); line-height: 1.65; }
-    .ic-close { position: absolute; top: .6rem; right: .8rem; color: rgba(200,165,100,.5); cursor: pointer; font-size: .9rem; pointer-events: all; background: none; border: none; font-family: Arial; }
-    .ic-close:hover { color: #c9a84c; }
+    #info-card.show { transform:translateX(-50%) translateY(0); opacity:1; pointer-events:all; }
+    .ic-tag { font-size:.54rem; letter-spacing:.35em; text-transform:uppercase; color:#c9a84c; margin-bottom:.42rem; display:flex; align-items:center; gap:.5rem; }
+    .ic-tag::after { content:''; flex:1; height:1px; background:rgba(195,158,88,.2); }
+    .ic-title { font-size:1.28rem; font-weight:700; color:#f2e8d4; margin-bottom:.22rem; }
+    .ic-sub { font-size:.68rem; color:#b08840; letter-spacing:.1em; margin-bottom:.65rem; }
+    .ic-text { font-size:.79rem; color:rgba(242,232,212,.68); line-height:1.68; }
+    .ic-close { position:absolute; top:.6rem; right:.8rem; color:rgba(195,158,88,.45); cursor:pointer; font-size:.9rem; pointer-events:all; background:none; border:none; font-family:Arial; }
+    .ic-close:hover { color:#c9a84c; }
   </style>
 </head>
 <body>
@@ -67,23 +67,15 @@
 <a-scene
   mindar-image="imageTargetSrc: targets.mind; autoStart: true; uiLoading: no; uiScanning: no; uiError: no;"
   color-space="sRGB"
-  renderer="colorManagement: true; physicallyCorrectLights: true"
+  renderer="colorManagement: true; physicallyCorrectLights: true; antialias: true"
   vr-mode-ui="enabled: false"
-  device-orientation-permission-ui="enabled: false"
-  shadow="type: pcfsoft; enabled: true">
+  device-orientation-permission-ui="enabled: false">
 
-  <!-- Ortam ışığı — sıcak, zayıf -->
-  <a-light type="ambient" color="#d0b080" intensity="0.55"></a-light>
-  <!-- Ana ışık — sağ üstten soft -->
-  <a-light type="directional" color="#fff5e0" intensity="1.1"
-    position="0.8 1.8 1.2" cast-shadow="true"
-    shadow-camera-near="0.1" shadow-camera-far="10"
-    shadow-camera-left="-1" shadow-camera-right="1"
-    shadow-camera-top="1" shadow-camera-bottom="-1"
-    shadow-map-width="2048" shadow-map-height="2048">
-  </a-light>
-  <!-- Dolgu ışığı — soldan serin -->
-  <a-light type="directional" color="#a0c0e8" intensity="0.28" position="-1 0.8 0.6"></a-light>
+  <!-- IŞIKLAR -->
+  <a-light type="ambient"     color="#c8a878" intensity="0.50"></a-light>
+  <a-light type="directional" color="#fff6e8" intensity="1.05" position="1.2 2.2 1.5"></a-light>
+  <a-light type="directional" color="#8ab0d8" intensity="0.22" position="-1.5 0.8 0.8"></a-light>
+  <a-light type="point"       color="#ffe8c0" intensity="0.35" position="0 0.8 0.5" distance="3"></a-light>
 
   <a-camera position="0 0 0" look-controls="enabled: false"
     cursor="fuse: false; rayOrigin: mouse"
@@ -92,238 +84,196 @@
 
   <a-entity mindar-image-target="targetIndex: 0">
 
-    <!-- ═══════════════════════════════════════════════════════
-         MASA YÜZEYİ — koyu meşe ahşap
-    ════════════════════════════════════════════════════════ -->
-    <a-cylinder position="0 -0.395 0" radius="0.62" height="0.010"
-      color="#1c0f07"
-      material="roughness:0.98; metalness:0; repeat:4 4"
-      shadow="receive: true">
+    <!-- ══════════════════════════════════════════
+         MASA — koyu meşe ahşap
+    ══════════════════════════════════════════ -->
+    <a-cylinder position="0 -0.400 0" radius="0.55" height="0.008"
+      color="#18100600" material="shader:flat; color:#1a0f07">
     </a-cylinder>
-    <!-- Masa kenar çizgisi (ince halkı) -->
-    <a-torus position="0 -0.390 0" radius="0.618" radius-tubular="0.004"
-      color="#0e0805" material="roughness:1; metalness:0">
+    <!-- Ahşap doku efekti: ince paralel çizgiler -->
+    <a-cylinder position="0 -0.396 0" radius="0.54" height="0.001"
+      color="#221408" material="roughness:1; metalness:0; transparent:true; opacity:0.55">
+    </a-cylinder>
+
+    <!-- ══════════════════════════════════════════
+         TABAK — gerçekçi porselen
+    ══════════════════════════════════════════ -->
+
+    <!-- Tabak alt gövde (kalın, hafif konik) -->
+    <a-cylinder position="0 -0.346 0" radius="0.265" height="0.022"
+      color="#F4F0EA"
+      material="roughness:0.86; metalness:0">
+    </a-cylinder>
+
+    <!-- Dış rim şişkinliği (torus) -->
+    <a-torus position="0 -0.336 0" radius="0.252" radius-tubular="0.013"
+      color="#EDE5D5"
+      material="roughness:0.88; metalness:0">
     </a-torus>
 
-    <!-- ═══════════════════════════════════════════════════════
-         TABAK — beyaz porselen, mat, gerçekçi rim
-    ════════════════════════════════════════════════════════ -->
-    <!-- Tabak gövdesi -->
-    <a-cylinder position="0 -0.338 0" radius="0.270" height="0.018"
-      color="#F6F2EC"
-      material="roughness:0.88; metalness:0; envMap: none"
-      shadow="cast:true; receive:true">
+    <!-- İç düzlem (tabak çukuru) -->
+    <a-cylinder position="0 -0.334 0" radius="0.200" height="0.003"
+      color="#FAFAF6"
+      material="roughness:0.80; metalness:0">
     </a-cylinder>
-    <!-- İç çukur (tabağın iç düzlemi) -->
-    <a-cylinder position="0 -0.329 0" radius="0.210" height="0.004"
-      color="#FDFAF5"
-      material="roughness:0.82; metalness:0">
-    </a-cylinder>
-    <!-- Dış rim halka -->
-    <a-torus position="0 -0.330 0" radius="0.255" radius-tubular="0.015"
-      color="#E8E0D0"
+
+    <!-- İç kenar ince çizgi -->
+    <a-torus position="0 -0.333 0" radius="0.200" radius-tubular="0.003"
+      color="#D8D0C0"
+      material="roughness:0.84; metalness:0">
+    </a-torus>
+
+    <!-- Tabak altı (görünür düzlem) -->
+    <a-cylinder position="0 -0.357 0" radius="0.240" height="0.002"
+      color="#E8E2D8"
       material="roughness:0.90; metalness:0">
-    </a-torus>
-    <!-- İkinci ince rim çizgisi -->
-    <a-torus position="0 -0.330 0" radius="0.216" radius-tubular="0.004"
-      color="#D8CFBF"
-      material="roughness:0.85; metalness:0">
-    </a-torus>
+    </a-cylinder>
 
-    <!-- ═══════════════════════════════════════════════════════
-         ÇATAL — sol, 3 diş, gümüş paslanmaz çelik
-    ════════════════════════════════════════════════════════ -->
-    <a-entity position="-0.36 -0.30 0.01" rotation="0 0 8">
-      <!-- Sap uzun kısmı -->
-      <a-cylinder position="0 -0.048 0" radius="0.0058" height="0.155"
-        color="#C0C0C0" material="roughness:0.18; metalness:0.92; color:#C8C8C8">
+    <!-- ══════════════════════════════════════════
+         ÇATAL — sol, paslanmaz çelik
+    ══════════════════════════════════════════ -->
+    <a-entity position="-0.345 -0.310 0.005" rotation="0 0 6">
+
+      <!-- Sap alt kısmı (yuvarlak köşeli) -->
+      <a-cylinder position="0 -0.062 0" radius="0.0055" height="0.150"
+        color="#C8C8C8" material="roughness:0.16; metalness:0.94">
       </a-cylinder>
-      <!-- Sap üst genişleme -->
-      <a-cylinder position="0 0.035 0" radius="0.007" height="0.022"
-        color="#BEBEBE" material="roughness:0.22; metalness:0.88">
+      <!-- Sap hafif oval şekli için ince kutu üste -->
+      <a-box position="0 -0.062 0" width="0.011" height="0.150" depth="0.003"
+        color="#CCCCCC" material="roughness:0.16; metalness:0.92">
+      </a-box>
+      <!-- Sap-diş geçiş bölgesi (kalın) -->
+      <a-cylinder position="0 0.022 0" radius="0.007" height="0.018"
+        color="#BABABA" material="roughness:0.20; metalness:0.90">
       </a-cylinder>
-      <!-- 3 diş -->
-      <a-cylinder position="-0.0085 0.072 0" radius="0.0022" height="0.052"
-        color="#D4D4D4" material="roughness:0.14; metalness:0.95">
+      <!-- 4 diş (gerçekçi çatal) -->
+      <a-cylinder position="-0.0120 0.065 0" radius="0.0020" height="0.055"
+        color="#D8D8D8" material="roughness:0.12; metalness:0.96">
       </a-cylinder>
-      <a-cylinder position="0 0.072 0" radius="0.0022" height="0.052"
-        color="#D4D4D4" material="roughness:0.14; metalness:0.95">
+      <a-cylinder position="-0.0040 0.065 0" radius="0.0020" height="0.058"
+        color="#D8D8D8" material="roughness:0.12; metalness:0.96">
       </a-cylinder>
-      <a-cylinder position="0.0085 0.072 0" radius="0.0022" height="0.052"
-        color="#D4D4D4" material="roughness:0.14; metalness:0.95">
+      <a-cylinder position="0.0040 0.065 0" radius="0.0020" height="0.058"
+        color="#D8D8D8" material="roughness:0.12; metalness:0.96">
       </a-cylinder>
-      <!-- Diş üst yuvarlaması -->
-      <a-sphere position="-0.0085 0.097 0" radius="0.0025" color="#D0D0D0" material="roughness:0.14; metalness:0.95"></a-sphere>
-      <a-sphere position="0 0.097 0" radius="0.0025" color="#D0D0D0" material="roughness:0.14; metalness:0.95"></a-sphere>
-      <a-sphere position="0.0085 0.097 0" radius="0.0025" color="#D0D0D0" material="roughness:0.14; metalness:0.95"></a-sphere>
+      <a-cylinder position="0.0120 0.065 0" radius="0.0020" height="0.055"
+        color="#D8D8D8" material="roughness:0.12; metalness:0.96">
+      </a-cylinder>
+      <!-- Diş uç yuvarlamaları -->
+      <a-sphere position="-0.0120 0.092 0" radius="0.0022" color="#D0D0D0" material="roughness:0.12; metalness:0.96"></a-sphere>
+      <a-sphere position="-0.0040 0.094 0" radius="0.0022" color="#D0D0D0" material="roughness:0.12; metalness:0.96"></a-sphere>
+      <a-sphere position="0.0040 0.094 0" radius="0.0022" color="#D0D0D0" material="roughness:0.12; metalness:0.96"></a-sphere>
+      <a-sphere position="0.0120 0.092 0" radius="0.0022" color="#D0D0D0" material="roughness:0.12; metalness:0.96"></a-sphere>
+      <!-- Sap alt yuvarlama -->
+      <a-sphere position="0 -0.138 0" radius="0.006" color="#C4C4C4" material="roughness:0.18; metalness:0.92"></a-sphere>
+
     </a-entity>
 
-    <!-- ═══════════════════════════════════════════════════════
-         BIÇAK — sağ, gümüş paslanmaz + bıçak ağzı
-    ════════════════════════════════════════════════════════ -->
-    <a-entity position="0.36 -0.30 0.01" rotation="0 0 -8">
+    <!-- ══════════════════════════════════════════
+         BIÇAK — sağ, paslanmaz çelik
+    ══════════════════════════════════════════ -->
+    <a-entity position="0.345 -0.310 0.005" rotation="0 0 -6">
+
       <!-- Sap -->
-      <a-cylinder position="0 -0.048 0" radius="0.0058" height="0.155"
-        color="#C0C0C0" material="roughness:0.18; metalness:0.92">
+      <a-cylinder position="0 -0.062 0" radius="0.0055" height="0.150"
+        color="#C8C8C8" material="roughness:0.16; metalness:0.94">
       </a-cylinder>
-      <!-- Sap üst koruyucu (bolster) -->
-      <a-cylinder position="0 0.035 0" radius="0.0082" height="0.016"
-        color="#A8A8A8" material="roughness:0.25; metalness:0.90">
+      <a-box position="0 -0.062 0" width="0.011" height="0.150" depth="0.003"
+        color="#CCCCCC" material="roughness:0.16; metalness:0.92">
+      </a-box>
+      <!-- Bolster (sap-ağız birleşim) -->
+      <a-cylinder position="0 0.022 0" radius="0.0085" height="0.016"
+        color="#A8A8A8" material="roughness:0.22; metalness:0.92">
       </a-cylinder>
-      <!-- Bıçak ağzı (flat box) -->
-      <a-box position="0.001 0.072 0" width="0.012" height="0.056" depth="0.0028"
-        color="#D8D8D8" material="roughness:0.10; metalness:0.96">
+      <!-- Bıçak ağzı — asimetrik: bir yan düz, öbür yan hafif eğimli -->
+      <a-box position="0.001 0.070 0" width="0.011" height="0.058" depth="0.0026"
+        color="#DCDCDC" material="roughness:0.08; metalness:0.97">
       </a-box>
-      <!-- Ağız sırtı biraz daha kalın -->
-      <a-box position="-0.002 0.072 0" width="0.003" height="0.056" depth="0.0028"
-        color="#C4C4C4" material="roughness:0.12; metalness:0.94">
+      <!-- Ağız sırtı (kalın kenar) -->
+      <a-box position="-0.003 0.070 0" width="0.003" height="0.058" depth="0.0026"
+        color="#C2C2C2" material="roughness:0.12; metalness:0.95">
       </a-box>
-      <!-- Uç yuvarlaması -->
-      <a-sphere position="0.001 0.099 0" radius="0.004" color="#D0D0D0" material="roughness:0.12; metalness:0.95"></a-sphere>
+      <!-- Uç -->
+      <a-sphere position="0.001 0.098 0" radius="0.004" color="#D4D4D4" material="roughness:0.10; metalness:0.96"></a-sphere>
+      <!-- Sap alt yuvarlama -->
+      <a-sphere position="0 -0.138 0" radius="0.006" color="#C4C4C4" material="roughness:0.18; metalness:0.92"></a-sphere>
+
     </a-entity>
 
-    <!-- ═══════════════════════════════════════════════════════
-         BERLİNER — tabak ortasında, yavaş nefes animasyonu
-    ════════════════════════════════════════════════════════ -->
-    <a-entity position="0 -0.290 0"
-      animation="property: position; from: 0 -0.290 0; to: 0 -0.274 0; dur: 2600; easing: easeInOutSine; loop: true; dir: alternate">
+    <!-- ══════════════════════════════════════════
+         BERLİNER — çok detaylı, gerçekçi
+    ══════════════════════════════════════════ -->
+    <a-entity position="0 -0.285 0"
+      animation="property: position; from: 0 -0.285 0; to: 0 -0.268 0; dur: 3000; easing: easeInOutSine; loop: true; dir: alternate">
 
-      <!-- Berliner gövdesi — yassılaştırılmış altın-kahve küre -->
+      <!-- Ana hamur gövdesi — yassılaştırılmış küre, altın kahve -->
       <a-sphere class="hotspot" data-person="berliner"
-        radius="0.078" color="#C8873A"
-        material="roughness:0.88; metalness:0"
-        scale="1 0.64 1"
-        shadow="cast:true; receive:true">
+        radius="0.080" scale="1 0.60 1"
+        color="#C4802E"
+        material="roughness:0.90; metalness:0">
       </a-sphere>
 
-      <!-- Pudra şekeri —  beyaz ince cylinder üstte -->
-      <a-cylinder position="0 0.022 0" radius="0.073" height="0.003"
-        color="#FAFAFA" material="roughness:0.95; metalness:0; transparent:true; opacity:0.82"
-        scale="1 1 1">
+      <!-- Alt yüzey (tabakla temas, biraz daha düz) -->
+      <a-cylinder position="0 -0.035 0" radius="0.072" height="0.004"
+        color="#B06820"
+        material="roughness:0.94; metalness:0">
       </a-cylinder>
 
-      <!-- Marmelat çizgisi (orta kuşak) -->
-      <a-torus position="0 0 0" radius="0.073" radius-tubular="0.0055"
-        color="#B03020" material="roughness:0.75; metalness:0"
+      <!-- Pişme çizgisi (ortada yatay şerit — Berliner'in tipik izi) -->
+      <a-torus position="0 0.002 0" radius="0.075" radius-tubular="0.0045"
+        color="#9A5615"
+        material="roughness:0.92; metalness:0"
         rotation="90 0 0">
       </a-torus>
 
-      <!-- Berliner label — sade, mat sarı -->
-      <a-text value="BERLINER" align="center" position="0 0.145 0"
-        scale="0.070 0.070 0.070" color="#c9a84c"
-        material="depthTest:false">
-      </a-text>
-      <a-text value="Berliner Pfannkuchen" align="center" position="0 0.117 0"
-        scale="0.040 0.040 0.040" color="rgba(200,165,100,0.65)"
-        material="depthTest:false">
-      </a-text>
-
-    </a-entity>
-
-    <!-- ═══════════════════════════════════════════════════════
-         BREZEL — tabağın sağ üstünde, yavaş dönüyor
-    ════════════════════════════════════════════════════════ -->
-    <a-entity position="0.26 -0.315 -0.06"
-      animation="property: position; from: 0.26 -0.315 -0.06; to: 0.26 -0.300 -0.06; dur: 2800; easing: easeInOutSine; loop: true; dir: alternate; delay: 400">
-
-      <a-torus class="hotspot" data-person="brezel"
-        radius="0.055" radius-tubular="0.014"
-        color="#7A3A0E"
-        material="roughness:0.92; metalness:0"
-        animation="property: rotation; from: 15 0 0; to: 15 360 0; dur: 9000; easing: linear; loop: true"
-        shadow="cast:true; receive:true">
-      </a-torus>
-      <!-- Tuz taneleri taklidi (beyaz nokta) -->
-      <a-sphere position="0 0.005 0.054" radius="0.003" color="#F5F0E8" material="roughness:0.95; metalness:0"></a-sphere>
-      <a-sphere position="-0.038 0.005 0.038" radius="0.0025" color="#F5F0E8" material="roughness:0.95; metalness:0"></a-sphere>
-      <a-sphere position="0.038 0.005 0.038" radius="0.0025" color="#F5F0E8" material="roughness:0.95; metalness:0"></a-sphere>
-
-      <a-text value="BREZEL" align="center" position="0 0.11 0"
-        scale="0.058 0.058 0.058" color="#c9a84c" material="depthTest:false">
-      </a-text>
-
-    </a-entity>
-
-    <!-- ═══════════════════════════════════════════════════════
-         BRATWURST — tabağın solunda, yatay ızgara sosis
-    ════════════════════════════════════════════════════════ -->
-    <a-entity position="-0.26 -0.320 -0.06"
-      animation="property: position; from: -0.26 -0.320 -0.06; to: -0.26 -0.305 -0.06; dur: 2400; easing: easeInOutSine; loop: true; dir: alternate; delay: 800">
-
-      <!-- Ana sosis gövdesi -->
-      <a-cylinder class="hotspot" data-person="bratwurst"
-        radius="0.022" height="0.150"
-        color="#A0520A"
-        material="roughness:0.85; metalness:0"
-        rotation="0 30 90"
-        shadow="cast:true; receive:true">
-      </a-cylinder>
-      <!-- Uç kapakları -->
-      <a-sphere position="-0.073 0 0" radius="0.022" color="#8A4208" material="roughness:0.88; metalness:0" scale="0.6 1 1"></a-sphere>
-      <a-sphere position="0.073 0 0" radius="0.022" color="#8A4208" material="roughness:0.88; metalness:0" scale="0.6 1 1"></a-sphere>
-      <!-- Izgara çizgileri (koyu band) -->
-      <a-cylinder radius="0.0235" height="0.010" color="#5A2A04" material="roughness:0.9; metalness:0" rotation="0 30 90" position="0.018 0.008 0"></a-cylinder>
-      <a-cylinder radius="0.0235" height="0.010" color="#5A2A04" material="roughness:0.9; metalness:0" rotation="0 30 90" position="-0.018 -0.008 0"></a-cylinder>
-
-      <a-text value="BRATWURST" align="center" position="0 0.095 0"
-        scale="0.052 0.052 0.052" color="#c9a84c" material="depthTest:false">
-      </a-text>
-
-    </a-entity>
-
-    <!-- ═══════════════════════════════════════════════════════
-         CURRYWURST — tabak dışı sol arka
-    ════════════════════════════════════════════════════════ -->
-    <a-entity position="-0.18 -0.310 -0.20"
-      animation="property: position; from: -0.18 -0.310 -0.20; to: -0.18 -0.295 -0.20; dur: 2200; easing: easeInOutSine; loop: true; dir: alternate; delay: 1200">
-
-      <a-cylinder class="hotspot" data-person="currywurst"
-        radius="0.020" height="0.130"
-        color="#B83A00"
-        material="roughness:0.83; metalness:0"
-        rotation="0 -20 90"
-        shadow="cast:true; receive:true">
-      </a-cylinder>
-      <!-- Köri sosu üst sarısı -->
-      <a-cylinder radius="0.021" height="0.050" color="#D4790A"
-        material="roughness:0.78; metalness:0; transparent:true; opacity:0.9"
-        rotation="0 -20 90" position="0.010 0.005 0">
-      </a-cylinder>
-
-      <a-text value="CURRYWURST" align="center" position="0 0.085 0"
-        scale="0.046 0.046 0.046" color="#c9a84c" material="depthTest:false">
-      </a-text>
-
-    </a-entity>
-
-    <!-- ═══════════════════════════════════════════════════════
-         KİRSCHTORTE — sağ arka
-    ════════════════════════════════════════════════════════ -->
-    <a-entity position="0.19 -0.308 -0.20"
-      animation="property: position; from: 0.19 -0.308 -0.20; to: 0.19 -0.292 -0.20; dur: 2350; easing: easeInOutSine; loop: true; dir: alternate; delay: 600">
-
-      <!-- Pasta gövdesi çikolatalı katman -->
-      <a-cylinder class="hotspot" data-person="kirschtorte"
-        radius="0.052" height="0.048"
-        color="#2A0A0A"
-        material="roughness:0.92; metalness:0"
-        shadow="cast:true; receive:true">
-      </a-cylinder>
-      <!-- Beyaz krema üstü -->
-      <a-cylinder position="0 0.028 0" radius="0.052" height="0.010"
-        color="#F8F4F0" material="roughness:0.75; metalness:0">
-      </a-cylinder>
-      <!-- Kiraz -->
-      <a-sphere position="0 0.042 0" radius="0.012"
-        color="#7A0000" material="roughness:0.62; metalness:0.05">
+      <!-- Üst hafif kabarıklık (pişme tümsek) -->
+      <a-sphere position="0 0.020 0" radius="0.060" scale="1 0.28 1"
+        color="#C88030"
+        material="roughness:0.88; metalness:0">
       </a-sphere>
-      <!-- Kiraz sap -->
-      <a-cylinder position="0.002 0.054 0" radius="0.0015" height="0.010"
-        color="#2A5A10" material="roughness:0.9; metalness:0" rotation="0 0 15">
-      </a-cylinder>
 
-      <a-text value="KIRSCHTORTE" align="center" position="0 0.110 0"
-        scale="0.044 0.044 0.044" color="#c9a84c" material="depthTest:false">
+      <!-- Pudra şekeri katmanı — üst yüzey, beyaz mat -->
+      <a-cylinder position="0 0.030 0" radius="0.070" height="0.005"
+        color="#F8F8F4"
+        material="roughness:0.98; metalness:0; transparent:true; opacity:0.88">
+      </a-cylinder>
+      <!-- Pudra şekeri hafif taşma kenarı -->
+      <a-torus position="0 0.028 0" radius="0.068" radius-tubular="0.006"
+        color="#F0F0EC"
+        material="roughness:0.98; metalness:0; transparent:true; opacity:0.72"
+        rotation="90 0 0">
+      </a-torus>
+
+      <!-- Marmelat dolgu — ortada kırmızı çizgi (ortadan kesit görünümü) -->
+      <a-torus position="0 0.001 0" radius="0.055" radius-tubular="0.0060"
+        color="#C0250A"
+        material="roughness:0.78; metalness:0"
+        rotation="90 0 0">
+      </a-torus>
+      <!-- Marmelat kenar sızıntısı sol -->
+      <a-sphere position="-0.058 0.001 0.028" radius="0.0045"
+        color="#B82008" material="roughness:0.72; metalness:0">
+      </a-sphere>
+      <!-- Marmelat kenar sızıntısı sağ -->
+      <a-sphere position="0.060 0.001 -0.020" radius="0.0040"
+        color="#B82008" material="roughness:0.72; metalness:0">
+      </a-sphere>
+
+      <!-- Pudra şekeri küçük topakları -->
+      <a-sphere position="0.022 0.034 0.038" radius="0.0055" color="#F5F5F2" material="roughness:0.99; metalness:0"></a-sphere>
+      <a-sphere position="-0.030 0.034 0.030" radius="0.0040" color="#F2F2EE" material="roughness:0.99; metalness:0"></a-sphere>
+      <a-sphere position="0.040 0.033 0.010" radius="0.0035" color="#F5F5F2" material="roughness:0.99; metalness:0"></a-sphere>
+      <a-sphere position="-0.042 0.033 -0.012" radius="0.0045" color="#F2F2EE" material="roughness:0.99; metalness:0"></a-sphere>
+      <a-sphere position="0.010 0.034 -0.050" radius="0.0038" color="#F5F5F2" material="roughness:0.99; metalness:0"></a-sphere>
+
+      <!-- Etiket -->
+      <a-text value="BERLINER" align="center" position="0 0.152 0"
+        scale="0.072 0.072 0.072" color="#c9a84c"
+        material="depthTest:false">
+      </a-text>
+      <a-text value="Berliner Pfannkuchen" align="center" position="0 0.122 0"
+        scale="0.040 0.040 0.040" color="rgba(195,158,88,0.60)"
+        material="depthTest:false">
       </a-text>
 
     </a-entity>
@@ -334,7 +284,7 @@
 <div id="ui">
   <div id="tap-hint"></div>
   <div id="status">
-    <div class="status-bar"><div class="status-bar-fill"></div></div>
+    <div class="sbar"><div class="sbar-fill"></div></div>
     <span id="status-text"></span>
   </div>
   <button id="back" onclick="window.location.href='index.html'"></button>
@@ -352,30 +302,24 @@
 
   var foods = {
     berliner: {
-      tr: { tag:"Berlin'in Tatlısı", title:'Berliner', sub:'Berlin · Pfannkuchen', text:"Berliner, içi marmelat veya muhallebi dolu, pudra şekerli kızartılmış bir hamur tatlısıdır. Berlin'de 'Pfannkuchen' olarak bilinir. Yılbaşı ve Karnaval dönemlerinde tüketimi zirveye ulaşır. John F. Kennedy'nin ünlü 'Ich bin ein Berliner' konuşmasıyla da tarihe geçmiştir." },
-      de: { tag:'Berliner Pfannkuchen', title:'Berliner', sub:'Berlin · Gefüllter Krapfen', text:"Der Berliner ist ein frittiertes Hefegebäck, gefüllt mit Marmelade oder Pudding, bestreut mit Puderzucker. In Berlin selbst heißt er 'Pfannkuchen'. Besonders zu Silvester und Karneval ist er sehr beliebt. John F. Kennedy machte ihn mit 'Ich bin ein Berliner' weltberühmt." }
-    },
-    brezel: {
-      tr: { tag:'İkonik Fırın Ürünü', title:'Brezel', sub:'Bavyera · Geleneksel Simidi', text:"Pretzel olarak da bilinen Brezel, dışı çıtır içi yumuşak geleneksel Alman fırın ürünüdür. Soda banyosundan geçirilerek pişirilen bu ekmek, Almanya'da kahvaltıdan bira bahçelerine kadar her yerde bulunur." },
-      de: { tag:'Traditionelles Gebäck', title:'Brezel', sub:'Bayern · Traditionelle Laugenbrezel', text:'Die Brezel ist ein außen knuspriges, innen weiches traditionelles deutsches Gebäck. Durch ein Sodabad vor dem Backen erhält sie ihre charakteristische braune Farbe und ihren unverwechselbaren Geschmack.' }
-    },
-    bratwurst: {
-      tr: { tag:'Sokak Lezzeti', title:'Bratwurst', sub:'Tüm Almanya · Izgara Sosis', text:"Bratwurst, Almanya'nın en ünlü sokak yemeğidir. Domuz, dana veya kuzu etinden yapılan bu ızgara sosis hardal ve ekmekle servis edilir. Her bölgenin kendi tarifi vardır." },
-      de: { tag:'Streetfood Klassiker', title:'Bratwurst', sub:'Ganz Deutschland · Grillwurst', text:'Die Bratwurst ist Deutschlands bekanntestes Streetfood. Die aus Schweine-, Rind- oder Lammfleisch hergestellte Grillwurst wird mit Senf und Brötchen serviert.' }
-    },
-    currywurst: {
-      tr: { tag:"Berlin Klasiği", title:'Currywurst', sub:"Berlin · 1949'dan Beri", text:"Currywurst, 1949'da Berlin'de Herta Heuwer tarafından icat edilen domates soslu ve köri baharatlı bir sosisle hazırlanan yemektir. Yıllık 800 milyondan fazla tüketiliyor." },
-      de: { tag:'Berliner Kultgericht', title:'Currywurst', sub:'Berlin · Seit 1949', text:"Die Currywurst wurde 1949 in Berlin von Herta Heuwer erfunden: eine Bratwurst mit Tomatensauce und Currypulver. Über 800 Millionen werden jährlich verzehrt." }
-    },
-    kirschtorte: {
-      tr: { tag:'Kara Orman Pastası', title:'Schwarzwälder Kirschtorte', sub:'Baden-Württemberg · Özel Pasta', text:"Schwarzwälder Kirschtorte, çikolatalı bisküvi, taze krema ve vişneli kiraz likörü katmanlarından oluşan Almanya'nın en ünlü pastasıdır. 1900'lerin başında ortaya çıkan bu tarif bugün dünya çapında ünlüdür." },
-      de: { tag:'Schwarzwälder Spezialität', title:'Schwarzwälder Kirschtorte', sub:'Baden-Württemberg · Sahnetorte', text:"Die Schwarzwälder Kirschtorte ist Deutschlands bekannteste Torte, bestehend aus Schokoladenbiskuit, frischer Sahne und Kirschen mit Kirschwasser." }
+      tr: {
+        tag: "Berlin'in Tatlısı",
+        title: 'Berliner',
+        sub: 'Berlin · Pfannkuchen',
+        text: "Berliner, içi marmelat veya muhallebi dolu, pudra şekerli kızartılmış bir hamur tatlısıdır. Berlin'de 'Pfannkuchen' olarak bilinir. Yılbaşı ve Karnaval dönemlerinde tüketimi zirveye ulaşır. John F. Kennedy'nin ünlü 'Ich bin ein Berliner' konuşmasıyla da tarihe geçmiştir."
+      },
+      de: {
+        tag: 'Berliner Pfannkuchen',
+        title: 'Berliner',
+        sub: 'Berlin · Gefüllter Krapfen',
+        text: "Der Berliner ist ein frittiertes Hefegebäck, gefüllt mit Marmelade oder Pudding, bestreut mit Puderzucker. In Berlin selbst heißt er 'Pfannkuchen'. Besonders zu Silvester und Karneval ist er sehr beliebt. John F. Kennedy machte ihn mit 'Ich bin ein Berliner' weltberühmt."
+      }
     }
   };
 
   var uiTexts = {
-    tr: { status:'Taraniyor...', found:'\u2713 Hedef Bulundu \u2014 Dokun', hint:'\u25B2 Yiyeceklere Dokun', back:'\u2190 Geri D\u00f6n' },
-    de: { status:'Wird gescannt...', found:'\u2713 Ziel erkannt \u2014 Antippen', hint:'\u25B2 Speisen antippen', back:'\u2190 Zur\u00fcck' }
+    tr: { status: 'Taraniyor...', found: '\u2713 Hedef Bulundu \u2014 Dokun', hint: '\u25B2 Berliner\'e Dokun', back: '\u2190 Geri D\u00f6n' },
+    de: { status: 'Wird gescannt...', found: '\u2713 Ziel erkannt \u2014 Antippen', hint: '\u25B2 Berliner antippen', back: '\u2190 Zur\u00fcck' }
   };
 
   var statusEl   = document.getElementById('status');
@@ -389,20 +333,20 @@
   backBtn.textContent    = uiTexts[lang].back;
 
   var target = document.querySelector('[mindar-image-target]');
-  target.addEventListener('targetFound', function() {
+  target.addEventListener('targetFound', function () {
     statusText.textContent = uiTexts[lang].found;
     statusEl.classList.add('found');
     tapHint.style.display = 'block';
   });
-  target.addEventListener('targetLost', function() {
+  target.addEventListener('targetLost', function () {
     statusText.textContent = uiTexts[lang].status;
     statusEl.classList.remove('found');
     tapHint.style.display = 'none';
     closeCard();
   });
 
-  document.querySelectorAll('.hotspot').forEach(function(hs) {
-    hs.addEventListener('click', function() {
+  document.querySelectorAll('.hotspot').forEach(function (hs) {
+    hs.addEventListener('click', function () {
       var key = hs.getAttribute('data-person');
       if (!key || !foods[key]) return;
       var data = foods[key][lang];
