@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Technologie AR — Deutschland Entdecken</title>
+  <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
+  <style>
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { overflow:hidden; background:#000; font-family:'Arial',sans-serif; }
+    a-scene { width:100vw!important; height:100vh!important; position:fixed!important; top:0!important; left:0!important; }
+
+    #ui { position:fixed; inset:0; pointer-events:none; z-index:1000; }
+
+    #status {
+      position:absolute; bottom:18px; left:50%; transform:translateX(-50%);
+      background:rgba(2,10,18,.92); color:#00d4ff; font-size:.60rem;
+      letter-spacing:.28em; text-transform:uppercase; padding:.5rem 1.3rem;
+      border:1px solid rgba(0,212,255,.30); backdrop-filter:blur(14px);
+      white-space:nowrap; display:flex; align-items:center; gap:.55rem;
+      animation:blink 2.5s ease infinite;
+    }
+    #status.found { color:#33ddff; border-color:rgba(0,212,255,.55); animation:none; }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.4} }
+
+    .sbar { width:34px; height:2px; background:rgba(0,212,255,.18); position:relative; overflow:hidden; border-radius:2px; }
+    .sbar-fill { position:absolute; top:0; left:-100%; width:100%; height:100%; background:#00d4ff; animation:slide 2s linear infinite; }
+    #status.found .sbar-fill { background:#33ddff; animation:none; width:100%; left:0; }
+    @keyframes slide { 0%{left:-100%} 100%{left:100%} }
+
+    #back {
+      position:absolute; top:16px; left:50%; transform:translateX(-50%);
+      background:rgba(2,10,18,.92); color:#00d4ff;
+      border:1px solid rgba(0,212,255,.30); padding:.45rem 1.3rem;
+      font-size:.60rem; letter-spacing:.22em; text-transform:uppercase;
+      cursor:pointer; pointer-events:all; backdrop-filter:blur(14px); font-family:Arial,sans-serif;
+    }
+    #tap-hint {
+      position:absolute; top:66px; left:50%; transform:translateX(-50%);
+      color:rgba(0,212,255,.65); font-size:.58rem; letter-spacing:.25em;
+      text-transform:uppercase; display:none; animation:blink 2s ease infinite;
+    }
+
+    #info-card {
+      position:absolute; bottom:72px; left:50%;
+      transform:translateX(-50%) translateY(300px);
+      width:min(380px,92vw);
+      background:rgba(2,10,18,.96); border:1px solid rgba(0,212,255,.48);
+      backdrop-filter:blur(22px); -webkit-backdrop-filter:blur(22px);
+      padding:1.3rem 1.5rem;
+      transition:transform .42s cubic-bezier(.16,1,.3,1), opacity .42s ease;
+      opacity:0; pointer-events:none;
+    }
+    #info-card.show { transform:translateX(-50%) translateY(0); opacity:1; pointer-events:all; }
+    .ic-tag { font-size:.54rem; letter-spacing:.35em; text-transform:uppercase; color:#00d4ff; margin-bottom:.42rem; display:flex; align-items:center; gap:.5rem; }
+    .ic-tag::after { content:''; flex:1; height:1px; background:rgba(0,212,255,.22); }
+    .ic-title { font-size:1.28rem; font-weight:700; color:#e8f4f8; margin-bottom:.22rem; }
+    .ic-sub { font-size:.68rem; color:#0099cc; letter-spacing:.1em; margin-bottom:.65rem; }
+    .ic-text { font-size:.79rem; color:rgba(232,244,248,.68); line-height:1.68; }
+    .ic-close { position:absolute; top:.6rem; right:.8rem; color:rgba(0,212,255,.55); cursor:pointer; font-size:.9rem; pointer-events:all; background:none; border:none; font-family:Arial; }
+    .ic-close:hover { color:#00d4ff; }
+  </style>
+</head>
+<body>
+
+<a-scene
+  mindar-image="imageTargetSrc: targets.mind; autoStart: true; uiLoading: no; uiScanning: no; uiError: no;"
+  color-space="sRGB"
+  renderer="colorManagement: true; physicallyCorrectLights: true; antialias: true"
+  vr-mode-ui="enabled: false"
+  device-orientation-permission-ui="enabled: false">
+
+  <!-- LIGHTS — cool blue industrial atmosphere -->
+  <a-light type="ambient"     color="#020e1a" intensity="0.9"></a-light>
+  <!-- Main cool-white directional from above -->
+  <a-light type="directional" color="#aae8ff" intensity="1.3" position="0 3 1"></a-light>
+  <!-- Blue side fill -->
+  <a-light type="directional" color="#0088cc" intensity="0.6" position="-2 1 0.5"></a-light>
+  <!-- Subtle warm counter-light -->
+  <a-light type="directional" color="#004488" intensity="0.25" position="2 0.5 -1"></a-light>
+  <!-- Blue accent point light — under scene -->
+  <a-light type="point" color="#00d4ff" intensity="0.7" position="0 0.2 0.4" distance="3.5"></a-light>
+
+  <a-camera position="0 0 0" look-controls="enabled: false"
+    cursor="fuse: false; rayOrigin: mouse"
+    raycaster="objects: .hotspot; far: 100">
+  </a-camera>
+
+  <a-entity mindar-image-target="targetIndex: 0">
+
+    <!-- ══════════════════════════════════════════
+         INDUSTRIAL PLATFORM — dark metallic base
+    ══════════════════════════════════════════ -->
+    <a-cylinder position="0 -0.44 0" radius="0.72" height="0.014"
+      color="#060e14" material="roughness:0.8; metalness:0.6">
+    </a-cylinder>
+    <!-- Platform edge blue light ring -->
+    <a-torus position="0 -0.433 0" radius="0.70" radius-tubular="0.005"
+      color="#00d4ff" material="roughness:0.3; metalness:0.2; emissive:#004466; emissiveIntensity:0.9">
+    </a-torus>
+    <!-- Inner secondary ring -->
+    <a-torus position="0 -0.433 0" radius="0.50" radius-tubular="0.003"
+      color="#0099cc" material="roughness:0.4; metalness:0.2; emissive:#002233; emissiveIntensity:0.7">
+    </a-torus>
+
+    <!-- ══════════════════════════════════════════
+         BACKDROP — dark tech panel
+    ══════════════════════════════════════════ -->
+    <a-plane position="0 0.04 -0.56" width="1.55" height="0.88"
+      color="#04101a" material="roughness:0.9; metalness:0.3">
+    </a-plane>
+    <!-- Circuit trace decorations on backdrop -->
+    <!-- Horizontal traces -->
+    <a-box position="0 0.20 -0.554" width="1.20" height="0.003" depth="0.002"
+      color="#00d4ff" material="roughness:0.2; metalness:0.1; emissive:#002244; emissiveIntensity:0.7">
+    </a-box>
+    <a-box position="0 -0.18 -0.554" width="1.20" height="0.003" depth="0.002"
+      color="#00d4ff" material="roughness:0.2; metalness:0.1; emissive:#002244; emissiveIntensity:0.7">
+    </a-box>
+    <!-- Vertical traces -->
+    <a-box position="-0.55 0.01 -0.554" width="0.003" height="0.80" depth="0.002"
+      color="#0099cc" material="roughness:0.2; metalness:0.1; emissive:#001a33; emissiveIntensity:0.6">
+    </a-box>
+    <a-box position="0.55 0.01 -0.554" width="0.003" height="0.80" depth="0.002"
+      color="#0099cc" material="roughness:0.2; metalness:0.1; emissive:#001a33; emissiveIntensity:0.6">
+    </a-box>
+    <!-- Corner node dots -->
+    <a-sphere position="-0.55 0.20 -0.552" radius="0.008"
+      color="#00d4ff" material="emissive:#00aadd; emissiveIntensity:1.0">
+    </a-sphere>
+    <a-sphere position="0.55 0.20 -0.552" radius="0.008"
+      color="#00d4ff" material="emissive:#00aadd; emissiveIntensity:1.0">
+    </a-sphere>
+    <a-sphere position="-0.55 -0.18 -0.552" radius="0.008"
+      color="#00d4ff" material="emissive:#00aadd; emissiveIntensity:1.0">
+    </a-sphere>
+    <a-sphere position="0.55 -0.18 -0.552" radius="0.008"
+      color="#00d4ff" material="emissive:#00aadd; emissiveIntensity:1.0">
+    </a-sphere>
+
+    <!-- ══════════════════════════════════════════
+         OBJECT 1 — STYLIZED CAR (left)
+         VW/BMW style body from boxes & cylinders
+    ══════════════════════════════════════════ -->
+    <a-entity position="-0.34 -0.26 0.04"
+      animation="property: position; from: -0.34 -0.26 0.04; to: -0.34 -0.235 0.04; dur: 2500; easing: easeInOutSine; loop: true; dir: alternate">
+
+      <a-entity class="hotspot" data-info="vw">
+        <!-- Car lower body -->
+        <a-box width="0.260" height="0.062" depth="0.120"
+          color="#0a1a28"
+          material="roughness:0.25; metalness:0.80; emissive:#001122; emissiveIntensity:0.3"
+          position="0 0 0">
+        </a-box>
+        <!-- Car upper cabin -->
+        <a-box width="0.170" height="0.055" depth="0.108"
+          color="#0d2035"
+          material="roughness:0.2; metalness:0.75; emissive:#001830; emissiveIntensity:0.4"
+          position="0 0.058 0">
+        </a-box>
+        <!-- Front windshield slant (angled box) -->
+        <a-box width="0.042" height="0.050" depth="0.106"
+          color="#082030"
+          material="roughness:0.15; metalness:0.5; emissive:#001020; emissiveIntensity:0.3"
+          position="0.073 0.042 0"
+          rotation="0 0 32">
+        </a-box>
+        <!-- Rear windshield slant -->
+        <a-box width="0.042" height="0.050" depth="0.106"
+          color="#082030"
+          material="roughness:0.15; metalness:0.5; emissive:#001020; emissiveIntensity:0.3"
+          position="-0.073 0.042 0"
+          rotation="0 0 -32">
+        </a-box>
+        <!-- Wheel left-front -->
+        <a-cylinder radius="0.026" height="0.026"
+          color="#111820"
+          material="roughness:0.6; metalness:0.5"
+          rotation="0 0 90" position="0.095 -0.030 0.054">
+        </a-cylinder>
+        <a-cylinder radius="0.014" height="0.028"
+          color="#00d4ff"
+          material="roughness:0.2; metalness:0.3; emissive:#004466; emissiveIntensity:0.8"
+          rotation="0 0 90" position="0.097 -0.030 0.054">
+        </a-cylinder>
+        <!-- Wheel left-rear -->
+        <a-cylinder radius="0.026" height="0.026"
+          color="#111820"
+          material="roughness:0.6; metalness:0.5"
+          rotation="0 0 90" position="-0.095 -0.030 0.054">
+        </a-cylinder>
+        <a-cylinder radius="0.014" height="0.028"
+          color="#00d4ff"
+          material="roughness:0.2; metalness:0.3; emissive:#004466; emissiveIntensity:0.8"
+          rotation="0 0 90" position="-0.097 -0.030 0.054">
+        </a-cylinder>
+        <!-- Wheel right-front -->
+        <a-cylinder radius="0.026" height="0.026"
+          color="#111820"
+          material="roughness:0.6; metalness:0.5"
+          rotation="0 0 90" position="0.095 -0.030 -0.054">
+        </a-cylinder>
+        <a-cylinder radius="0.014" height="0.028"
+          color="#00d4ff"
+          material="roughness:0.2; metalness:0.3; emissive:#004466; emissiveIntensity:0.8"
+          rotation="0 0 90" position="-0.097 -0.030 -0.054">
+        </a-cylinder>
+        <!-- Headlights blue glow -->
+        <a-box width="0.010" height="0.018" depth="0.040"
+          color="#00d4ff"
+          material="roughness:0.1; metalness:0; emissive:#00aadd; emissiveIntensity:1.2"
+          position="0.131 0.004 0">
+        </a-box>
+        <!-- Taillights -->
+        <a-box width="0.010" height="0.018" depth="0.040"
+          color="#0088aa"
+          material="roughness:0.1; metalness:0; emissive:#004466; emissiveIntensity:0.9"
+          position="-0.131 0.004 0">
+        </a-box>
+        <!-- Side accent stripe -->
+        <a-box width="0.260" height="0.005" depth="0.004"
+          color="#00d4ff"
+          material="roughness:0.1; metalness:0; emissive:#005577; emissiveIntensity:0.8"
+          position="0 0.010 0.062">
+        </a-box>
+      </a-entity>
+
+      <a-text value="VOLKSWAGEN" align="center" position="0 0.145 0"
+        scale="0.060 0.060 0.060" color="#00d4ff" material="depthTest:false">
+      </a-text>
+    </a-entity>
+
+    <!-- ══════════════════════════════════════════
+         OBJECT 2 — GEAR / COG (center)
+         Siemens industrial symbol — torus stacked
+    ══════════════════════════════════════════ -->
+    <a-entity position="0.05 -0.18 0.06"
+      animation="property: rotation; from: 0 0 0; to: 0 360 0; dur: 8000; easing: linear; loop: true">
+
+      <a-entity class="hotspot" data-info="siemens"
+        animation="property: rotation; from: 0 0 0; to: 0 -360 0; dur: 8000; easing: linear; loop: true">
+        <!-- Outer gear ring -->
+        <a-torus radius="0.110" radius-tubular="0.020"
+          color="#b0c4cc"
+          material="roughness:0.15; metalness:0.92; emissive:#001a22; emissiveIntensity:0.2">
+        </a-torus>
+        <!-- Middle ring -->
+        <a-torus radius="0.072" radius-tubular="0.014"
+          color="#90b0bb"
+          material="roughness:0.12; metalness:0.95; emissive:#001520; emissiveIntensity:0.15">
+        </a-torus>
+        <!-- Inner hub disk -->
+        <a-cylinder radius="0.038" height="0.028"
+          color="#c0d4dd"
+          material="roughness:0.10; metalness:0.95; emissive:#002233; emissiveIntensity:0.25">
+        </a-cylinder>
+        <!-- Center hole ring -->
+        <a-torus radius="0.022" radius-tubular="0.008"
+          color="#00d4ff"
+          material="roughness:0.1; metalness:0.2; emissive:#004466; emissiveIntensity:1.0">
+        </a-torus>
+        <!-- Gear teeth — 8 spokes as radial boxes -->
+        <a-box width="0.028" height="0.016" depth="0.016"
+          color="#a8bec8" material="roughness:0.15; metalness:0.90"
+          position="0.130 0 0">
+        </a-box>
+        <a-box width="0.028" height="0.016" depth="0.016"
+          color="#a8bec8" material="roughness:0.15; metalness:0.90"
+          position="-0.130 0 0">
+        </a-box>
+        <a-box width="0.016" height="0.028" depth="0.016"
+          color="#a8bec8" material="roughness:0.15; metalness:0.90"
+          position="0 0.130 0">
+        </a-box>
+        <a-box width="0.016" height="0.028" depth="0.016"
+          color="#a8bec8" material="roughness:0.15; metalness:0.90"
+          position="0 -0.130 0">
+        </a-box>
+        <a-box width="0.022" height="0.022" depth="0.016"
+          color="#a8bec8" material="roughness:0.15; metalness:0.90"
+          position="0.092 0.092 0" rotation="0 0 45">
+        </a-box>
+        <a-box width="0.022" height="0.022" depth="0.016"
+          color="#a8bec8" material="roughness:0.15; metalness:0.90"
+          position="-0.092 0.092 0" rotation="0 0 45">
+        </a-box>
+        <a-box width="0.022" height="0.022" depth="0.016"
+          color="#a8bec8" material="roughness:0.15; metalness:0.90"
+          position="0.092 -0.092 0" rotation="0 0 45">
+        </a-box>
+        <a-box width="0.022" height="0.022" depth="0.016"
+          color="#a8bec8" material="roughness:0.15; metalness:0.90"
+          position="-0.092 -0.092 0" rotation="0 0 45">
+        </a-box>
+        <!-- Spoke arms -->
+        <a-box width="0.010" height="0.072" depth="0.010"
+          color="#88aaaa" material="roughness:0.2; metalness:0.85"
+          position="0 0 0">
+        </a-box>
+        <a-box width="0.072" height="0.010" depth="0.010"
+          color="#88aaaa" material="roughness:0.2; metalness:0.85"
+          position="0 0 0">
+        </a-box>
+        <a-box width="0.010" height="0.072" depth="0.010"
+          color="#88aaaa" material="roughness:0.2; metalness:0.85"
+          position="0 0 0" rotation="0 0 45">
+        </a-box>
+        <a-box width="0.072" height="0.010" depth="0.010"
+          color="#88aaaa" material="roughness:0.2; metalness:0.85"
+          position="0 0 0" rotation="0 0 45">
+        </a-box>
+      </a-entity>
+
+      <a-text value="SIEMENS" align="center" position="0 0.220 0"
+        scale="0.062 0.062 0.062" color="#00d4ff" material="depthTest:false">
+      </a-text>
+    </a-entity>
+
+    <!-- ══════════════════════════════════════════
+         OBJECT 3 — CIRCUIT BOARD (right)
+         SAP — flat plane with component boxes
+    ══════════════════════════════════════════ -->
+    <a-entity position="0.38 -0.30 0.02"
+      animation="property: position; from: 0.38 -0.30 0.02; to: 0.38 -0.272 0.02; dur: 2500; easing: easeInOutSine; loop: true; dir: alternate; delay: 400">
+
+      <a-entity class="hotspot" data-info="sap">
+        <!-- PCB base board -->
+        <a-box width="0.260" height="0.006" depth="0.200"
+          color="#0a2a10"
+          material="roughness:0.7; metalness:0.2; emissive:#041208; emissiveIntensity:0.3">
+        </a-box>
+        <!-- PCB edge highlight -->
+        <a-box width="0.262" height="0.008" depth="0.004"
+          color="#00d4ff"
+          material="roughness:0.2; emissive:#004455; emissiveIntensity:0.7"
+          position="0 0 0.102">
+        </a-box>
+        <a-box width="0.262" height="0.008" depth="0.004"
+          color="#00d4ff"
+          material="roughness:0.2; emissive:#004455; emissiveIntensity:0.7"
+          position="0 0 -0.102">
+        </a-box>
+        <!-- Trace lines on board — horizontal (blue) -->
+        <a-box width="0.180" height="0.004" depth="0.003"
+          color="#00d4ff" material="roughness:0.1; emissive:#002244; emissiveIntensity:0.8"
+          position="-0.020 0.006 0.060">
+        </a-box>
+        <a-box width="0.120" height="0.004" depth="0.003"
+          color="#00aacc" material="roughness:0.1; emissive:#002033; emissiveIntensity:0.7"
+          position="0.030 0.006 -0.020">
+        </a-box>
+        <a-box width="0.200" height="0.004" depth="0.003"
+          color="#00d4ff" material="roughness:0.1; emissive:#002244; emissiveIntensity:0.8"
+          position="0 0.006 -0.060">
+        </a-box>
+        <!-- Trace lines — vertical (green tint) -->
+        <a-box width="0.003" height="0.004" depth="0.160"
+          color="#00ff88" material="roughness:0.1; emissive:#004422; emissiveIntensity:0.6"
+          position="-0.080 0.006 0">
+        </a-box>
+        <a-box width="0.003" height="0.004" depth="0.140"
+          color="#00cc66" material="roughness:0.1; emissive:#003311; emissiveIntensity:0.5"
+          position="0.040 0.006 0">
+        </a-box>
+        <a-box width="0.003" height="0.004" depth="0.160"
+          color="#00ff88" material="roughness:0.1; emissive:#004422; emissiveIntensity:0.6"
+          position="0.100 0.006 0">
+        </a-box>
+        <!-- IC chip 1 — large CPU -->
+        <a-box width="0.070" height="0.016" depth="0.070"
+          color="#111111"
+          material="roughness:0.3; metalness:0.6; emissive:#0a0a0a; emissiveIntensity:0.2"
+          position="-0.040 0.012 0.020">
+        </a-box>
+        <!-- CPU label dot -->
+        <a-sphere radius="0.005" color="#00d4ff"
+          material="emissive:#0044aa; emissiveIntensity:1.0"
+          position="-0.040 0.020 0.020">
+        </a-sphere>
+        <!-- IC chip 2 — small -->
+        <a-box width="0.036" height="0.012" depth="0.036"
+          color="#0d0d0d"
+          material="roughness:0.3; metalness:0.65"
+          position="0.080 0.010 -0.040">
+        </a-box>
+        <!-- IC chip 3 — medium -->
+        <a-box width="0.048" height="0.014" depth="0.038"
+          color="#0d0d0d"
+          material="roughness:0.3; metalness:0.65"
+          position="-0.080 0.010 -0.055">
+        </a-box>
+        <!-- Capacitors (small cylinders) -->
+        <a-cylinder radius="0.008" height="0.022"
+          color="#222288"
+          material="roughness:0.4; metalness:0.3; emissive:#000033; emissiveIntensity:0.3"
+          position="0.090 0.014 0.055">
+        </a-cylinder>
+        <a-cylinder radius="0.008" height="0.022"
+          color="#222288"
+          material="roughness:0.4; metalness:0.3; emissive:#000033; emissiveIntensity:0.3"
+          position="0.110 0.014 0.055">
+        </a-cylinder>
+        <!-- Solder pads / vias -->
+        <a-sphere radius="0.005" color="#00d4ff" material="emissive:#003355; emissiveIntensity:0.9" position="-0.080 0.007 0.060"></a-sphere>
+        <a-sphere radius="0.005" color="#00d4ff" material="emissive:#003355; emissiveIntensity:0.9" position="0.040 0.007 0.060"></a-sphere>
+        <a-sphere radius="0.005" color="#00ff88" material="emissive:#004422; emissiveIntensity:0.8" position="0.100 0.007 -0.060"></a-sphere>
+        <a-sphere radius="0.005" color="#00ff88" material="emissive:#004422; emissiveIntensity:0.8" position="-0.080 0.007 -0.060"></a-sphere>
+        <a-sphere radius="0.004" color="#00d4ff" material="emissive:#002244; emissiveIntensity:0.7" position="0.040 0.007 -0.060"></a-sphere>
+      </a-entity>
+
+      <a-text value="SAP" align="center" position="0 0.120 0"
+        scale="0.072 0.072 0.072" color="#00d4ff" material="depthTest:false">
+      </a-text>
+    </a-entity>
+
+    <!-- ══════════════════════════════════════════
+         FLOATING BRAND LABEL — center top
+    ══════════════════════════════════════════ -->
+    <a-entity position="0 0.20 -0.12"
+      animation="property: position; from: 0 0.20 -0.12; to: 0 0.215 -0.12; dur: 2800; easing: easeInOutSine; loop: true; dir: alternate">
+
+      <a-text value="DEUTSCHE TECHNOLOGIE" align="center" position="0 0 0"
+        scale="0.110 0.110 0.110" color="#00d4ff"
+        material="depthTest:false; emissive:#002244; emissiveIntensity:0.5">
+      </a-text>
+      <a-text value="INGENIEURKUNST · INNOVATION · INDUSTRIE 4.0" align="center" position="0 -0.048 0"
+        scale="0.036 0.036 0.036" color="rgba(0,180,220,0.72)"
+        material="depthTest:false">
+      </a-text>
+
+      <!-- Accent line under label -->
+      <a-box position="0 -0.062 0" width="0.360" height="0.002" depth="0.001"
+        color="#00d4ff" material="emissive:#004466; emissiveIntensity:0.9">
+      </a-box>
+    </a-entity>
+
+  </a-entity>
+</a-scene>
+
+<div id="ui">
+  <div id="tap-hint"></div>
+  <div id="status">
+    <div class="sbar"><div class="sbar-fill"></div></div>
+    <span id="status-text"></span>
+  </div>
+  <button id="back" onclick="window.location.href='index.html'"></button>
+  <div id="info-card">
+    <button class="ic-close" onclick="closeCard()">&#x2715;</button>
+    <div class="ic-tag" id="ic-tag"></div>
+    <div class="ic-title" id="ic-title"></div>
+    <div class="ic-sub" id="ic-sub"></div>
+    <div class="ic-text" id="ic-text"></div>
+  </div>
+</div>
+
+<script>
+  var lang = localStorage.getItem('lang') || 'tr';
+
+  var infos = {
+    vw: {
+      tr: {
+        tag: 'Alman Otomotiv Devi',
+        title: 'Volkswagen',
+        sub: 'Wolfsburg · 1937 · "Halk Arabası"',
+        text: "Volkswagen, 1937 yılında Wolfsburg'da kurulan Almanya'nın en büyük otomobil üreticisidir. 'Halk arabası' anlamına gelen Volkswagen, ikonik Beetle modeli ile dünya tarihine geçmiştir. Bugün VW Grubu, Audi, Porsche, Skoda ve SEAT markalarını da bünyesinde barındırmakta olup küresel satışlarda dünya liderliğini korumaktadır."
+      },
+      de: {
+        tag: 'Deutscher Automobilriese',
+        title: 'Volkswagen',
+        sub: 'Wolfsburg · 1937 · "Das Volksauto"',
+        text: "Volkswagen ist der größte Automobilhersteller Deutschlands, der 1937 in Wolfsburg gegründet wurde. Mit dem ikonischen Käfer schrieb Volkswagen Weltgeschichte. Heute umfasst der VW-Konzern Marken wie Audi, Porsche, Skoda und SEAT und hält die globale Führungsposition beim Fahrzeugabsatz."
+      }
+    },
+    siemens: {
+      tr: {
+        tag: 'Sanayi & Teknoloji Lideri',
+        title: 'Siemens',
+        sub: 'München · 1847 · Küresel Sanayi Devi',
+        text: "Siemens, 1847 yılında Werner von Siemens tarafından kurulan ve bugün 190 ülkede faaliyet gösteren küresel bir teknoloji şirketidir. Enerji üretimi, akıllı altyapı, sağlık teknolojileri ve dijital endüstri alanlarında dünya lideridir. Siemens'in Alman mühendislik anlayışı, 'Endüstri 4.0' devriminin temel taşlarından birini oluşturmaktadır."
+      },
+      de: {
+        tag: 'Industrie- & Technologieführer',
+        title: 'Siemens',
+        sub: 'München · 1847 · Globaler Industriegigant',
+        text: "Siemens ist ein globales Technologieunternehmen, das 1847 von Werner von Siemens gegründet wurde und heute in 190 Ländern tätig ist. Es ist Weltmarktführer in den Bereichen Energieerzeugung, intelligente Infrastruktur, Gesundheitstechnologien und digitale Industrie. Siemens' deutsches Ingenieursverständnis ist ein Grundpfeiler der 'Industrie 4.0'-Revolution."
+      }
+    },
+    sap: {
+      tr: {
+        tag: 'Kurumsal Yazılım Öncüsü',
+        title: 'SAP',
+        sub: 'Walldorf · 1972 · Fortune 500\'ün %99\'u',
+        text: "SAP, 1972 yılında Walldorf'ta kurulan ve dünyanın en büyük kurumsal yazılım şirketi olan bir Alman teknoloji devdir. Fortune 500 şirketlerinin yüzde doksan dokuzu SAP çözümlerini kullanmaktadır. ERP (Kurumsal Kaynak Planlaması) yazılımının öncüsü olan SAP, şirketlerin verimlilik ve dijital dönüşüm süreçlerini yönetmelerine yardımcı olmaktadır."
+      },
+      de: {
+        tag: 'Pionier der Unternehmenssoftware',
+        title: 'SAP',
+        sub: 'Walldorf · 1972 · 99% der Fortune 500',
+        text: "SAP ist ein deutsches Technologieunternehmen, das 1972 in Walldorf gegründet wurde und das weltweit größte Unternehmenssoftwareunternehmen ist. 99 Prozent der Fortune-500-Unternehmen nutzen SAP-Lösungen. Als Pionier der ERP-Software (Enterprise Resource Planning) hilft SAP Unternehmen dabei, ihre Effizienz und digitale Transformation zu steuern."
+      }
+    }
+  };
+
+  var uiTexts = {
+    tr: {
+      status: 'Taranıyor...',
+      found: '\u2713 Hedef Bulundu \u2014 Dokun',
+      hint: '\u25B2 Objelere Dokun',
+      back: '\u2190 Geri D\u00f6n'
+    },
+    de: {
+      status: 'Wird gescannt...',
+      found: '\u2713 Ziel erkannt \u2014 Antippen',
+      hint: '\u25B2 Objekte antippen',
+      back: '\u2190 Zur\u00fcck'
+    }
+  };
+
+  var statusEl   = document.getElementById('status');
+  var statusText = document.getElementById('status-text');
+  var tapHint    = document.getElementById('tap-hint');
+  var backBtn    = document.getElementById('back');
+  var card       = document.getElementById('info-card');
+
+  statusText.textContent = uiTexts[lang].status;
+  tapHint.textContent    = uiTexts[lang].hint;
+  backBtn.textContent    = uiTexts[lang].back;
+
+  var target = document.querySelector('[mindar-image-target]');
+  target.addEventListener('targetFound', function () {
+    statusText.textContent = uiTexts[lang].found;
+    statusEl.classList.add('found');
+    tapHint.style.display = 'block';
+  });
+  target.addEventListener('targetLost', function () {
+    statusText.textContent = uiTexts[lang].status;
+    statusEl.classList.remove('found');
+    tapHint.style.display = 'none';
+    closeCard();
+  });
+
+  document.querySelectorAll('.hotspot').forEach(function (hs) {
+    hs.addEventListener('click', function () {
+      var key = hs.getAttribute('data-info');
+      if (!key || !infos[key]) return;
+      var data = infos[key][lang];
+      document.getElementById('ic-tag').textContent   = data.tag;
+      document.getElementById('ic-title').textContent = data.title;
+      document.getElementById('ic-sub').textContent   = data.sub;
+      document.getElementById('ic-text').textContent  = data.text;
+      card.classList.add('show');
+    });
+  });
+
+  function closeCard() { card.classList.remove('show'); }
+</script>
+</body>
+</html>
