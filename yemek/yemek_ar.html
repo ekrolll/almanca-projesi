@@ -12,126 +12,347 @@
     a-scene { width: 100vw !important; height: 100vh !important; position: fixed !important; top: 0 !important; left: 0 !important; }
 
     #ui { position: fixed; inset: 0; pointer-events: none; z-index: 1000; }
-    .c { position: absolute; width: 40px; height: 40px; }
-    .c-tl { top:16px; left:16px; border-top:2px solid #ffb300; border-left:2px solid #ffb300; }
-    .c-tr { top:16px; right:16px; border-top:2px solid #ffb300; border-right:2px solid #ffb300; }
-    .c-bl { bottom:70px; left:16px; border-bottom:2px solid #ffb300; border-left:2px solid #ffb300; }
-    .c-br { bottom:70px; right:16px; border-bottom:2px solid #ffb300; border-right:2px solid #ffb300; }
-    .scan { position:absolute; left:0; right:0; height:1px; background:linear-gradient(to right,transparent,#ffb300,transparent); animation:scan 3s ease-in-out infinite; opacity:.5; }
-    @keyframes scan { 0%{top:10%} 50%{top:90%} 100%{top:10%} }
 
-    #status { position:absolute; bottom:16px; left:50%; transform:translateX(-50%); background:rgba(0,0,0,.85); color:#ffb300; font-size:.62rem; letter-spacing:.3em; text-transform:uppercase; padding:.5rem 1.2rem; border:1px solid rgba(255,179,0,.35); backdrop-filter:blur(10px); white-space:nowrap; animation:blink 2s ease infinite; display:flex; align-items:center; gap:0.5rem; }
-    #status.found { color:#00ff88; border-color:rgba(0,255,136,.4); animation:none; }
-    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.4} }
-    .status-bar { width:40px; height:3px; background:rgba(255,179,0,0.2); position:relative; overflow:hidden; border-radius:2px; }
-    .status-bar-fill { position:absolute; top:0; left:-100%; width:100%; height:100%; background:#ffb300; animation:barSlide 2s linear infinite; }
-    #status.found .status-bar-fill { background:#00ff88; animation:none; width:100%; left:0; }
+    #status {
+      position: absolute; bottom: 16px; left: 50%; transform: translateX(-50%);
+      background: rgba(0,0,0,.80); color: #e8d5b0; font-size: .62rem;
+      letter-spacing: .25em; text-transform: uppercase; padding: .5rem 1.2rem;
+      border: 1px solid rgba(200,170,110,.3); backdrop-filter: blur(12px);
+      white-space: nowrap; animation: blink 2.5s ease infinite;
+      display: flex; align-items: center; gap: 0.5rem;
+    }
+    #status.found { color: #a8c87a; border-color: rgba(150,200,100,.4); animation: none; }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.45} }
+
+    .status-bar { width: 36px; height: 2px; background: rgba(200,170,110,0.18); position: relative; overflow: hidden; border-radius: 2px; }
+    .status-bar-fill { position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: #c9a84c; animation: barSlide 2s linear infinite; }
+    #status.found .status-bar-fill { background: #a8c87a; animation: none; width: 100%; left: 0; }
     @keyframes barSlide { 0%{left:-100%} 100%{left:100%} }
 
-    #back { position:absolute; top:16px; left:50%; transform:translateX(-50%); background:rgba(0,0,0,.85); color:#ffb300; border:1px solid rgba(255,179,0,.35); padding:.45rem 1.2rem; font-size:.62rem; letter-spacing:.2em; text-transform:uppercase; cursor:pointer; pointer-events:all; backdrop-filter:blur(10px); font-family:Arial,sans-serif; }
-    #tap-hint { position:absolute; top:70px; left:50%; transform:translateX(-50%); color:rgba(255,179,0,.65); font-size:.6rem; letter-spacing:.25em; text-transform:uppercase; display:none; animation:blink 2s ease infinite; }
+    #back {
+      position: absolute; top: 16px; left: 50%; transform: translateX(-50%);
+      background: rgba(0,0,0,.80); color: #e8d5b0;
+      border: 1px solid rgba(200,170,110,.3); padding: .45rem 1.2rem;
+      font-size: .62rem; letter-spacing: .2em; text-transform: uppercase;
+      cursor: pointer; pointer-events: all; backdrop-filter: blur(12px); font-family: Arial, sans-serif;
+    }
+    #tap-hint {
+      position: absolute; top: 68px; left: 50%; transform: translateX(-50%);
+      color: rgba(220,190,130,.6); font-size: .6rem; letter-spacing: .25em;
+      text-transform: uppercase; display: none; animation: blink 2s ease infinite;
+    }
 
-    #info-card { position:absolute; bottom:70px; left:50%; transform:translateX(-50%) translateY(260px); width:min(360px, 92vw); background:rgba(10,5,0,.93); border:1px solid rgba(255,179,0,.5); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); padding:1.2rem 1.5rem; transition:transform .4s cubic-bezier(.16,1,.3,1), opacity .4s ease; opacity:0; pointer-events:none; }
-    #info-card.show { transform:translateX(-50%) translateY(0); opacity:1; pointer-events:all; }
-    .ic-tag { font-size:.55rem; letter-spacing:.35em; text-transform:uppercase; color:#ffb300; margin-bottom:.4rem; display:flex; align-items:center; gap:.5rem; }
-    .ic-tag::after { content:''; flex:1; height:1px; background:rgba(255,179,0,.25); }
-    .ic-title { font-size:1.25rem; font-weight:700; color:#f8f0e0; margin-bottom:.25rem; }
-    .ic-sub { font-size:.7rem; color:#ffb300; letter-spacing:.1em; margin-bottom:.65rem; }
-    .ic-text { font-size:.8rem; color:rgba(248,240,224,.7); line-height:1.65; }
-    .ic-close { position:absolute; top:.6rem; right:.8rem; color:rgba(255,179,0,.5); cursor:pointer; font-size:.9rem; pointer-events:all; background:none; border:none; font-family:Arial; }
-    .ic-close:hover { color:#ffb300; }
+    #info-card {
+      position: absolute; bottom: 70px; left: 50%;
+      transform: translateX(-50%) translateY(260px);
+      width: min(360px, 92vw);
+      background: rgba(12,8,3,.92); border: 1px solid rgba(200,165,100,.45);
+      backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+      padding: 1.2rem 1.5rem;
+      transition: transform .4s cubic-bezier(.16,1,.3,1), opacity .4s ease;
+      opacity: 0; pointer-events: none;
+    }
+    #info-card.show { transform: translateX(-50%) translateY(0); opacity: 1; pointer-events: all; }
+    .ic-tag { font-size: .55rem; letter-spacing: .35em; text-transform: uppercase; color: #c9a84c; margin-bottom: .4rem; display: flex; align-items: center; gap: .5rem; }
+    .ic-tag::after { content: ''; flex: 1; height: 1px; background: rgba(200,165,100,.22); }
+    .ic-title { font-size: 1.25rem; font-weight: 700; color: #f0e8d5; margin-bottom: .25rem; }
+    .ic-sub { font-size: .7rem; color: #b8944c; letter-spacing: .1em; margin-bottom: .65rem; }
+    .ic-text { font-size: .8rem; color: rgba(240,232,210,.7); line-height: 1.65; }
+    .ic-close { position: absolute; top: .6rem; right: .8rem; color: rgba(200,165,100,.5); cursor: pointer; font-size: .9rem; pointer-events: all; background: none; border: none; font-family: Arial; }
+    .ic-close:hover { color: #c9a84c; }
   </style>
 </head>
 <body>
 
-<a-scene mindar-image="imageTargetSrc: targets.mind; autoStart: true; uiLoading: no; uiScanning: no; uiError: no;" color-space="sRGB" renderer="colorManagement: true" vr-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false">
-  <a-camera position="0 0 0" look-controls="enabled: false" cursor="fuse: false; rayOrigin: mouse" raycaster="objects: .hotspot; far: 100"></a-camera>
+<a-scene
+  mindar-image="imageTargetSrc: targets.mind; autoStart: true; uiLoading: no; uiScanning: no; uiError: no;"
+  color-space="sRGB"
+  renderer="colorManagement: true; physicallyCorrectLights: true"
+  vr-mode-ui="enabled: false"
+  device-orientation-permission-ui="enabled: false"
+  shadow="type: pcfsoft; enabled: true">
+
+  <!-- Ortam ışığı — sıcak, zayıf -->
+  <a-light type="ambient" color="#d0b080" intensity="0.55"></a-light>
+  <!-- Ana ışık — sağ üstten soft -->
+  <a-light type="directional" color="#fff5e0" intensity="1.1"
+    position="0.8 1.8 1.2" cast-shadow="true"
+    shadow-camera-near="0.1" shadow-camera-far="10"
+    shadow-camera-left="-1" shadow-camera-right="1"
+    shadow-camera-top="1" shadow-camera-bottom="-1"
+    shadow-map-width="2048" shadow-map-height="2048">
+  </a-light>
+  <!-- Dolgu ışığı — soldan serin -->
+  <a-light type="directional" color="#a0c0e8" intensity="0.28" position="-1 0.8 0.6"></a-light>
+
+  <a-camera position="0 0 0" look-controls="enabled: false"
+    cursor="fuse: false; rayOrigin: mouse"
+    raycaster="objects: .hotspot; far: 100">
+  </a-camera>
+
   <a-entity mindar-image-target="targetIndex: 0">
 
-    <!-- Masa yüzeyi (koyu ahşap) -->
-    <a-cylinder position="0 -0.388 0" radius="0.54" height="0.012" color="#1a0d06" material="roughness:1; metalness:0"></a-cylinder>
+    <!-- ═══════════════════════════════════════════════════════
+         MASA YÜZEYİ — koyu meşe ahşap
+    ════════════════════════════════════════════════════════ -->
+    <a-cylinder position="0 -0.395 0" radius="0.62" height="0.010"
+      color="#1c0f07"
+      material="roughness:0.98; metalness:0; repeat:4 4"
+      shadow="receive: true">
+    </a-cylinder>
+    <!-- Masa kenar çizgisi (ince halkı) -->
+    <a-torus position="0 -0.390 0" radius="0.618" radius-tubular="0.004"
+      color="#0e0805" material="roughness:1; metalness:0">
+    </a-torus>
 
-    <!-- Tabak (beyaz, mat, gerçekçi) -->
-    <a-cylinder position="0 -0.330 0" radius="0.27" height="0.016" color="#F8F4EE" material="roughness:0.9; metalness:0"></a-cylinder>
-    <!-- Tabak kenarı / rim -->
-    <a-torus position="0 -0.322 0" radius="0.268" radius-tubular="0.011" color="#DDD0BB" material="roughness:0.85; metalness:0"></a-torus>
+    <!-- ═══════════════════════════════════════════════════════
+         TABAK — beyaz porselen, mat, gerçekçi rim
+    ════════════════════════════════════════════════════════ -->
+    <!-- Alt gölge yansıması -->
+    <a-cylinder position="0 -0.393 0" radius="0.29" height="0.001"
+      color="#000000" material="transparent:true; opacity:0.28">
+    </a-cylinder>
 
-    <!-- Çatal (Fork) — gümüş metalik -->
-    <a-entity position="-0.365 -0.29 0.02" rotation="0 0 10">
-      <a-cylinder position="0 -0.038 0" radius="0.006" height="0.14" color="#A8A8A8" material="roughness:0.2; metalness:0.9"></a-cylinder>
-      <a-cylinder position="-0.007 0.058 0" radius="0.0025" height="0.056" color="#C2C2C2" material="roughness:0.2; metalness:0.9"></a-cylinder>
-      <a-cylinder position="0 0.058 0" radius="0.0025" height="0.056" color="#C2C2C2" material="roughness:0.2; metalness:0.9"></a-cylinder>
-      <a-cylinder position="0.007 0.058 0" radius="0.0025" height="0.056" color="#C2C2C2" material="roughness:0.2; metalness:0.9"></a-cylinder>
-    </a-entity>
+    <!-- Tabak gövdesi -->
+    <a-cylinder position="0 -0.338 0" radius="0.270" height="0.018"
+      color="#F6F2EC"
+      material="roughness:0.88; metalness:0; envMap: none"
+      shadow="cast:true; receive:true">
+    </a-cylinder>
+    <!-- İç çukur (tabağın iç düzlemi) -->
+    <a-cylinder position="0 -0.329 0" radius="0.210" height="0.004"
+      color="#FDFAF5"
+      material="roughness:0.82; metalness:0">
+    </a-cylinder>
+    <!-- Dış rim halka -->
+    <a-torus position="0 -0.330 0" radius="0.255" radius-tubular="0.015"
+      color="#E8E0D0"
+      material="roughness:0.90; metalness:0">
+    </a-torus>
+    <!-- İkinci ince rim çizgisi -->
+    <a-torus position="0 -0.330 0" radius="0.216" radius-tubular="0.004"
+      color="#D8CFBF"
+      material="roughness:0.85; metalness:0">
+    </a-torus>
 
-    <!-- Bıçak (Knife) — gümüş metalik -->
-    <a-entity position="0.365 -0.29 0.02" rotation="0 0 -10">
-      <a-cylinder position="0 -0.038 0" radius="0.006" height="0.14" color="#A8A8A8" material="roughness:0.2; metalness:0.9"></a-cylinder>
-      <a-box position="0 0.058 0" width="0.013" height="0.056" depth="0.003" color="#C8C8C8" material="roughness:0.15; metalness:0.9"></a-box>
-    </a-entity>
-
-    <!-- 1. BREZEL — merkez, kahverengi torus, yavaş spin + float -->
-    <a-entity position="0 -0.210 0.02"
-      animation="property: position; from: 0 -0.210 0.02; to: 0 -0.188 0.02; dur: 2200; easing: easeInOutSine; loop: true; dir: alternate">
-      <a-torus class="hotspot" data-person="brezel"
-        radius="0.078" radius-tubular="0.030" color="#8B4513" material="roughness:0.9; metalness:0"
-        animation="property: rotation; from: 12 0 0; to: 12 360 0; dur: 7000; easing: linear; loop: true">
-      </a-torus>
-      <a-cylinder position="0 -0.062 0" radius="0.055" height="0.002" color="#000000" opacity="0.14" material="transparent:true"></a-cylinder>
-      <a-text value="BREZEL" align="center" position="0 0.135 0" scale="0.068 0.068 0.068" color="#c9a84c"></a-text>
-    </a-entity>
-
-    <!-- 2. BRATWURST — sağ, yatay altın kahve silindir, float -->
-    <a-entity position="0.22 -0.250 0.04"
-      animation="property: position; from: 0.22 -0.250 0.04; to: 0.22 -0.229 0.04; dur: 1900; easing: easeInOutSine; loop: true; dir: alternate; delay: 300">
-      <a-cylinder class="hotspot" data-person="bratwurst"
-        radius="0.028" height="0.160" color="#B87333" material="roughness:0.82; metalness:0"
-        rotation="0 25 90">
+    <!-- ═══════════════════════════════════════════════════════
+         ÇATAL — sol, 3 diş, gümüş paslanmaz çelik
+    ════════════════════════════════════════════════════════ -->
+    <a-entity position="-0.36 -0.30 0.01" rotation="0 0 8">
+      <!-- Sap uzun kısmı -->
+      <a-cylinder position="0 -0.048 0" radius="0.0058" height="0.155"
+        color="#C0C0C0" material="roughness:0.18; metalness:0.92; color:#C8C8C8">
       </a-cylinder>
-      <a-cylinder position="0 -0.042 0" radius="0.058" height="0.002" color="#000000" opacity="0.12" material="transparent:true"></a-cylinder>
-      <a-text value="BRATWURST" align="center" position="0 0.092 0" scale="0.057 0.057 0.057" color="#c9a84c"></a-text>
+      <!-- Sap üst genişleme -->
+      <a-cylinder position="0 0.035 0" radius="0.007" height="0.022"
+        color="#BEBEBE" material="roughness:0.22; metalness:0.88">
+      </a-cylinder>
+      <!-- 3 diş -->
+      <a-cylinder position="-0.0085 0.072 0" radius="0.0022" height="0.052"
+        color="#D4D4D4" material="roughness:0.14; metalness:0.95">
+      </a-cylinder>
+      <a-cylinder position="0 0.072 0" radius="0.0022" height="0.052"
+        color="#D4D4D4" material="roughness:0.14; metalness:0.95">
+      </a-cylinder>
+      <a-cylinder position="0.0085 0.072 0" radius="0.0022" height="0.052"
+        color="#D4D4D4" material="roughness:0.14; metalness:0.95">
+      </a-cylinder>
+      <!-- Diş üst yuvarlaması -->
+      <a-sphere position="-0.0085 0.097 0" radius="0.0025" color="#D0D0D0" material="roughness:0.14; metalness:0.95"></a-sphere>
+      <a-sphere position="0 0.097 0" radius="0.0025" color="#D0D0D0" material="roughness:0.14; metalness:0.95"></a-sphere>
+      <a-sphere position="0.0085 0.097 0" radius="0.0025" color="#D0D0D0" material="roughness:0.14; metalness:0.95"></a-sphere>
     </a-entity>
 
-    <!-- 3. BERLİNER — sol, yassı küre, açık kahve, float -->
-    <a-entity position="-0.22 -0.254 0.04"
-      animation="property: position; from: -0.22 -0.254 0.04; to: -0.22 -0.232 0.04; dur: 2400; easing: easeInOutSine; loop: true; dir: alternate; delay: 700">
+    <!-- ═══════════════════════════════════════════════════════
+         BIÇAK — sağ, gümüş paslanmaz + bıçak ağzı
+    ════════════════════════════════════════════════════════ -->
+    <a-entity position="0.36 -0.30 0.01" rotation="0 0 -8">
+      <!-- Sap -->
+      <a-cylinder position="0 -0.048 0" radius="0.0058" height="0.155"
+        color="#C0C0C0" material="roughness:0.18; metalness:0.92">
+      </a-cylinder>
+      <!-- Sap üst koruyucu (bolster) -->
+      <a-cylinder position="0 0.035 0" radius="0.0082" height="0.016"
+        color="#A8A8A8" material="roughness:0.25; metalness:0.90">
+      </a-cylinder>
+      <!-- Bıçak ağzı (flat box) -->
+      <a-box position="0.001 0.072 0" width="0.012" height="0.056" depth="0.0028"
+        color="#D8D8D8" material="roughness:0.10; metalness:0.96">
+      </a-box>
+      <!-- Ağız sırtı biraz daha kalın -->
+      <a-box position="-0.002 0.072 0" width="0.003" height="0.056" depth="0.0028"
+        color="#C4C4C4" material="roughness:0.12; metalness:0.94">
+      </a-box>
+      <!-- Uç yuvarlaması -->
+      <a-sphere position="0.001 0.099 0" radius="0.004" color="#D0D0D0" material="roughness:0.12; metalness:0.95"></a-sphere>
+    </a-entity>
+
+    <!-- ═══════════════════════════════════════════════════════
+         BERLİNER — tabak ortasında, yavaş nefes animasyonu
+    ════════════════════════════════════════════════════════ -->
+    <a-entity position="0 -0.290 0"
+      animation="property: position; from: 0 -0.290 0; to: 0 -0.274 0; dur: 2600; easing: easeInOutSine; loop: true; dir: alternate">
+
+      <!-- Berliner gövdesi — yassılaştırılmış altın-kahve küre -->
       <a-sphere class="hotspot" data-person="berliner"
-        radius="0.065" color="#C4893A" material="roughness:0.85; metalness:0"
-        scale="1 0.62 1">
+        radius="0.078" color="#C8873A"
+        material="roughness:0.88; metalness:0"
+        scale="1 0.64 1"
+        shadow="cast:true; receive:true">
       </a-sphere>
-      <a-cylinder position="0 -0.040 0" radius="0.052" height="0.002" color="#000000" opacity="0.12" material="transparent:true"></a-cylinder>
-      <a-text value="BERLINER" align="center" position="0 0.092 0" scale="0.057 0.057 0.057" color="#c9a84c"></a-text>
-    </a-entity>
 
-    <!-- 4. KİRSCHTORTE — sağ arka, koyu çikolata pasta + krema + kiraz -->
-    <a-entity position="0.17 -0.254 -0.15"
-      animation="property: position; from: 0.17 -0.254 -0.15; to: 0.17 -0.234 -0.15; dur: 2050; easing: easeInOutSine; loop: true; dir: alternate; delay: 200">
-      <a-cylinder class="hotspot" data-person="kirschtorte"
-        radius="0.062" height="0.055" color="#3D1010" material="roughness:0.9; metalness:0">
+      <!-- Pudra şekeri —  beyaz ince cylinder üstte -->
+      <a-cylinder position="0 0.022 0" radius="0.073" height="0.003"
+        color="#FAFAFA" material="roughness:0.95; metalness:0; transparent:true; opacity:0.82"
+        scale="1 1 1">
       </a-cylinder>
-      <a-cylinder position="0 0.032 0" radius="0.062" height="0.008" color="#FFFFFF" material="roughness:0.7; metalness:0"></a-cylinder>
-      <a-sphere position="0 0.048 0" radius="0.013" color="#8B0000" material="roughness:0.65; metalness:0"></a-sphere>
-      <a-cylinder position="0 -0.050 0" radius="0.050" height="0.002" color="#000000" opacity="0.12" material="transparent:true"></a-cylinder>
-      <a-text value="KIRSCHTORTE" align="center" position="0 0.120 0" scale="0.049 0.049 0.049" color="#c9a84c"></a-text>
+
+      <!-- Marmelat çizgisi (orta kuşak) -->
+      <a-torus position="0 0 0" radius="0.073" radius-tubular="0.0055"
+        color="#B03020" material="roughness:0.75; metalness:0"
+        rotation="90 0 0">
+      </a-torus>
+
+      <!-- Berliner label — sade, mat sarı -->
+      <a-text value="BERLINER" align="center" position="0 0.145 0"
+        scale="0.070 0.070 0.070" color="#c9a84c"
+        material="depthTest:false">
+      </a-text>
+      <a-text value="Berliner Pfannkuchen" align="center" position="0 0.117 0"
+        scale="0.040 0.040 0.040" color="rgba(200,165,100,0.65)"
+        material="depthTest:false">
+      </a-text>
+
+      <!-- Gölge altında -->
+      <a-cylinder position="0 -0.052 0" radius="0.068" height="0.001"
+        color="#000000" material="transparent:true; opacity:0.22">
+      </a-cylinder>
     </a-entity>
 
-    <!-- 5. CURRYWURST — sol arka, turuncu-kırmızı yatay silindir, float -->
-    <a-entity position="-0.17 -0.250 -0.15"
-      animation="property: position; from: -0.17 -0.250 -0.15; to: -0.17 -0.229 -0.15; dur: 2100; easing: easeInOutSine; loop: true; dir: alternate; delay: 1000">
+    <!-- ═══════════════════════════════════════════════════════
+         BREZEL — tabağın sağ üstünde, yavaş dönüyor
+    ════════════════════════════════════════════════════════ -->
+    <a-entity position="0.26 -0.315 -0.06"
+      animation="property: position; from: 0.26 -0.315 -0.06; to: 0.26 -0.300 -0.06; dur: 2800; easing: easeInOutSine; loop: true; dir: alternate; delay: 400">
+
+      <a-torus class="hotspot" data-person="brezel"
+        radius="0.058" radius-tubular="0.022"
+        color="#7A3A0E"
+        material="roughness:0.92; metalness:0"
+        animation="property: rotation; from: 15 0 0; to: 15 360 0; dur: 9000; easing: linear; loop: true"
+        shadow="cast:true; receive:true">
+      </a-torus>
+      <!-- Tuz taneleri taklidi (beyaz nokta) -->
+      <a-sphere position="0 0.008 0.058" radius="0.004" color="#F5F0E8" material="roughness:0.95; metalness:0"></a-sphere>
+      <a-sphere position="-0.04 0.008 0.042" radius="0.003" color="#F5F0E8" material="roughness:0.95; metalness:0"></a-sphere>
+      <a-sphere position="0.04 0.008 0.042" radius="0.003" color="#F5F0E8" material="roughness:0.95; metalness:0"></a-sphere>
+
+      <a-text value="BREZEL" align="center" position="0 0.11 0"
+        scale="0.058 0.058 0.058" color="#c9a84c" material="depthTest:false">
+      </a-text>
+
+      <a-cylinder position="0 -0.042 0" radius="0.050" height="0.001"
+        color="#000000" material="transparent:true; opacity:0.18">
+      </a-cylinder>
+    </a-entity>
+
+    <!-- ═══════════════════════════════════════════════════════
+         BRATWURST — tabağın solunda, yatay ızgara sosis
+    ════════════════════════════════════════════════════════ -->
+    <a-entity position="-0.26 -0.320 -0.06"
+      animation="property: position; from: -0.26 -0.320 -0.06; to: -0.26 -0.305 -0.06; dur: 2400; easing: easeInOutSine; loop: true; dir: alternate; delay: 800">
+
+      <!-- Ana sosis gövdesi -->
+      <a-cylinder class="hotspot" data-person="bratwurst"
+        radius="0.022" height="0.150"
+        color="#A0520A"
+        material="roughness:0.85; metalness:0"
+        rotation="0 30 90"
+        shadow="cast:true; receive:true">
+      </a-cylinder>
+      <!-- Uç kapakları -->
+      <a-sphere position="-0.073 0 0" radius="0.022" color="#8A4208" material="roughness:0.88; metalness:0" scale="0.6 1 1"></a-sphere>
+      <a-sphere position="0.073 0 0" radius="0.022" color="#8A4208" material="roughness:0.88; metalness:0" scale="0.6 1 1"></a-sphere>
+      <!-- Izgara çizgileri (koyu band) -->
+      <a-cylinder radius="0.0235" height="0.010" color="#5A2A04" material="roughness:0.9; metalness:0" rotation="0 30 90" position="0.018 0.008 0"></a-cylinder>
+      <a-cylinder radius="0.0235" height="0.010" color="#5A2A04" material="roughness:0.9; metalness:0" rotation="0 30 90" position="-0.018 -0.008 0"></a-cylinder>
+
+      <a-text value="BRATWURST" align="center" position="0 0.095 0"
+        scale="0.052 0.052 0.052" color="#c9a84c" material="depthTest:false">
+      </a-text>
+
+      <a-cylinder position="0 -0.032 0" radius="0.055" height="0.001"
+        color="#000000" material="transparent:true; opacity:0.16">
+      </a-cylinder>
+    </a-entity>
+
+    <!-- ═══════════════════════════════════════════════════════
+         CURRYWURST — tabak dışı sol arka
+    ════════════════════════════════════════════════════════ -->
+    <a-entity position="-0.18 -0.310 -0.20"
+      animation="property: position; from: -0.18 -0.310 -0.20; to: -0.18 -0.295 -0.20; dur: 2200; easing: easeInOutSine; loop: true; dir: alternate; delay: 1200">
+
       <a-cylinder class="hotspot" data-person="currywurst"
-        radius="0.026" height="0.148" color="#CC4400" material="roughness:0.82; metalness:0"
-        rotation="0 -25 90">
+        radius="0.020" height="0.130"
+        color="#B83A00"
+        material="roughness:0.83; metalness:0"
+        rotation="0 -20 90"
+        shadow="cast:true; receive:true">
       </a-cylinder>
-      <a-cylinder position="0 -0.042 0" radius="0.058" height="0.002" color="#000000" opacity="0.12" material="transparent:true"></a-cylinder>
-      <a-text value="CURRYWURST" align="center" position="0 0.092 0" scale="0.048 0.048 0.048" color="#c9a84c"></a-text>
+      <!-- Köri sosu üst sarısı -->
+      <a-cylinder radius="0.021" height="0.050" color="#D4790A"
+        material="roughness:0.78; metalness:0; transparent:true; opacity:0.9"
+        rotation="0 -20 90" position="0.010 0.005 0">
+      </a-cylinder>
+
+      <a-text value="CURRYWURST" align="center" position="0 0.085 0"
+        scale="0.046 0.046 0.046" color="#c9a84c" material="depthTest:false">
+      </a-text>
+
+      <a-cylinder position="0 -0.030 0" radius="0.050" height="0.001"
+        color="#000000" material="transparent:true; opacity:0.14">
+      </a-cylinder>
+    </a-entity>
+
+    <!-- ═══════════════════════════════════════════════════════
+         KİRSCHTORTE — sağ arka
+    ════════════════════════════════════════════════════════ -->
+    <a-entity position="0.19 -0.308 -0.20"
+      animation="property: position; from: 0.19 -0.308 -0.20; to: 0.19 -0.292 -0.20; dur: 2350; easing: easeInOutSine; loop: true; dir: alternate; delay: 600">
+
+      <!-- Pasta gövdesi çikolatalı katman -->
+      <a-cylinder class="hotspot" data-person="kirschtorte"
+        radius="0.052" height="0.048"
+        color="#2A0A0A"
+        material="roughness:0.92; metalness:0"
+        shadow="cast:true; receive:true">
+      </a-cylinder>
+      <!-- Beyaz krema üstü -->
+      <a-cylinder position="0 0.028 0" radius="0.052" height="0.010"
+        color="#F8F4F0" material="roughness:0.75; metalness:0">
+      </a-cylinder>
+      <!-- Kiraz -->
+      <a-sphere position="0 0.042 0" radius="0.012"
+        color="#7A0000" material="roughness:0.62; metalness:0.05">
+      </a-sphere>
+      <!-- Kiraz sap -->
+      <a-cylinder position="0.002 0.054 0" radius="0.0015" height="0.010"
+        color="#2A5A10" material="roughness:0.9; metalness:0" rotation="0 0 15">
+      </a-cylinder>
+
+      <a-text value="KIRSCHTORTE" align="center" position="0 0.110 0"
+        scale="0.044 0.044 0.044" color="#c9a84c" material="depthTest:false">
+      </a-text>
+
+      <a-cylinder position="0 -0.038 0" radius="0.045" height="0.001"
+        color="#000000" material="transparent:true; opacity:0.18">
+      </a-cylinder>
     </a-entity>
 
   </a-entity>
 </a-scene>
 
 <div id="ui">
-  <div class="c c-tl"></div><div class="c c-tr"></div><div class="c c-bl"></div><div class="c c-br"></div>
-  <div class="scan"></div>
   <div id="tap-hint"></div>
   <div id="status">
     <div class="status-bar"><div class="status-bar-fill"></div></div>
@@ -151,42 +372,42 @@
   var lang = localStorage.getItem('lang') || 'tr';
 
   var foods = {
-    brezel: {
-      tr: { tag:'İkonik Fırın Ürünü', title:'Brezel', sub:'Bavyera · Geleneksel Simidi', text:"Pretzel olarak da bilinen Brezel, dışı çıtır içi yumuşak geleneksel Alman fırın ürünüdür. Soda banyosundan geçirilerek pişirilen bu ekmek, Almanya'da kahvaltıdan bira bahçelerine kadar her yerde bulunur. Ökonomisi basit, lezzeti efsanedir." },
-      de: { tag:'Traditionelles Gebäck', title:'Brezel', sub:'Bayern · Traditionelle Laugenbrezel', text:'Die Brezel ist ein außen knuspriges, innen weiches traditionelles deutsches Gebäck. Durch ein Sodabad vor dem Backen erhält sie ihre charakteristische braune Farbe und ihren unverwechselbaren Geschmack. Von der Bäckerei bis zum Biergarten — die Brezel ist allgegenwärtig.' }
-    },
-    bratwurst: {
-      tr: { tag:'Sokak Lezzeti', title:'Bratwurst', sub:'Tüm Almanya · Izgara Sosis', text:"Bratwurst, Almanya'nın en ünlü sokak yemeğidir. Domuz, dana veya kuzu etinden yapılan bu ızgara sosis hardal ve ekmekle servis edilir. Her bölgenin kendi tarifi vardır: Nürnberg Bratwurstları küçük ve baharatlı, Thüringen versiyonu ise uzun ve sarımsaklıdır." },
-      de: { tag:'Streetfood Klassiker', title:'Bratwurst', sub:'Ganz Deutschland · Grillwurst', text:'Die Bratwurst ist Deutschlands bekanntestes Streetfood. Die aus Schweine-, Rind- oder Lammfleisch hergestellte Grillwurst wird mit Senf und Brötchen serviert. Jede Region hat ihr eigenes Rezept: Nürnberger sind klein und würzig, Thüringer lang und knoblauchbetont.' }
-    },
     berliner: {
       tr: { tag:"Berlin'in Tatlısı", title:'Berliner', sub:'Berlin · Pfannkuchen', text:"Berliner, içi marmelat veya muhallebi dolu, pudra şekerli kızartılmış bir hamur tatlısıdır. Berlin'de 'Pfannkuchen' olarak bilinir. Yılbaşı ve Karnaval dönemlerinde tüketimi zirveye ulaşır. John F. Kennedy'nin ünlü 'Ich bin ein Berliner' konuşmasıyla da tarihe geçmiştir." },
-      de: { tag:'Berliner Pfannkuchen', title:'Berliner', sub:'Berlin · Gefüllter Krapfen', text:"Der Berliner ist ein frittiertes Hefegebäck, gefüllt mit Marmelade oder Pudding, bestreut mit Puderschucker. In Berlin selbst heißt er 'Pfannkuchen'. Besonders zu Silvester und Karneval ist er sehr beliebt. John F. Kennedy machte ihn mit 'Ich bin ein Berliner' weltberühmt." }
+      de: { tag:'Berliner Pfannkuchen', title:'Berliner', sub:'Berlin · Gefüllter Krapfen', text:"Der Berliner ist ein frittiertes Hefegebäck, gefüllt mit Marmelade oder Pudding, bestreut mit Puderzucker. In Berlin selbst heißt er 'Pfannkuchen'. Besonders zu Silvester und Karneval ist er sehr beliebt. John F. Kennedy machte ihn mit 'Ich bin ein Berliner' weltberühmt." }
     },
-    kirschtorte: {
-      tr: { tag:'Kara Orman Pastası', title:'Schwarzwälder Kirschtorte', sub:'Baden-Württemberg · Özel Pasta', text:"Schwarzwälder Kirschtorte, çikolatalı bisküvi, taze krema ve vişneli kiraz likörü (Kirschwasser) katmanlarından oluşan Almanya'nın en ünlü pastasıdır. 1900'lerin başında ortaya çıkan bu tarif, bugün dünya çapında ünlüdür. Bir dilimi Almanya'nın tüm lezzetini taşır." },
-      de: { tag:'Schwarzwälder Spezialität', title:'Schwarzwälder Kirschtorte', sub:'Baden-Württemberg · Sahnetorte', text:"Die Schwarzwälder Kirschtorte ist Deutschlands bekannteste Torte, bestehend aus Schokoladenbiskuit, frischer Sahne und Kirschen mit Kirschwasser. In den frühen 1900er Jahren entstanden, ist dieses Rezept heute weltberühmt. Ein Stück trägt den ganzen Geschmack Deutschlands in sich." }
+    brezel: {
+      tr: { tag:'İkonik Fırın Ürünü', title:'Brezel', sub:'Bavyera · Geleneksel Simidi', text:"Pretzel olarak da bilinen Brezel, dışı çıtır içi yumuşak geleneksel Alman fırın ürünüdür. Soda banyosundan geçirilerek pişirilen bu ekmek, Almanya'da kahvaltıdan bira bahçelerine kadar her yerde bulunur." },
+      de: { tag:'Traditionelles Gebäck', title:'Brezel', sub:'Bayern · Traditionelle Laugenbrezel', text:'Die Brezel ist ein außen knuspriges, innen weiches traditionelles deutsches Gebäck. Durch ein Sodabad vor dem Backen erhält sie ihre charakteristische braune Farbe und ihren unverwechselbaren Geschmack.' }
+    },
+    bratwurst: {
+      tr: { tag:'Sokak Lezzeti', title:'Bratwurst', sub:'Tüm Almanya · Izgara Sosis', text:"Bratwurst, Almanya'nın en ünlü sokak yemeğidir. Domuz, dana veya kuzu etinden yapılan bu ızgara sosis hardal ve ekmekle servis edilir. Her bölgenin kendi tarifi vardır." },
+      de: { tag:'Streetfood Klassiker', title:'Bratwurst', sub:'Ganz Deutschland · Grillwurst', text:'Die Bratwurst ist Deutschlands bekanntestes Streetfood. Die aus Schweine-, Rind- oder Lammfleisch hergestellte Grillwurst wird mit Senf und Brötchen serviert.' }
     },
     currywurst: {
-      tr: { tag:"Berlin Klasiği", title:'Currywurst', sub:'Berlin · 1949\'dan Beri', text:"Currywurst, 1949'da Berlin'de Herta Heuwer tarafından icat edilen domates soslu ve köri baharatlı bir sosisle hazırlanan yemektir. Yıllık 800 milyondan fazla tüketiliyor. Çıtır patates kızartmasıyla (Pommes) servis edilir. Berlin'in Currywurst Müzesi bu lezzete adanmıştır." },
-      de: { tag:'Berliner Kultgericht', title:'Currywurst', sub:'Berlin · Seit 1949', text:"Die Currywurst wurde 1949 in Berlin von Herta Heuwer erfunden: eine Bratwurst mit Tomatensauce und Currypulver. Über 800 Millionen werden jährlich verzehrt. Sie wird mit Pommes frites serviert. Das Currywurst-Museum Berlin ist diesem Berliner Kultgericht gewidmet." }
+      tr: { tag:"Berlin Klasiği", title:'Currywurst', sub:"Berlin · 1949'dan Beri", text:"Currywurst, 1949'da Berlin'de Herta Heuwer tarafından icat edilen domates soslu ve köri baharatlı bir sosisle hazırlanan yemektir. Yıllık 800 milyondan fazla tüketiliyor." },
+      de: { tag:'Berliner Kultgericht', title:'Currywurst', sub:'Berlin · Seit 1949', text:"Die Currywurst wurde 1949 in Berlin von Herta Heuwer erfunden: eine Bratwurst mit Tomatensauce und Currypulver. Über 800 Millionen werden jährlich verzehrt." }
+    },
+    kirschtorte: {
+      tr: { tag:'Kara Orman Pastası', title:'Schwarzwälder Kirschtorte', sub:'Baden-Württemberg · Özel Pasta', text:"Schwarzwälder Kirschtorte, çikolatalı bisküvi, taze krema ve vişneli kiraz likörü katmanlarından oluşan Almanya'nın en ünlü pastasıdır. 1900'lerin başında ortaya çıkan bu tarif bugün dünya çapında ünlüdür." },
+      de: { tag:'Schwarzwälder Spezialität', title:'Schwarzwälder Kirschtorte', sub:'Baden-Württemberg · Sahnetorte', text:"Die Schwarzwälder Kirschtorte ist Deutschlands bekannteste Torte, bestehend aus Schokoladenbiskuit, frischer Sahne und Kirschen mit Kirschwasser." }
     }
   };
 
   var uiTexts = {
-    tr: { status:'Taraniyor...', found:'\u2713 Hedef Bulundu \u2014 Noktalara Dokun', hint:'\u25B2 Noktalara Dokun', back:'\u2190 Geri Don' },
-    de: { status:'Wird gescannt...', found:'\u2713 Ziel erkannt \u2014 Punkte antippen', hint:'\u25B2 Punkte antippen', back:'\u2190 Zur\u00fcck' }
+    tr: { status:'Taraniyor...', found:'\u2713 Hedef Bulundu \u2014 Dokun', hint:'\u25B2 Yiyeceklere Dokun', back:'\u2190 Geri D\u00f6n' },
+    de: { status:'Wird gescannt...', found:'\u2713 Ziel erkannt \u2014 Antippen', hint:'\u25B2 Speisen antippen', back:'\u2190 Zur\u00fcck' }
   };
 
-  var statusEl = document.getElementById('status');
+  var statusEl   = document.getElementById('status');
   var statusText = document.getElementById('status-text');
-  var tapHint = document.getElementById('tap-hint');
-  var backBtn = document.getElementById('back');
-  var card = document.getElementById('info-card');
+  var tapHint    = document.getElementById('tap-hint');
+  var backBtn    = document.getElementById('back');
+  var card       = document.getElementById('info-card');
 
   statusText.textContent = uiTexts[lang].status;
-  tapHint.textContent = uiTexts[lang].hint;
-  backBtn.textContent = uiTexts[lang].back;
+  tapHint.textContent    = uiTexts[lang].hint;
+  backBtn.textContent    = uiTexts[lang].back;
 
   var target = document.querySelector('[mindar-image-target]');
   target.addEventListener('targetFound', function() {
@@ -206,10 +427,10 @@
       var key = hs.getAttribute('data-person');
       if (!key || !foods[key]) return;
       var data = foods[key][lang];
-      document.getElementById('ic-tag').textContent = data.tag;
+      document.getElementById('ic-tag').textContent   = data.tag;
       document.getElementById('ic-title').textContent = data.title;
-      document.getElementById('ic-sub').textContent = data.sub;
-      document.getElementById('ic-text').textContent = data.text;
+      document.getElementById('ic-sub').textContent   = data.sub;
+      document.getElementById('ic-text').textContent  = data.text;
       card.classList.add('show');
     });
   });
