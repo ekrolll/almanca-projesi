@@ -108,11 +108,6 @@
     <!-- ═══════════════════════════════════════════════════════
          TABAK — beyaz porselen, mat, gerçekçi rim
     ════════════════════════════════════════════════════════ -->
-    <!-- Alt gölge yansıması -->
-    <a-cylinder position="0 -0.393 0" radius="0.29" height="0.001"
-      color="#000000" material="transparent:true; opacity:0.28">
-    </a-cylinder>
-
     <!-- Tabak gövdesi -->
     <a-cylinder position="0 -0.338 0" radius="0.270" height="0.018"
       color="#F6F2EC"
@@ -223,10 +218,6 @@
         material="depthTest:false">
       </a-text>
 
-      <!-- Gölge altında -->
-      <a-cylinder position="0 -0.052 0" radius="0.068" height="0.001"
-        color="#000000" material="transparent:true; opacity:0.22">
-      </a-cylinder>
     </a-entity>
 
     <!-- ═══════════════════════════════════════════════════════
@@ -236,24 +227,21 @@
       animation="property: position; from: 0.26 -0.315 -0.06; to: 0.26 -0.300 -0.06; dur: 2800; easing: easeInOutSine; loop: true; dir: alternate; delay: 400">
 
       <a-torus class="hotspot" data-person="brezel"
-        radius="0.058" radius-tubular="0.022"
+        radius="0.055" radius-tubular="0.014"
         color="#7A3A0E"
         material="roughness:0.92; metalness:0"
         animation="property: rotation; from: 15 0 0; to: 15 360 0; dur: 9000; easing: linear; loop: true"
         shadow="cast:true; receive:true">
       </a-torus>
       <!-- Tuz taneleri taklidi (beyaz nokta) -->
-      <a-sphere position="0 0.008 0.058" radius="0.004" color="#F5F0E8" material="roughness:0.95; metalness:0"></a-sphere>
-      <a-sphere position="-0.04 0.008 0.042" radius="0.003" color="#F5F0E8" material="roughness:0.95; metalness:0"></a-sphere>
-      <a-sphere position="0.04 0.008 0.042" radius="0.003" color="#F5F0E8" material="roughness:0.95; metalness:0"></a-sphere>
+      <a-sphere position="0 0.005 0.054" radius="0.003" color="#F5F0E8" material="roughness:0.95; metalness:0"></a-sphere>
+      <a-sphere position="-0.038 0.005 0.038" radius="0.0025" color="#F5F0E8" material="roughness:0.95; metalness:0"></a-sphere>
+      <a-sphere position="0.038 0.005 0.038" radius="0.0025" color="#F5F0E8" material="roughness:0.95; metalness:0"></a-sphere>
 
       <a-text value="BREZEL" align="center" position="0 0.11 0"
         scale="0.058 0.058 0.058" color="#c9a84c" material="depthTest:false">
       </a-text>
 
-      <a-cylinder position="0 -0.042 0" radius="0.050" height="0.001"
-        color="#000000" material="transparent:true; opacity:0.18">
-      </a-cylinder>
     </a-entity>
 
     <!-- ═══════════════════════════════════════════════════════
@@ -281,9 +269,6 @@
         scale="0.052 0.052 0.052" color="#c9a84c" material="depthTest:false">
       </a-text>
 
-      <a-cylinder position="0 -0.032 0" radius="0.055" height="0.001"
-        color="#000000" material="transparent:true; opacity:0.16">
-      </a-cylinder>
     </a-entity>
 
     <!-- ═══════════════════════════════════════════════════════
@@ -309,9 +294,6 @@
         scale="0.046 0.046 0.046" color="#c9a84c" material="depthTest:false">
       </a-text>
 
-      <a-cylinder position="0 -0.030 0" radius="0.050" height="0.001"
-        color="#000000" material="transparent:true; opacity:0.14">
-      </a-cylinder>
     </a-entity>
 
     <!-- ═══════════════════════════════════════════════════════
@@ -344,9 +326,6 @@
         scale="0.044 0.044 0.044" color="#c9a84c" material="depthTest:false">
       </a-text>
 
-      <a-cylinder position="0 -0.038 0" radius="0.045" height="0.001"
-        color="#000000" material="transparent:true; opacity:0.18">
-      </a-cylinder>
     </a-entity>
 
   </a-entity>
