@@ -48,58 +48,83 @@
   <a-camera position="0 0 0" look-controls="enabled: false" cursor="fuse: false; rayOrigin: mouse" raycaster="objects: .hotspot; far: 100"></a-camera>
   <a-entity mindar-image-target="targetIndex: 0">
 
-    <!-- Platform & Rings -->
-    <a-torus position="0 -0.38 0" radius="0.58" radius-tubular="0.004" color="#ffb300" opacity="0.5" animation="property: rotation; to: 0 360 0; dur: 10000; easing: linear; loop: true"></a-torus>
-    <a-torus position="0 -0.38 0" radius="0.42" radius-tubular="0.002" color="#c9a84c" opacity="0.3" animation="property: rotation; to: 0 -360 0; dur: 7000; easing: linear; loop: true"></a-torus>
-    <a-cylinder position="0 -0.382 0" radius="0.58" height="0.008" color="#ffb300" opacity="0.1" material="transparent:true"></a-cylinder>
+    <!-- Masa yüzeyi (koyu ahşap) -->
+    <a-cylinder position="0 -0.388 0" radius="0.54" height="0.012" color="#1a0d06" material="roughness:1; metalness:0"></a-cylinder>
 
-    <!-- Tabak (Plate) -->
-    <a-cylinder position="0 -0.32 0" radius="0.3" height="0.018" color="#f5f0e8" opacity="0.92" material="transparent:true; emissive:#c9a84c; emissiveIntensity:0.08"></a-cylinder>
-    <a-torus position="0 -0.31 0" radius="0.3" radius-tubular="0.008" color="#c9a84c" opacity="0.6" material="transparent:true"></a-torus>
+    <!-- Tabak (beyaz, mat, gerçekçi) -->
+    <a-cylinder position="0 -0.330 0" radius="0.27" height="0.016" color="#F8F4EE" material="roughness:0.9; metalness:0"></a-cylinder>
+    <!-- Tabak kenarı / rim -->
+    <a-torus position="0 -0.322 0" radius="0.268" radius-tubular="0.011" color="#DDD0BB" material="roughness:0.85; metalness:0"></a-torus>
 
-    <!-- Cloche / Kubbe -->
-    <a-sphere position="0 -0.19 0" radius="0.19" color="#00d4ff" opacity="0.08" material="transparent:true; side:back"></a-sphere>
-    <a-sphere position="0 -0.19 0" radius="0.19" color="#c9a84c" opacity="0.12" material="transparent:true" animation="property: material.opacity; from:0.12; to:0.22; dur:2000; easing:easeInOutSine; loop:true; dir:alternate"></a-sphere>
-    <!-- Cloche tutacak -->
-    <a-cylinder position="0 -0.02 0" radius="0.018" height="0.04" color="#c9a84c" opacity="0.85" material="transparent:true; emissive:#c9a84c; emissiveIntensity:0.4" animation="property: position; from: 0 -0.025 0; to: 0 -0.015 0; dur: 2000; easing: easeInOutSine; loop: true; dir: alternate"></a-cylinder>
+    <!-- Çatal (Fork) — gümüş metalik -->
+    <a-entity position="-0.365 -0.29 0.02" rotation="0 0 10">
+      <a-cylinder position="0 -0.038 0" radius="0.006" height="0.14" color="#A8A8A8" material="roughness:0.2; metalness:0.9"></a-cylinder>
+      <a-cylinder position="-0.007 0.058 0" radius="0.0025" height="0.056" color="#C2C2C2" material="roughness:0.2; metalness:0.9"></a-cylinder>
+      <a-cylinder position="0 0.058 0" radius="0.0025" height="0.056" color="#C2C2C2" material="roughness:0.2; metalness:0.9"></a-cylinder>
+      <a-cylinder position="0.007 0.058 0" radius="0.0025" height="0.056" color="#C2C2C2" material="roughness:0.2; metalness:0.9"></a-cylinder>
+    </a-entity>
 
-    <!-- Çatal (Fork) -->
-    <a-cylinder position="-0.35 -0.28 0" radius="0.005" height="0.22" color="#ffb300" opacity="0.7" material="transparent:true; emissive:#ffb300; emissiveIntensity:0.3" rotation="0 0 15"></a-cylinder>
-    <!-- Bıçak (Knife) -->
-    <a-cylinder position="0.35 -0.28 0" radius="0.005" height="0.22" color="#c9a84c" opacity="0.7" material="transparent:true; emissive:#c9a84c; emissiveIntensity:0.3" rotation="0 0 -15"></a-cylinder>
+    <!-- Bıçak (Knife) — gümüş metalik -->
+    <a-entity position="0.365 -0.29 0.02" rotation="0 0 -10">
+      <a-cylinder position="0 -0.038 0" radius="0.006" height="0.14" color="#A8A8A8" material="roughness:0.2; metalness:0.9"></a-cylinder>
+      <a-box position="0 0.058 0" width="0.013" height="0.056" depth="0.003" color="#C8C8C8" material="roughness:0.15; metalness:0.9"></a-box>
+    </a-entity>
 
-    <!-- Particles -->
-    <a-sphere position="-0.22 -0.1 0.1" radius="0.005" color="#ffb300" opacity="0.7" material="transparent:true" animation="property: position; from:-0.22 -0.38 0.1; to:-0.22 0.12 0.1; dur:3000; easing:easeInOutSine; loop:true; dir:alternate"></a-sphere>
-    <a-sphere position="0.18 -0.05 -0.1" radius="0.004" color="#c9a84c" opacity="0.6" material="transparent:true" animation="property: position; from:0.18 -0.38 -0.1; to:0.18 0.1 -0.1; dur:4000; easing:easeInOutSine; loop:true; dir:alternate; delay:500"></a-sphere>
-    <a-sphere position="0.08 0.05 0.18" radius="0.004" color="#ffb300" opacity="0.5" material="transparent:true" animation="property: position; from:0.08 -0.38 0.18; to:0.08 0.18 0.18; dur:2500; easing:easeInOutSine; loop:true; dir:alternate; delay:1000"></a-sphere>
-    <a-sphere position="-0.3 0 0.04" radius="0.004" color="#00d4ff" opacity="0.4" material="transparent:true" animation="property: position; from:-0.3 -0.38 0.04; to:-0.3 0.08 0.04; dur:3500; easing:easeInOutSine; loop:true; dir:alternate; delay:1500"></a-sphere>
-    <a-sphere position="0.28 0.05 0.08" radius="0.003" color="#c9a84c" opacity="0.5" material="transparent:true" animation="property: position; from:0.28 -0.38 0.08; to:0.28 0.14 0.08; dur:2800; easing:easeInOutSine; loop:true; dir:alternate; delay:800"></a-sphere>
+    <!-- 1. BREZEL — merkez, kahverengi torus, yavaş spin + float -->
+    <a-entity position="0 -0.210 0.02"
+      animation="property: position; from: 0 -0.210 0.02; to: 0 -0.188 0.02; dur: 2200; easing: easeInOutSine; loop: true; dir: alternate">
+      <a-torus class="hotspot" data-person="brezel"
+        radius="0.078" radius-tubular="0.030" color="#8B4513" material="roughness:0.9; metalness:0"
+        animation="property: rotation; from: 12 0 0; to: 12 360 0; dur: 7000; easing: linear; loop: true">
+      </a-torus>
+      <a-cylinder position="0 -0.062 0" radius="0.055" height="0.002" color="#000000" opacity="0.14" material="transparent:true"></a-cylinder>
+      <a-text value="BREZEL" align="center" position="0 0.135 0" scale="0.068 0.068 0.068" color="#c9a84c"></a-text>
+    </a-entity>
 
-    <!-- Başlık -->
-    <a-text value="DEUTSCHE KUCHE" align="center" position="0 0.28 0" scale="0.28 0.28 0.28" color="#ffb300" material="emissive:#ffb300; emissiveIntensity:0.5" animation="property: position; from: 0 0.26 0; to: 0 0.30 0; dur: 2500; easing: easeInOutSine; loop: true; dir: alternate"></a-text>
-    <a-text value="Berlin - Munchen - Stuttgart" align="center" position="0 0.21 0" scale="0.10 0.10 0.10" color="rgba(201,168,76,0.7)"></a-text>
+    <!-- 2. BRATWURST — sağ, yatay altın kahve silindir, float -->
+    <a-entity position="0.22 -0.250 0.04"
+      animation="property: position; from: 0.22 -0.250 0.04; to: 0.22 -0.229 0.04; dur: 1900; easing: easeInOutSine; loop: true; dir: alternate; delay: 300">
+      <a-cylinder class="hotspot" data-person="bratwurst"
+        radius="0.028" height="0.160" color="#B87333" material="roughness:0.82; metalness:0"
+        rotation="0 25 90">
+      </a-cylinder>
+      <a-cylinder position="0 -0.042 0" radius="0.058" height="0.002" color="#000000" opacity="0.12" material="transparent:true"></a-cylinder>
+      <a-text value="BRATWURST" align="center" position="0 0.092 0" scale="0.057 0.057 0.057" color="#c9a84c"></a-text>
+    </a-entity>
 
-    <!-- 5 Hotspot -->
-    <!-- 1: Brezel — merkez, amber -->
-    <a-sphere class="hotspot" position="0 0.07 0.01" radius="0.026" color="#ffb300" material="emissive:#ffb300; emissiveIntensity:0.9; transparent:true; opacity:0.95" animation="property: scale; from:1 1 1; to:1.4 1.4 1.4; dur:1000; easing:easeInOutSine; loop:true; dir:alternate" data-person="brezel"></a-sphere>
-    <a-torus position="0 0.07 0.01" radius="0.042" radius-tubular="0.003" color="#ffb300" opacity="0.35" animation="property: scale; from:1 1 1; to:2 2 2; dur:1500; easing:easeOutQuad; loop:true"></a-torus>
-    <a-text value="[ BREZEL ]" align="center" position="0 0.155 0.01" scale="0.07 0.07 0.07" color="#ffb300"></a-text>
+    <!-- 3. BERLİNER — sol, yassı küre, açık kahve, float -->
+    <a-entity position="-0.22 -0.254 0.04"
+      animation="property: position; from: -0.22 -0.254 0.04; to: -0.22 -0.232 0.04; dur: 2400; easing: easeInOutSine; loop: true; dir: alternate; delay: 700">
+      <a-sphere class="hotspot" data-person="berliner"
+        radius="0.065" color="#C4893A" material="roughness:0.85; metalness:0"
+        scale="1 0.62 1">
+      </a-sphere>
+      <a-cylinder position="0 -0.040 0" radius="0.052" height="0.002" color="#000000" opacity="0.12" material="transparent:true"></a-cylinder>
+      <a-text value="BERLINER" align="center" position="0 0.092 0" scale="0.057 0.057 0.057" color="#c9a84c"></a-text>
+    </a-entity>
 
-    <!-- 2: Bratwurst — sağ üst, gold -->
-    <a-sphere class="hotspot" position="0.44 0.12 -0.05" radius="0.023" color="#c9a84c" material="emissive:#c9a84c; emissiveIntensity:0.9; transparent:true; opacity:0.95" animation="property: scale; from:1 1 1; to:1.5 1.5 1.5; dur:800; easing:easeInOutSine; loop:true; dir:alternate; delay:300" data-person="bratwurst"></a-sphere>
-    <a-text value="[ BRATWURST ]" align="center" position="0.44 0.19 -0.05" scale="0.07 0.07 0.07" color="#c9a84c"></a-text>
+    <!-- 4. KİRSCHTORTE — sağ arka, koyu çikolata pasta + krema + kiraz -->
+    <a-entity position="0.17 -0.254 -0.15"
+      animation="property: position; from: 0.17 -0.254 -0.15; to: 0.17 -0.234 -0.15; dur: 2050; easing: easeInOutSine; loop: true; dir: alternate; delay: 200">
+      <a-cylinder class="hotspot" data-person="kirschtorte"
+        radius="0.062" height="0.055" color="#3D1010" material="roughness:0.9; metalness:0">
+      </a-cylinder>
+      <a-cylinder position="0 0.032 0" radius="0.062" height="0.008" color="#FFFFFF" material="roughness:0.7; metalness:0"></a-cylinder>
+      <a-sphere position="0 0.048 0" radius="0.013" color="#8B0000" material="roughness:0.65; metalness:0"></a-sphere>
+      <a-cylinder position="0 -0.050 0" radius="0.050" height="0.002" color="#000000" opacity="0.12" material="transparent:true"></a-cylinder>
+      <a-text value="KIRSCHTORTE" align="center" position="0 0.120 0" scale="0.049 0.049 0.049" color="#c9a84c"></a-text>
+    </a-entity>
 
-    <!-- 3: Berliner — sol üst, kırmızı -->
-    <a-sphere class="hotspot" position="-0.44 0.12 -0.04" radius="0.023" color="#ff6b6b" material="emissive:#ff6b6b; emissiveIntensity:0.9; transparent:true; opacity:0.95" animation="property: scale; from:1 1 1; to:1.4 1.4 1.4; dur:1200; easing:easeInOutSine; loop:true; dir:alternate; delay:600" data-person="berliner"></a-sphere>
-    <a-text value="[ BERLINER ]" align="center" position="-0.44 0.19 -0.04" scale="0.07 0.07 0.07" color="#ff6b6b"></a-text>
-
-    <!-- 4: Schwarzwälder Kirschtorte — sol alt, mor -->
-    <a-sphere class="hotspot" position="-0.44 -0.14 0" radius="0.023" color="#aa88ff" material="emissive:#aa88ff; emissiveIntensity:0.9; transparent:true; opacity:0.95" animation="property: scale; from:1 1 1; to:1.4 1.4 1.4; dur:900; easing:easeInOutSine; loop:true; dir:alternate; delay:900" data-person="kirschtorte"></a-sphere>
-    <a-text value="[ KIRSCHTORTE ]" align="center" position="-0.44 -0.07 0" scale="0.07 0.07 0.07" color="#aa88ff"></a-text>
-
-    <!-- 5: Currywurst — sağ alt, yeşil -->
-    <a-sphere class="hotspot" position="0.44 -0.14 0.05" radius="0.023" color="#00ff88" material="emissive:#00ff88; emissiveIntensity:0.9; transparent:true; opacity:0.95" animation="property: scale; from:1 1 1; to:1.5 1.5 1.5; dur:1100; easing:easeInOutSine; loop:true; dir:alternate; delay:1200" data-person="currywurst"></a-sphere>
-    <a-text value="[ CURRYWURST ]" align="center" position="0.44 -0.07 0.05" scale="0.07 0.07 0.07" color="#00ff88"></a-text>
+    <!-- 5. CURRYWURST — sol arka, turuncu-kırmızı yatay silindir, float -->
+    <a-entity position="-0.17 -0.250 -0.15"
+      animation="property: position; from: -0.17 -0.250 -0.15; to: -0.17 -0.229 -0.15; dur: 2100; easing: easeInOutSine; loop: true; dir: alternate; delay: 1000">
+      <a-cylinder class="hotspot" data-person="currywurst"
+        radius="0.026" height="0.148" color="#CC4400" material="roughness:0.82; metalness:0"
+        rotation="0 -25 90">
+      </a-cylinder>
+      <a-cylinder position="0 -0.042 0" radius="0.058" height="0.002" color="#000000" opacity="0.12" material="transparent:true"></a-cylinder>
+      <a-text value="CURRYWURST" align="center" position="0 0.092 0" scale="0.048 0.048 0.048" color="#c9a84c"></a-text>
+    </a-entity>
 
   </a-entity>
 </a-scene>
